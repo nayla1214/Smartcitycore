@@ -1,0 +1,334 @@
+:global(#root) {
+  min-height: 100vh;
+  padding-left: 0;
+  box-sizing: border-box;
+  transition: padding-left 0.25s ease;
+}
+
+:global(#root.with-sidebar) {
+  padding-left: 260px;
+}
+
+.sidebar {
+  position: fixed;
+  width: 260px;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #e1e7f0;
+  background: #ffffff;
+  box-shadow: 5px 0 22px rgba(27, 57, 105, 0.06);
+  font-family: inherit;
+}
+
+.sidebarHeader {
+  min-height: 90px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e8ecf2;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #15233b;
+  text-decoration: none;
+}
+
+.logoIcon {
+  width: 43px;
+  height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #123b79, #2563eb);
+  box-shadow: 0 7px 15px rgba(37, 99, 235, 0.2);
+}
+
+.logoIcon svg {
+  width: 24px;
+  height: 24px;
+  fill: #ffffff;
+}
+
+.logo > div:last-child {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo strong {
+  color: #2563eb;
+  font-size: 19px;
+  line-height: 1.1;
+}
+
+.logo span {
+  margin-top: 2px;
+  color: #627087;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Navegación */
+
+.sidebarContent {
+  padding: 29px 17px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.menuLabel {
+  display: block;
+  margin: 0 12px 12px;
+  color: #9aa4b4;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.navLink {
+  min-height: 46px;
+  padding: 0 13px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 10px;
+  color: #657187;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    color 0.2s,
+    background 0.2s,
+    transform 0.2s;
+}
+
+.navLink svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+.navLink:hover {
+  background: #f2f6fd;
+  color: #2563eb;
+  transform: translateX(2px);
+}
+
+.activeLink {
+  background: #eaf1ff;
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.activeLink:hover {
+  background: #eaf1ff;
+}
+
+/* Parte inferior */
+
+.sidebarFooter {
+  padding: 17px;
+  border-top: 1px solid #e8ecf2;
+}
+
+.userInformation {
+  margin-bottom: 12px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 11px;
+  background: #f6f8fc;
+}
+
+.userAvatar {
+  width: 37px;
+  height: 37px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #123b79, #2563eb);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.userInformation > div:last-child {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.userInformation strong {
+  max-width: 150px;
+  overflow: hidden;
+  color: #25334a;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userInformation span {
+  margin-top: 2px;
+  color: #8a95a6;
+  font-size: 10px;
+}
+
+.logoutButton {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid #dfe5ee;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #5d6a80;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.logoutButton svg {
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
+}
+
+.logoutButton:hover {
+  border-color: #f1baba;
+  background: #fff4f4;
+  color: #c83b3b;
+}
+
+.authButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.loginButton,
+.registerButton {
+  min-height: 41px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.loginButton {
+  border: 1px solid #dbe2ed;
+  color: #4d5b72;
+}
+
+.loginButton:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.registerButton {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.registerButton:hover {
+  background: #1d4ed8;
+}
+
+.copyright {
+  margin: 14px 0 0;
+  text-align: center;
+  color: #a1a9b6;
+  font-size: 9px;
+}
+
+/* Menú móvil */
+
+.mobileButton {
+  display: none;
+}
+
+.overlay {
+  display: none;
+}
+
+/* Adaptación para celulares */
+
+@media (max-width: 800px) {
+   :global(#root.with-sidebar) {
+    padding-left: 0;
+  }
+
+  .sidebar {
+    width: 260px;
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
+  }
+
+  .mobileButton {
+    position: fixed;
+    width: 44px;
+    height: 44px;
+    top: 16px;
+    left: 16px;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    border: 1px solid #dce3ee;
+    border-radius: 11px;
+    background: #ffffff;
+    box-shadow: 0 5px 15px rgba(25, 55, 104, 0.12);
+    cursor: pointer;
+  }
+
+  .mobileButton span {
+    width: 20px;
+    height: 2px;
+    border-radius: 5px;
+    background: #2563eb;
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 95;
+    display: block;
+    border: none;
+    background: rgba(15, 28, 48, 0.44);
+    cursor: pointer;
+  }
+}

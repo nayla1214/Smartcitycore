@@ -1,0 +1,604 @@
+.home {
+  min-height: 100vh;
+  padding: 32px 6% 70px;
+  background:
+    radial-gradient(
+      circle at 90% 5%,
+      rgba(74, 144, 245, 0.12),
+      transparent 24%
+    ),
+    #f5f7fb;
+  color: #15233b;
+}
+
+/* Presentación principal */
+
+.hero {
+  position: relative;
+  max-width: 1180px;
+  min-height: 480px;
+  margin: 0 auto;
+  padding: 55px 60px;
+  display: grid;
+  grid-template-columns: 54% 46%;
+  align-items: center;
+  border: 1px solid #e7ebf2;
+  border-radius: 24px;
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0.98),
+      rgba(239, 247, 255, 0.95)
+    );
+  box-shadow: 0 18px 45px rgba(32, 65, 110, 0.1);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Botón superior de inicio de sesión */
+
+.loginButton {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  z-index: 10;
+  min-height: 42px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #c9d7eb;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #2563eb;
+  box-shadow: 0 6px 16px rgba(35, 75, 135, 0.08);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    color 0.2s,
+    background 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+
+.loginButton:hover {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 9px 20px rgba(37, 99, 235, 0.22);
+  transform: translateY(-2px);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 8px 14px;
+  border-radius: 30px;
+  background-color: #e9f3ff;
+  color: #1764c0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.hero h1 {
+  max-width: 650px;
+  margin: 21px 0 18px;
+  color: #14213d;
+  font-size: clamp(36px, 4vw, 54px);
+  line-height: 1.12;
+  letter-spacing: -1.5px;
+}
+
+.hero h1 span {
+  color: #2869df;
+}
+
+.heroContent > p {
+  max-width: 590px;
+  margin: 0;
+  color: #617087;
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+.heroButtons {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.primaryButton {
+  min-height: 48px;
+  padding: 0 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #3478ec, #2059cb);
+  box-shadow: 0 9px 20px rgba(40, 105, 223, 0.25);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+
+.primaryButton:hover {
+  background: linear-gradient(135deg, #2869df, #194cad);
+  box-shadow: 0 12px 24px rgba(40, 105, 223, 0.32);
+  transform: translateY(-2px);
+}
+
+/* Tarjeta visual educativa */
+
+.heroVisual {
+  min-height: 370px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.heroVisual::before {
+  width: 360px;
+  height: 360px;
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d9edff, #e5f9f2);
+  content: '';
+}
+
+.educationCard {
+  width: 100%;
+  max-width: 370px;
+  position: relative;
+  z-index: 2;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 18px;
+  background-color: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 25px 50px rgba(37, 70, 116, 0.18);
+  box-sizing: border-box;
+  transform: rotate(1.5deg);
+}
+
+.cardTop {
+  padding-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  border-bottom: 1px solid #ebeff5;
+}
+
+/* Iconos vectoriales */
+
+.bookIcon,
+.moduleIcon,
+.decorativeIcon,
+.featureIcon,
+.gadIcon {
+  color: #2869df;
+}
+
+.bookIcon svg,
+.moduleIcon svg,
+.decorativeIcon svg,
+.featureIcon svg,
+.gadIcon svg {
+  display: block;
+  fill: none;
+  stroke: currentColor;
+}
+
+.bookIcon {
+  width: 49px;
+  height: 49px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background-color: #e7f1ff;
+}
+
+.bookIcon svg {
+  width: 25px;
+  height: 25px;
+  stroke-width: 1.8;
+}
+
+.cardTop div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cardTop span,
+.moduleInformation span {
+  color: #7a8799;
+  font-size: 12px;
+}
+
+.cardTop strong {
+  color: #172640;
+  font-size: 16px;
+}
+
+.module {
+  margin: 20px 0;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  border-radius: 12px;
+  background-color: #f5f8fc;
+}
+
+.moduleIcon {
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid #e5ebf3;
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: #3273dc;
+}
+
+.moduleIcon svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.8;
+}
+
+.moduleInformation {
+  flex: 1;
+}
+
+.moduleInformation div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.moduleInformation strong {
+  color: #273952;
+  font-size: 13px;
+}
+
+.progress {
+  width: 100%;
+  height: 6px;
+  margin-top: 11px;
+  overflow: hidden;
+  border-radius: 10px;
+  background-color: #dce5f1;
+}
+
+.progress span {
+  width: 68%;
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2d75e8, #51b8a2);
+}
+
+.learningData {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.learningData div {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.learningData div:not(:last-child) {
+  border-right: 1px solid #e7ebf1;
+}
+
+.learningData strong {
+  color: #245ec7;
+  font-size: 18px;
+}
+
+.learningData span {
+  color: #7b8798;
+  font-size: 11px;
+}
+
+.decorativeIcon {
+  width: 55px;
+  height: 55px;
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  border: 1px solid #e5ebf3;
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: #2869df;
+  box-shadow: 0 10px 25px rgba(26, 57, 96, 0.15);
+}
+
+.decorativeIcon svg {
+  width: 25px;
+  height: 25px;
+  stroke-width: 1.7;
+}
+
+.iconOne {
+  top: 15px;
+  right: 20px;
+}
+
+.iconTwo {
+  bottom: 10px;
+  left: 35px;
+}
+
+/* Encabezados de las secciones */
+
+.featuresSection,
+.gadsSection {
+  max-width: 1180px;
+  margin: 75px auto 0;
+}
+
+.sectionHeading {
+  max-width: 680px;
+  margin: 0 auto 35px;
+  text-align: center;
+}
+
+.sectionHeading > span {
+  color: #2870dc;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+}
+
+.sectionHeading h2 {
+  margin: 10px 0 12px;
+  color: #14213d;
+  font-size: 32px;
+}
+
+.sectionHeading p {
+  margin: 0;
+  color: #6e7b8f;
+  line-height: 1.65;
+}
+
+/* Beneficios */
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.featureCard {
+  padding: 30px;
+  border: 1px solid #e6ebf2;
+  border-radius: 17px;
+  background-color: #ffffff;
+  box-shadow: 0 9px 25px rgba(27, 55, 89, 0.06);
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
+}
+
+.featureCard:hover {
+  box-shadow: 0 16px 35px rgba(27, 55, 89, 0.12);
+  transform: translateY(-5px);
+}
+
+.featureIcon {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #deebf7;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #e8f2ff, #edf9f5);
+  color: #161311;
+}
+
+.featureIcon svg {
+  width: 26px;
+  height: 26px;
+  stroke-width: 1.7;
+}
+
+.featureCard h3 {
+  margin: 20px 0 10px;
+  color: #192944;
+  font-size: 19px;
+}
+
+.featureCard p {
+  margin: 0;
+  color: #6c788a;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* Tarjetas de los GAD */
+
+.gadsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.gadCard {
+  overflow: hidden;
+  border: 1px solid #e4eaf2;
+  border-radius: 17px;
+  background-color: #ffffff;
+  box-shadow: 0 9px 25px rgba(27, 55, 89, 0.07);
+}
+
+.gadHeader {
+  min-height: 125px;
+  padding: 22px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #e4f0ff, #e9faf4);
+}
+
+.gadHeader > span {
+  padding: 6px 9px;
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.75);
+  color: #346894;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.gadIcon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #e1e9f3;
+  border-radius: 15px;
+  background-color: #ffffff;
+  color: #ec3d72;
+  box-shadow: 0 8px 20px rgba(38, 74, 116, 0.12);
+}
+
+.gadIcon svg {
+  width: 27px;
+  height: 27px;
+  stroke-width: 1.7;
+}
+
+.gadContent {
+  padding: 25px;
+}
+
+.gadContent h3 {
+  margin: 0 0 10px;
+  color: #172640;
+  font-size: 20px;
+}
+
+.gadContent p {
+  min-height: 72px;
+  margin: 0 0 22px;
+  color: #6d798b;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.detailsButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #2869d9;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: gap 0.2s;
+}
+
+.detailsButton:hover {
+  gap: 14px;
+}
+
+/* Adaptación para tablet */
+
+@media (max-width: 950px) {
+  .hero {
+    padding: 70px 35px 45px;
+    grid-template-columns: 1fr;
+  }
+
+  .heroContent {
+    text-align: center;
+  }
+
+  .heroContent > p {
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .heroButtons {
+    justify-content: center;
+  }
+
+  .heroVisual {
+    margin-top: 35px;
+    justify-content: center;
+  }
+
+  .featuresGrid,
+  .gadsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .gadContent p {
+    min-height: auto;
+  }
+}
+
+/* Adaptación para celular */
+
+@media (max-width: 560px) {
+  .home {
+    padding: 20px 16px 50px;
+  }
+
+  .hero {
+    padding: 30px 22px 35px;
+  }
+
+  .loginButton {
+    position: static;
+    width: fit-content;
+    margin: 0 auto 25px;
+  }
+
+  .hero h1 {
+    font-size: 35px;
+  }
+
+  .heroButtons {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .primaryButton {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .heroVisual {
+    min-height: 330px;
+  }
+
+  .educationCard {
+    padding: 19px;
+  }
+
+  .sectionHeading h2 {
+    font-size: 27px;
+  }
+}
