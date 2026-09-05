@@ -9,84 +9,109 @@
   padding-left: 260px;
 }
 
+/* Menú lateral */
+
 .sidebar {
   position: fixed;
-  width: 260px;
-  height: 100vh;
   top: 0;
   left: 0;
   z-index: 100;
+
+  width: 260px;
+  height: 100vh;
+
   display: flex;
   flex-direction: column;
-  border-right: 1px solid #e1e7f0;
+
   background: #ffffff;
-  box-shadow: 5px 0 22px rgba(27, 57, 105, 0.06);
+  border-right: 2px solid #d8e0ec;
+  box-shadow: 7px 0 24px rgba(31, 58, 105, 0.1);
+
   font-family: inherit;
 }
+/* Encabezado y logo */
 
 .sidebarHeader {
-  min-height: 90px;
-  padding: 0 24px;
+  min-height: 145px;
+  padding: 16px 20px;
+
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #e8ecf2;
+  justify-content: center;
+
+  border-bottom: none;
+}
+
+.sidebarFooter {
+  padding: 17px;
+  border-top: 1px solid #d8e0ec;
+  background: #fbfcfe;
 }
 
 .logo {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 8px;
+
   color: #15233b;
   text-decoration: none;
 }
 
 .logoIcon {
-  width: 43px;
-  height: 43px;
+  width: 82px;
+  height: 82px;
+
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border-radius: 12px;
-  background: linear-gradient(145deg, #123b79, #2563eb);
-  box-shadow: 0 7px 15px rgba(37, 99, 235, 0.2);
+
+  border: 1px solid #e7ecf4;
+  border-radius: 19px;
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(25, 55, 104, 0.14);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.logoIcon svg {
-  width: 24px;
-  height: 24px;
-  fill: #ffffff;
+.logo:hover .logoIcon {
+  transform: translateY(-2px);
+  box-shadow: 0 11px 25px rgba(25, 55, 104, 0.18);
 }
 
-.logo > div:last-child {
-  display: flex;
-  flex-direction: column;
+.logoIcon img {
+  width: 100px;
+  height: 200px;
+
+  display: block;
+  object-fit: contain;
 }
 
-.logo strong {
-  color: #2563eb;
-  font-size: 19px;
-  line-height: 1.1;
-}
+.logo > span {
+  margin: 0;
 
-.logo span {
-  margin-top: 2px;
-  color: #627087;
-  font-size: 12px;
-  font-weight: 600;
+  color: #52627a;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
 }
 
 /* Navegación */
 
 .sidebarContent {
-  padding: 29px 17px;
   flex: 1;
+  padding: 25px 17px;
   overflow-y: auto;
 }
 
 .menuLabel {
   display: block;
   margin: 0 12px 12px;
+
   color: #9aa4b4;
   font-size: 9px;
   font-weight: 800;
@@ -102,18 +127,22 @@
 .navLink {
   min-height: 46px;
   padding: 0 13px;
+
   display: flex;
   align-items: center;
   gap: 12px;
+
   border-radius: 10px;
   color: #657187;
+
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;
+
   transition:
-    color 0.2s,
-    background 0.2s,
-    transform 0.2s;
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .navLink svg {
@@ -137,6 +166,7 @@
 
 .activeLink:hover {
   background: #eaf1ff;
+  color: #2563eb;
 }
 
 /* Parte inferior */
@@ -146,12 +176,16 @@
   border-top: 1px solid #e8ecf2;
 }
 
+/* Información del usuario */
+
 .userInformation {
   margin-bottom: 12px;
   padding: 10px;
+
   display: flex;
   align-items: center;
   gap: 10px;
+
   border-radius: 11px;
   background: #f6f8fc;
 }
@@ -159,19 +193,23 @@
 .userAvatar {
   width: 37px;
   height: 37px;
+
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+
   border-radius: 50%;
   background: linear-gradient(145deg, #123b79, #2563eb);
   color: #ffffff;
+
   font-size: 14px;
   font-weight: 800;
 }
 
 .userInformation > div:last-child {
   min-width: 0;
+
   display: flex;
   flex-direction: column;
 }
@@ -179,38 +217,48 @@
 .userInformation strong {
   max-width: 150px;
   overflow: hidden;
+
   color: #25334a;
   font-size: 12px;
+
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .userInformation span {
   margin-top: 2px;
+
   color: #8a95a6;
   font-size: 10px;
 }
+
+/* Cerrar sesión */
 
 .logoutButton {
   width: 100%;
   min-height: 42px;
   padding: 0 13px;
+
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 9px;
+
   border: 1px solid #dfe5ee;
   border-radius: 9px;
   background: #ffffff;
   color: #5d6a80;
+
   font: inherit;
   font-size: 12px;
   font-weight: 700;
+
   cursor: pointer;
+
   transition:
-    color 0.2s,
-    border-color 0.2s,
-    background 0.2s;
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
 .logoutButton svg {
@@ -225,6 +273,8 @@
   color: #c83b3b;
 }
 
+/* Botones de autenticación */
+
 .authButtons {
   display: flex;
   flex-direction: column;
@@ -234,10 +284,13 @@
 .loginButton,
 .registerButton {
   min-height: 41px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   border-radius: 9px;
+
   font-size: 12px;
   font-weight: 700;
   text-decoration: none;
@@ -262,11 +315,14 @@
   background: #1d4ed8;
 }
 
+/* Copyright */
+
 .copyright {
   margin: 14px 0 0;
-  text-align: center;
+
   color: #a1a9b6;
   font-size: 9px;
+  text-align: center;
 }
 
 /* Menú móvil */
@@ -282,7 +338,7 @@
 /* Adaptación para celulares */
 
 @media (max-width: 800px) {
-   :global(#root.with-sidebar) {
+  :global(#root.with-sidebar) {
     padding-left: 0;
   }
 
@@ -298,26 +354,31 @@
 
   .mobileButton {
     position: fixed;
-    width: 44px;
-    height: 44px;
     top: 16px;
     left: 16px;
     z-index: 90;
+
+    width: 44px;
+    height: 44px;
+
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     gap: 5px;
+
     border: 1px solid #dce3ee;
     border-radius: 11px;
     background: #ffffff;
     box-shadow: 0 5px 15px rgba(25, 55, 104, 0.12);
+
     cursor: pointer;
   }
 
   .mobileButton span {
     width: 20px;
     height: 2px;
+
     border-radius: 5px;
     background: #2563eb;
   }
@@ -326,9 +387,17 @@
     position: fixed;
     inset: 0;
     z-index: 95;
+
     display: block;
+
     border: none;
     background: rgba(15, 28, 48, 0.44);
+
     cursor: pointer;
   }
+}
+.accountSection {
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid #e6ebf2;
 }

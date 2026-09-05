@@ -1,0 +1,544 @@
+.profilePage {
+  min-height: 100vh;
+  padding: 45px 5%;
+  background:
+    radial-gradient(
+      circle at 95% 5%,
+      rgba(52, 120, 236, 0.1),
+      transparent 25%
+    ),
+    #f5f7fb;
+  color: #15233b;
+}
+
+.profileHeader {
+  max-width: 1100px;
+  margin: 0 auto 25px;
+  padding: 28px 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+
+  border: 1px solid #e1e7f0;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(25, 55, 104, 0.07);
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #7568d8, #574bb8);
+  color: #ffffff;
+  box-shadow: 0 6px 15px rgba(87, 75, 184, 0.25);
+
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.headerLabel,
+.cardEyebrow {
+  color: #3478ec;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.identity h1 {
+  margin: 4px 0 5px;
+  color: #15233b;
+  font-size: 29px;
+}
+
+.identity p {
+  margin: 0;
+  color: #647188;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.editButton,
+.saveButton,
+.cancelButton {
+  min-height: 43px;
+  padding: 0 17px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border-radius: 10px;
+
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.editButton,
+.saveButton {
+  border: none;
+  background: #3478ec;
+  color: #ffffff;
+  box-shadow: 0 6px 15px rgba(52, 120, 236, 0.2);
+}
+
+.editButton:hover,
+.saveButton:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.successMessage {
+  max-width: 1100px;
+  margin: 0 auto 20px;
+  padding: 13px 17px;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  border: 1px solid #bce8d4;
+  border-radius: 11px;
+  background: #ecfdf5;
+  color: #147a52;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.contentGrid {
+  max-width: 1100px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: 1.12fr 0.88fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.leftColumn,
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.card {
+  overflow: hidden;
+
+  border: 1px solid #e1e7f0;
+  border-radius: 17px;
+  background: #ffffff;
+  box-shadow: 0 8px 25px rgba(25, 55, 104, 0.06);
+}
+
+.cardHeader {
+  min-height: 78px;
+  padding: 18px 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  border-bottom: 1px solid #e8edf4;
+}
+
+.cardHeader h2 {
+  margin: 4px 0 0;
+  color: #15233b;
+  font-size: 18px;
+}
+
+.headerIcon {
+  width: 23px;
+  height: 23px;
+  color: #3478ec;
+}
+
+.personalInformation {
+  padding: 22px;
+}
+
+.informationRow {
+  padding: 15px 0;
+
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  border-bottom: 1px solid #eef1f6;
+}
+
+.informationRow:first-child {
+  padding-top: 0;
+}
+
+.informationIcon {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  border-radius: 10px;
+  background: #edf4ff;
+  color: #3478ec;
+}
+
+.informationRow div:last-child {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.informationRow span,
+.accountDetails span {
+  margin-bottom: 4px;
+  color: #8a95a7;
+  font-size: 11px;
+}
+
+.informationRow strong {
+  overflow: hidden;
+  color: #25334a;
+  font-size: 14px;
+  text-overflow: ellipsis;
+}
+
+.accountDetails {
+  padding-top: 20px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.accountDetails div {
+  padding: 14px;
+
+  display: flex;
+  flex-direction: column;
+
+  border-radius: 10px;
+  background: #f6f8fc;
+}
+
+.accountDetails strong {
+  color: #25334a;
+  font-size: 13px;
+}
+
+.profileForm {
+  padding: 22px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.profileForm label {
+  color: #334158;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.inputContainer {
+  min-height: 46px;
+  margin-top: 7px;
+  padding: 0 13px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border: 1px solid #dce3ed;
+  border-radius: 10px;
+  background: #ffffff;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.inputContainer:focus-within {
+  border-color: #3478ec;
+  box-shadow: 0 0 0 4px rgba(52, 120, 236, 0.1);
+}
+
+.inputContainer svg {
+  color: #8390a5;
+}
+
+.inputContainer input {
+  width: 100%;
+
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #25334a;
+
+  font: inherit;
+  font-size: 13px;
+}
+
+.formButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.cancelButton {
+  border: 1px solid #dce3ed;
+  background: #ffffff;
+  color: #657187;
+}
+
+.cancelButton:hover {
+  border-color: #f1baba;
+  background: #fff4f4;
+  color: #c83b3b;
+}
+
+.progressInformation {
+  padding: 24px 22px;
+}
+
+.progressText {
+  margin-bottom: 11px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  color: #657187;
+  font-size: 13px;
+}
+
+.progressText strong {
+  color: #15233b;
+  font-size: 19px;
+}
+
+.progressBar {
+  width: 100%;
+  height: 10px;
+
+  overflow: hidden;
+
+  border-radius: 20px;
+  background: #e8edf5;
+}
+
+.progressBar span {
+  height: 100%;
+  display: block;
+
+  border-radius: inherit;
+  background: linear-gradient(90deg, #3478ec, #4db7a5);
+}
+
+.progressInformation p {
+  margin: 14px 0 0;
+  color: #7c889a;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.statisticsGrid {
+  padding: 20px;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 11px;
+}
+
+.statistic {
+  min-height: 135px;
+  padding: 15px 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  border: 1px solid #e8edf4;
+  border-radius: 12px;
+  background: #fbfcfe;
+
+  text-align: center;
+}
+
+.statisticIcon {
+  width: 37px;
+  height: 37px;
+  margin-bottom: 9px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+}
+
+.blue {
+  background: #eaf2ff;
+  color: #3478ec;
+}
+
+.green {
+  background: #e8f8f3;
+  color: #259c78;
+}
+
+.orange {
+  background: #fff3dd;
+  color: #d88a15;
+}
+
+.statistic strong {
+  color: #15233b;
+  font-size: 21px;
+}
+
+.statistic span {
+  margin-top: 4px;
+  color: #788598;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.achievements {
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.achievement {
+  padding: 13px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  border: 1px solid #e7ebf2;
+  border-radius: 11px;
+  background: #f7f8fa;
+  color: #a4adba;
+
+  opacity: 0.7;
+}
+
+.achievement > svg {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.achievement div {
+  display: flex;
+  flex-direction: column;
+}
+
+.achievement strong {
+  color: #687386;
+  font-size: 12px;
+}
+
+.achievement span {
+  margin-top: 3px;
+  font-size: 10px;
+}
+
+.unlocked {
+  border-color: #f2d598;
+  background: #fff8e9;
+  color: #d99017;
+  opacity: 1;
+}
+
+.unlocked strong {
+  color: #59451e;
+}
+
+@media (max-width: 1000px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .profilePage {
+    padding: 80px 18px 35px;
+  }
+
+  .profileHeader {
+    padding: 22px;
+
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .identity {
+    align-items: flex-start;
+  }
+
+  .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    font-size: 17px;
+  }
+
+  .identity h1 {
+    font-size: 22px;
+  }
+
+  .editButton {
+    width: 100%;
+  }
+
+  .accountDetails {
+    grid-template-columns: 1fr;
+  }
+
+  .statisticsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statistic {
+    min-height: 110px;
+  }
+
+  .formButtons {
+    flex-direction: column;
+  }
+}

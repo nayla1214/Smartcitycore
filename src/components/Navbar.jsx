@@ -10,6 +10,7 @@ import {
 } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import styles from './Navbar.module.css';
+import logoSmartCity from '../assets/logo.png';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -96,22 +97,20 @@ const Navbar = () => {
         }`}
       >
         <div className={styles.sidebarHeader}>
-          <Link
-            to="/"
-            className={styles.logo}
-            onClick={closeMenu}
-          >
-            <div className={styles.logoIcon}>
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 3 1.8 8.2 12 13.4l8-4.1v6h2V8.2L12 3Zm-6 9.1v4.2c0 1.7 2.7 3.7 6 3.7s6-2 6-3.7v-4.2l-6 3.1-6-3.1Z" />
-              </svg>
-            </div>
+         <Link
+  to="/"
+  className={styles.logo}
+  onClick={closeMenu}
+>
+  <div className={styles.logoIcon}>
+    <img
+      src={logoSmartCity}
+      alt="Logo de SmartCityCore"
+    />
+  </div>
 
-            <div>
-              <strong>Logo</strong>
-              <span>Capacitación</span>
-            </div>
-          </Link>
+  <span>Capacitación</span>
+</Link>
         </div>
 
         <div className={styles.sidebarContent}>
@@ -144,6 +143,37 @@ const Navbar = () => {
 
               <span>Cursos</span>
             </NavLink>
+            <div className={styles.accountSection}>
+  <span className={styles.menuLabel}>
+    MI CUENTA
+  </span>
+
+  <nav className={styles.links}>
+    <NavLink
+      to="/progress"
+      className={getLinkClass}
+      onClick={closeMenu}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 19h16v2H2V3h2v16Zm3-3-2-2 5-5 4 4 5-6 2 1.5-6.4 8-4.6-4.1L7 16Z" />
+      </svg>
+
+      <span>Avance</span>
+    </NavLink>
+
+    <NavLink
+      to="/profile"
+      className={getLinkClass}
+      onClick={closeMenu}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-5 0-9 2.5-9 5.5V22h18v-2.5C21 16.5 17 14 12 14Z" />
+      </svg>
+
+      <span>Perfil</span>
+    </NavLink>
+  </nav>
+</div>
 
             {user.role === 'ADMIN' && (
               <NavLink

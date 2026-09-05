@@ -3,8 +3,6 @@ import {
   FiBookOpen,
   FiAward,
   FiBarChart2,
-  FiMapPin,
-  FiHome,
   FiLayers,
   FiMonitor,
 } from 'react-icons/fi';
@@ -32,34 +30,9 @@ const Home = () => {
     },
   ];
 
-  const gads = [
-    {
-      nombre: 'GAD Paján',
-      ubicacion: 'Paján',
-      Icon: FiHome,
-      descripcion:
-        'Conoce la información, proyectos y actividades desarrolladas en el cantón Paján.',
-    },
-    {
-      nombre: 'GAD Puerto López',
-      ubicacion: 'Puerto López',
-      Icon: FiMapPin,
-      descripcion:
-        'Descubre la información institucional y los avances realizados en Puerto López.',
-    },
-    {
-      nombre: 'GAD Jipijapa',
-      ubicacion: 'Jipijapa',
-      Icon: FiHome,
-      descripcion:
-        'Infórmate sobre las actividades y la gestión institucional del GAD Jipijapa.',
-    },
-  ];
-
   return (
     <main className={styles.home}>
       {/* Presentación principal */}
-
       <section className={styles.hero}>
         <Link to="/login" className={styles.loginButton}>
           Iniciar sesión
@@ -108,9 +81,7 @@ const Home = () => {
               <div className={styles.moduleInformation}>
                 <div>
                   <span>Contenido educativo</span>
-                  <strong>
-                    Introducción a las Smart Cities
-                  </strong>
+                  <strong>Introducción a las Smart Cities</strong>
                 </div>
 
                 <div className={styles.progress}>
@@ -137,22 +108,10 @@ const Home = () => {
             </div>
           </div>
 
-          <span
-            className={`${styles.decorativeIcon} ${styles.iconOne}`}
-          >
-            💡
-          </span>
-
-          <span
-            className={`${styles.decorativeIcon} ${styles.iconTwo}`}
-          >
-            <FiMonitor />
-          </span>
         </div>
       </section>
 
       {/* Beneficios educativos */}
-
       <section
         id="informacion"
         className={styles.featuresSection}
@@ -183,55 +142,6 @@ const Home = () => {
 
                 <h3>{beneficio.titulo}</h3>
                 <p>{beneficio.descripcion}</p>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Información institucional */}
-
-      <section className={styles.gadsSection}>
-        <div className={styles.sectionHeading}>
-          <span>Instituciones participantes</span>
-
-          <h2>Información de los GAD</h2>
-
-          <p>
-            Consulta la información institucional de los municipios
-            participantes.
-          </p>
-        </div>
-
-        <div className={styles.gadsGrid}>
-          {gads.map((gad) => {
-            const Icon = gad.Icon;
-
-            return (
-              <article
-                className={styles.gadCard}
-                key={gad.nombre}
-              >
-                <div className={styles.gadHeader}>
-                  <div className={styles.gadIcon}>
-                    <Icon />
-                  </div>
-
-                  <span>Información institucional</span>
-                </div>
-
-                <div className={styles.gadContent}>
-                  <h3>{gad.nombre}</h3>
-                  <p>{gad.descripcion}</p>
-
-                  <Link
-                    to={`/gad/${gad.ubicacion}`}
-                    className={styles.detailsButton}
-                  >
-                    Ver información
-                    <span aria-hidden="true">→</span>
-                  </Link>
-                </div>
               </article>
             );
           })}
