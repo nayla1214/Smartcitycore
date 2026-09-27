@@ -17,7 +17,8 @@ const Profile = () => {
   const { user, updateUser } = useContext(AuthContext);
   const [editing, setEditing] = useState(false);
   const [message, setMessage] = useState('');
-
+const [error, setError] = useState('');
+const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -51,21 +52,36 @@ const initial = useMemo(() => {
     }));
   };
 
-  const handleSave = (event) => {
-    event.preventDefault();
+const handleSave = async (event) => {
+  event.preventDefault();
 
-    updateUser({
+  setMessage('');
+  setError('');
+  setSaving(true);
+
+  try {
+    await updateUser({
       name: formData.name.trim(),
       email: formData.email.trim(),
     });
 
     setEditing(false);
-    setMessage('Tu información se actualizó correctamente.');
+    setMessage(
+      'Tu información se actualizó correctamente.',
+    );
 
     window.setTimeout(() => {
       setMessage('');
     }, 3000);
-  };
+  } catch (requestError) {
+    setError(
+      requestError.message ||
+        'No se pudo actualizar el perfil.',
+    );
+  } finally {
+    setSaving(false);
+  }
+};
 
   const handleCancel = () => {
     setFormData({
@@ -116,6 +132,12 @@ const initial = useMemo(() => {
           {message}
         </div>
       )}
+      {error && (
+  <div className={styles.errorMessage}>
+    <FiX />
+    {error}
+  </div>
+)}
 
       <section className={styles.contentGrid}>
         <div className={styles.leftColumn}>
@@ -173,21 +195,26 @@ const initial = useMemo(() => {
 
                 <div className={styles.formButtons}>
                   <button
-                    type="submit"
-                    className={styles.saveButton}
-                  >
-                    <FiSave />
-                    Guardar cambios
-                  </button>
+  type="submit"
+  className={styles.saveButton}
+  disabled={saving}
+>
+  <FiSave />
+
+  {saving
+    ? 'Guardando...'
+    : 'Guardar cambios'}
+</button>
 
                   <button
-                    type="button"
-                    className={styles.cancelButton}
-                    onClick={handleCancel}
-                  >
-                    <FiX />
-                    Cancelar
-                  </button>
+  type="button"
+  className={styles.cancelButton}
+  onClick={handleCancel}
+  disabled={saving}
+>
+  <FiX />
+  Cancelar
+</button>
                 </div>
               </form>
             ) : (

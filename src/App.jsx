@@ -14,7 +14,8 @@ import ModuleDetail from './pages/ModuleDetail';
 import Profile from './pages/Profile';
 import MainLayout from './layouts/MainLayout';
 import PrivateRoute from './components/PrivateRoute';
-
+import Progress from './pages/Progress';
+import TopicDetail from './pages/TopicDetail';
 function App() {
   return (
     <Router>
@@ -29,6 +30,7 @@ function App() {
           <Route element={<PrivateRoute />}>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="admin" element={<AdminDashboard />} />
+            <Route path="progress" element={<Progress />} />
 
             <Route
               path="course/:courseId"
@@ -39,7 +41,10 @@ function App() {
               path="module/:moduleId"
               element={<ModuleDetail />}
             />
-
+<Route
+  path="module/:moduleId/topic/:topicNumber"
+  element={<TopicDetail />}
+/>
             <Route path="profile" element={<Profile />} />
           </Route>
         </Route>

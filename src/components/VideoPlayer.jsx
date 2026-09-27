@@ -28,6 +28,7 @@ const VideoPlayer = ({ ytVideoId, dbVideoId, videoDuration, onComplete, onProgre
         videoId: ytVideoId,
         playerVars: {
           controls: 1,
+            fs: 1,
           disablekb: 0,
           modestbranding: 1,
           rel: 0,
@@ -58,20 +59,14 @@ const VideoPlayer = ({ ytVideoId, dbVideoId, videoDuration, onComplete, onProgre
       if (!playerRef.current?.getCurrentTime) return;
 
       try {
-        const currentTime = Math.floor(playerRef.current.getCurrentTime() || 0);
-        const ytDuration = Math.floor(playerRef.current.getDuration?.() || videoDuration || 300);
+        const ytDuration = Math.floor(
+  playerRef.current.getDuration?.() || videoDuration || 300
+);
+       const currentTime = isEnded
+  ? ytDuration
+  : Math.floor(playerRef.current.getCurrentTime() || 0);
 
         if (currentTime === 0 && !isEnded) return;
-
-        const isLocalCompleted = isEnded || (ytDuration > 0 && (currentTime / ytDuration) >= 0.8);
-
-        if (isLocalCompleted && !completed && isMounted) {
-          setCompleted(true);
-          if (onProgress) {
-            onProgress(dbVideoId, { time_watched: currentTime, percentage: 100, is_completed: true });
-          }
-          if (onComplete) onComplete();
-        }
 
         const res = await api.post('/videos/progress', {
           videoId: dbVideoId,

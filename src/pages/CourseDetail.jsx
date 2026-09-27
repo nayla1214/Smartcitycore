@@ -10,6 +10,34 @@ import { getCourseById } from '../data/courseData';
 import EvaluationForm from '../components/EvaluationForm';
 import styles from './Course.module.css';
 
+const COURSE_STRUCTURE = [
+  {
+    title: 'Fundamentos de las Ciudades Inteligentes',
+    topics: [
+    'Concepto de Ciudad Inteligente',
+    'Gobernanza Inteligente y Ciudadanía Digital',
+    'Evolución de las Ciudades Tradicionales a Ciudades Inteligentes',
+    'Plataforma web de urbanismo inteligente',
+    ],
+  },
+  {
+    title: 'Infraestructura Sostenible y Movilidad',
+    topics: [
+    'Infraestructura Verde (Smart Environment)',
+    'Transporte Sostenible (Smart Transport)',
+    'Espacios Urbanos (Smart Living)',
+    ],
+  },
+  {
+    title: 'Inteligencia Artificial y Aprendizaje',
+    topics: [
+    'Inteligencia Artificial aplicada a los Servicios Urbanos',
+    'Educación Inteligente (Smart Education)',
+    'Gemelos Digitales y Simulación Urbana',
+    ],
+  },
+];
+
 const CourseDetail = () => {
   const { courseId } = useParams();
   const { user } = useContext(AuthContext);
@@ -23,6 +51,7 @@ const CourseDetail = () => {
   const [loading, setLoading] = useState(true);
   const [showFinalEval, setShowFinalEval] = useState(false);
   const [error, setError] = useState('');
+  const [selectedModuleIndex, setSelectedModuleIndex] = useState(0);
 
   const isAdmin = user?.role === 'ADMIN';
 
@@ -75,6 +104,7 @@ const CourseDetail = () => {
 
   useEffect(() => {
     setLoading(true);
+    setSelectedModuleIndex(0);
     fetchData();
   }, [courseId, isAdmin]);
 
@@ -107,6 +137,22 @@ const CourseDetail = () => {
 
   const moduleList = course.modules || course.Modules || [];
 
+  const selectedModule = moduleList[selectedModuleIndex];
+
+  const getModuleTitle = (mod, index) =>
+    COURSE_STRUCTURE[index]?.title || mod.title;
+
+  const selectedTopics =
+    COURSE_STRUCTURE[selectedModuleIndex]?.topics ||
+    selectedModule?.topics ||
+    selectedModule?.Topics ||
+    [];
+
+  const getTopicTitle = (topic) =>
+    typeof topic === 'string'
+      ? topic
+      : topic.title || topic.name || 'Tema sin título';
+
   const isModuleAvailable = (mod, index) => {
     if (isAdmin) return true;
     if (progress.isCompleted) return true;
@@ -130,17 +176,6 @@ const CourseDetail = () => {
       )?.passed === true
     );
   };
-
-  const passedModules = moduleList.filter((mod) =>
-    isModulePassed(mod)
-  ).length;
-
-  const progressPercentage =
-    moduleList.length > 0
-      ? Math.round(
-          (passedModules / moduleList.length) * 100
-        )
-      : 0;
 
   const allModulesPassed =
     moduleList.length > 0 &&
@@ -171,40 +206,47 @@ const CourseDetail = () => {
             <span className={styles.heroLabel}>
               {isAdmin
                 ? 'GESTIÓN DEL CURSO'
-                : 'CURSO DE CAPACITACIÓN'}
+                : 'FORMACIÓN SMARTCITYCORE'}
             </span>
 
             <h1>{course.name}</h1>
             <p>{course.description}</p>
 
             <div className={styles.courseInformation}>
-              <span>
+              <div className={styles.informationItem}>
                 <strong>{moduleList.length}</strong>
-                {moduleList.length === 1
-                  ? ' módulo'
-                  : ' módulos'}
-              </span>
+                <span>
+                  {moduleList.length === 1
+                    ? 'Módulo'
+                    : 'Módulos'}
+                </span>
+              </div>
 
               {finalEvalInfo && (
-                <span>
-                  <strong>1</strong> evaluación final
-                </span>
+                <div className={styles.informationItem}>
+                  <strong>1</strong>
+                  <span>Evaluación final</span>
+                </div>
               )}
 
-              <span>
-                {isAdmin
-                  ? 'Modo administrador'
-                  : progress.isCompleted
-                    ? 'Curso completado'
-                    : 'Curso en desarrollo'}
-              </span>
+              <div className={styles.courseStatus}>
+                <span className={styles.heroStatusDot}></span>
+                <span>
+                  {isAdmin
+                    ? 'Modo administrador'
+                    : progress.isCompleted
+                      ? 'Curso completado'
+                      : 'Curso en desarrollo'}
+                </span>
+              </div>
             </div>
           </div>
 
           <div className={styles.heroIcon}>
             <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 4h16v16H4V4Zm3 3v2h10V7H7Zm0 4v2h10v-2H7Zm0 4v2h6v-2H7Z" />
+              <path d="M12 6.1C10.2 4.7 7.7 4 4.5 4H3v14h1.5c3.1 0 5.5.7 7.5 2.1V6.1Zm0 0C13.8 4.7 16.3 4 19.5 4H21v14h-1.5c-3.1 0-5.5.7-7.5 2.1V6.1Z" />
             </svg>
+            <span className={styles.iconSpark}></span>
           </div>
 
           <div className={styles.heroCircleOne}></div>
@@ -215,36 +257,6 @@ const CourseDetail = () => {
           <div className={styles.errorMessage}>
             {error}
           </div>
-        )}
-
-        {!isAdmin && (
-          <section className={styles.progressCard}>
-            <div className={styles.progressHeader}>
-              <div>
-                <span>PROGRESO GENERAL</span>
-                <h2>Avance del curso</h2>
-              </div>
-
-              <strong>{progressPercentage}%</strong>
-            </div>
-
-            <div className={styles.generalProgressBar}>
-              <span
-                style={{
-                  width: `${progressPercentage}%`,
-                }}
-              ></span>
-            </div>
-
-            <p>
-              Has aprobado {passedModules} de{' '}
-              {moduleList.length}{' '}
-              {moduleList.length === 1
-                ? 'módulo'
-                : 'módulos'}
-              .
-            </p>
-          </section>
         )}
 
         {!isAdmin && progress.isCompleted && (
@@ -303,103 +315,144 @@ const CourseDetail = () => {
             </span>
           </div>
 
-          <div className={styles.modulesList}>
-            {moduleList.map((mod, index) => {
-              const available = isModuleAvailable(
-                mod,
-                index
-              );
-              const passed = isModulePassed(mod);
+          <div className={styles.courseContentLayout}>
+            <aside className={styles.modulesSidebar}>
+              {moduleList.map((mod, index) => {
+                const available = isModuleAvailable(mod, index);
+                const passed = isModulePassed(mod);
 
-              let moduleStatus = 'Disponible';
+                return (
+                  <button
+                    key={mod.id}
+                    type="button"
+                    disabled={!available}
+                    onClick={() => setSelectedModuleIndex(index)}
+                    className={`${styles.sidebarModule} ${
+                      selectedModuleIndex === index
+                        ? styles.activeModule
+                        : ''
+                    } ${!available ? styles.sidebarLocked : ''}`}
+                  >
+                    <span className={styles.sidebarNumber}>
+                      MÓDULO {index + 1}
+                    </span>
 
-              if (!isAdmin) {
-                if (passed) {
-                  moduleStatus = 'Aprobado';
-                } else if (!available) {
-                  moduleStatus = 'Bloqueado';
-                } else {
-                  moduleStatus = 'En progreso';
-                }
-              }
+                    <strong>{getModuleTitle(mod, index)}</strong>
 
-              return (
-                <article
-                  key={mod.id}
-                  className={`${styles.moduleItem} ${
-                    !available ? styles.locked : ''
-                  }`}
-                >
-                  <div className={styles.moduleOrder}>
-                    {String(index + 1).padStart(2, '0')}
+                    <span className={styles.sidebarStatus}>
+                      {!isAdmin && !available
+                        ? '🔒 Bloqueado'
+                        : !isAdmin && passed
+                          ? '✓ Aprobado'
+                          : isAdmin
+                            ? 'Disponible'
+                            : 'En progreso'}
+                    </span>
+                  </button>
+                );
+              })}
+            </aside>
+
+            {selectedModule && (
+              <div className={styles.topicsPanel}>
+                <div className={styles.topicsHeader}>
+                  <div>
+                    <span className={styles.moduleNumber}>
+                      Módulo {selectedModuleIndex + 1}
+                    </span>
+                    <h3>
+                      {getModuleTitle(
+                        selectedModule,
+                        selectedModuleIndex
+                      )}
+                    </h3>
+                    {selectedModule.description && (
+                      <p>{selectedModule.description}</p>
+                    )}
                   </div>
 
-                  <div className={styles.moduleBody}>
-                    <div className={styles.moduleHeader}>
-                      <div>
+                  <span className={styles.topicCount}>
+                    {selectedTopics.length}{' '}
+                    {selectedTopics.length === 1 ? 'tema' : 'temas'}
+                  </span>
+                </div>
+
+                <div className={styles.topicsList}>
+                  {selectedTopics.map((topic, topicIndex) => {
+                    const isFirstTopic =
+                      selectedModuleIndex === 0 && topicIndex === 0;
+
+                    const topicContent = (
+                      <>
                         <span
-                          className={styles.moduleNumber}
+                          className={`${styles.topicNumber} ${
+                            isFirstTopic ? styles.firstTopicIcon : ''
+                          }`}
                         >
-                          Módulo {index + 1}
+                          {isFirstTopic ? (
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                              <path d="M3 21V10l5-3v14H3Zm7 0V3l7 4v14h-7Zm9 0v-8l3 2v6h-3ZM5 12v2h1v-2H5Zm0 4v2h1v-2H5Zm7-9v2h2V7h-2Zm0 4v2h2v-2h-2Zm0 4v2h2v-2h-2Z" />
+                            </svg>
+                          ) : (
+                            <>
+                              {selectedModuleIndex + 1}.{topicIndex + 1}
+                            </>
+                          )}
                         </span>
 
-                        <h3>{mod.title}</h3>
+                        <div>
+                          <small>
+                            TEMA {selectedModuleIndex + 1}.{topicIndex + 1}
+                          </small>
+                          <h4>{getTopicTitle(topic)}</h4>
+                        </div>
 
-                        {mod.description && (
-                          <p>{mod.description}</p>
-                        )}
-                      </div>
-
-                      <span
-                        className={
-                          isAdmin
-                            ? styles.badgeAdmin
-                            : passed
-                              ? styles.badgeSuccess
-                              : available
-                                ? styles.badgeWarning
-                                : styles.badgeLocked
-                        }
-                      >
-                        <span
-                          className={styles.statusDot}
-                        ></span>
-                        {moduleStatus}
-                      </span>
-                    </div>
-
-                    <div className={styles.moduleFooter}>
-                      {available ? (
-                        <Link
-                          to={`/module/${mod.id}`}
-                          className={styles.moduleButton}
-                        >
-                          {isAdmin
-                            ? 'Gestionar módulo'
-                            : passed
-                              ? 'Repasar módulo'
-                              : 'Ir al módulo'}
-
-                          <span aria-hidden="true">→</span>
-                        </Link>
-                      ) : (
-                        <p className={styles.lockedMessage}>
-                          <svg
-                            viewBox="0 0 24 24"
+                        {isFirstTopic && (
+                          <span
+                            className={styles.topicArrow}
                             aria-hidden="true"
                           >
-                            <path d="M17 9h-1V7a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v9h14v-9a2 2 0 0 0-2-2Zm-7-2a2 2 0 0 1 4 0v2h-4V7Z" />
-                          </svg>
+                            <svg viewBox="0 0 24 24">
+                              <path d="M9 7.5v9l7-4.5-7-4.5Z" />
+                            </svg>
+                          </span>
+                        )}
+                      </>
+                    );
 
-                          Completa y aprueba el módulo
-                          anterior para desbloquearlo.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
+                    if (isFirstTopic) {
+                      return (
+                        <Link
+                          key={
+                            topic.id ||
+                            `${selectedModule.id}-${topicIndex}`
+                          }
+                          to={`/module/${selectedModule.id}/topic/1.1`}
+                          className={`${styles.topicItem} ${styles.topicLink}`}
+                        >
+                          {topicContent}
+                        </Link>
+                      );
+                    }
+
+                    return (
+                      <div
+                        key={
+                          topic.id ||
+                          `${selectedModule.id}-${topicIndex}`
+                        }
+                        className={styles.topicItem}
+                      >
+                        {topicContent}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.modulesList}>
 
             {finalEvalInfo && (
               <article

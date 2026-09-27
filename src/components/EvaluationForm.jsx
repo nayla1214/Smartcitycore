@@ -1,150 +1,286 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { api } from '../services/api';
-import { getEvaluationById } from '../data/courseData';
 import styles from './Evaluation.module.css';
 
-const EvaluationForm = ({ evaluationId, courseId, onSuccess }) => {
+const EvaluationForm = ({ evaluationId, onSuccess }) => {
   const [evaluation, setEvaluation] = useState(null);
   const [answers, setAnswers] = useState({});
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchEval = async () => {
-      // Intentar primero cargar desde los datos hardcodeados
-      const localEval = getEvaluationById(evaluationId);
-      if (localEval) {
-        setEvaluation(localEval);
-        setLoading(false);
-        return;
-      }
+    let active = true;
 
-      // Si no está hardcodeado, hacer petición al backend
+    setEvaluation(null);
+    setAnswers({});
+    setResult(null);
+    setError('');
+    setLoading(true);
+
+    const loadEvaluation = async () => {
       try {
-        const data = await api.get(`/evaluations/${evaluationId}`);
+        const data = await api.get(
+          `/evaluations/${evaluationId}`
+        );
+
+        if (!active) return;
+
+        const questions =
+          data?.Questions || data?.questions || [];
+
+        if (questions.length === 0) {
+          setError(
+            'La API no devolvió preguntas para esta evaluación.'
+          );
+        }
+
         setEvaluation(data);
       } catch (err) {
-        setError(err.message || 'Error al cargar evaluación');
+        if (active) {
+          setError(
+            err.message || 'No se pudo cargar la evaluación.'
+          );
+        }
       } finally {
-        setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
       }
     };
-    fetchEval();
+
+    loadEvaluation();
+
+    return () => {
+      active = false;
+    };
   }, [evaluationId]);
 
+  const questions =
+    evaluation?.Questions || evaluation?.questions || [];
+
   const handleOptionChange = (questionId, optionId) => {
-    setAnswers({ ...answers, [questionId]: optionId });
+    setAnswers((previous) => ({
+      ...previous,
+      [questionId]: optionId,
+    }));
   };
 
-  const questionsList = evaluation?.questions || evaluation?.Questions || [];
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setError('');
 
-    if (questionsList.length > 0 && Object.keys(answers).length < questionsList.length) {
-      setError(`Por favor responde las ${questionsList.length} preguntas antes de enviar.`);
+    if (questions.length === 0) {
+      setError('No hay preguntas disponibles para enviar.');
       return;
     }
 
+    if (
+      questions.some(
+        (question) => answers[question.id] === undefined
+      )
+    ) {
+      setError('Responde todas las preguntas antes de enviar.');
+      return;
+    }
+
+    setSubmitting(true);
+
     try {
-      let scorePercentage = 0;
-
-      if (questionsList.length > 0) {
-        let totalScore = 0;
-        let maxScore = 0;
-
-        questionsList.forEach(q => {
-          maxScore += q.score || 1;
-          const selectedOptionId = answers[q.id];
-          const optionsList = q.options || q.Options || [];
-          const selectedOption = optionsList.find(o => String(o.id) === String(selectedOptionId));
-          if (selectedOption && selectedOption.is_correct) {
-            totalScore += q.score || 1;
-          }
-        });
-
-        scorePercentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
-      }
-
-      const formattedAnswers = Object.keys(answers).map(qId => ({
-        questionId: parseInt(qId),
-        optionId: answers[qId]
+      const formattedAnswers = questions.map((question) => ({
+        questionId: question.id,
+        optionId: answers[question.id],
       }));
 
-      let res;
-      try {
-        res = await api.post(`/evaluations/${evaluationId}/submit`, {
-          answers: formattedAnswers,
-          percentage: scorePercentage,
-          is_final: evaluation?.is_final || false,
-          courseId: courseId || evaluation?.courseId || 1
-        });
-        if (!res || (res.percentage === 0 && scorePercentage > 0)) {
-          res = {
-            percentage: scorePercentage,
-            passed: scorePercentage >= 70
-          };
-        }
-      } catch (apiErr) {
-        // Fallback local en caso de error de servidor
-        res = {
-          percentage: scorePercentage,
-          passed: scorePercentage >= 70
-        };
-      }
+      const response = await api.post(
+        `/evaluations/${evaluationId}/submit`,
+        { answers: formattedAnswers }
+      );
 
-      setResult(res);
-      if (res.passed && onSuccess) {
-        onSuccess(res);
-      }
+      setResult(response);
     } catch (err) {
-      setError(err.message || 'Error al enviar evaluación');
+      setError(
+        err.message || 'No se pudieron guardar tus respuestas.'
+      );
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  if (loading) return <div>Cargando evaluación...</div>;
-  if (error) return <div className="alert">{error}</div>;
-  if (!evaluation) return null;
+  if (loading) {
+    return <p>Cargando preguntas...</p>;
+  }
+
+  if (!evaluation) {
+    return (
+      <p role="alert">
+        {error || 'Evaluación no disponible.'}
+      </p>
+    );
+  }
 
   return (
     <div className={styles.evalContainer}>
-      <h4>{evaluation.title}</h4>
-      
-      {result && (
-        <div className={`alert ${result.passed ? 'alert-success' : 'alert-danger'} mt-2 mb-4`} style={{padding: '1rem', borderRadius: '0.375rem', backgroundColor: result.passed ? '#ecfdf5' : '#fef2f2', color: result.passed ? '#065f46' : '#991b1b'}}>
-          Obtuviste un {result.percentage.toFixed(2)}%.
-          {result.passed ? ' ¡Aprobado!' : ' No aprobado. Debes obtener al menos 70% para continuar.'}
-        </div>
+      <h3>{evaluation.title}</h3>
+
+      {error && (
+        <p role="alert" style={{ color: '#b91c1c' }}>
+          {error}
+        </p>
       )}
 
-      {!result?.passed && (
-        <form onSubmit={handleSubmit}>
-          {questionsList.map((q, index) => {
-            const optionsList = q.options || q.Options || [];
-            return (
-              <div key={q.id} className={styles.questionBlock}>
-                <p className={styles.questionText}>{index + 1}. {q.text}</p>
-                <div className={styles.optionsList}>
-                  {optionsList.map(opt => (
-                    <label key={opt.id} className={styles.optionLabel}>
-                      <input 
-                        type="radio" 
-                        name={`question-${q.id}`} 
-                        value={opt.id}
-                        onChange={() => handleOptionChange(q.id, opt.id)}
-                        required
-                      />
-                      {opt.text}
-                    </label>
-                  ))}
-                </div>
+      {result ? (
+        <>
+          <div
+            role="status"
+            style={{
+              padding: '1.25rem',
+              margin: '1rem 0 1.5rem',
+              borderRadius: '0.8rem',
+              background: result.passed
+                ? '#edf9f1'
+                : '#fff3f0',
+              color: result.passed
+                ? '#176342'
+                : '#9a392b',
+            }}
+          >
+            <strong>
+              Nota: {Number(result.earnedScore).toFixed(0)}
+              /{Number(result.maximumScore).toFixed(0)}
+              {' '}puntos
+              {' '}({Number(result.percentage).toFixed(0)}%).
+            </strong>
+
+            <p>
+              {result.passed
+                ? '¡Aprobaste!'
+                : 'Aún no aprobaste. Revisa tus respuestas y vuelve a intentarlo.'}
+            </p>
+          </div>
+
+          <section aria-label="Revisión de respuestas">
+            <h4>Revisión de tus respuestas</h4>
+
+            {(result.review || []).map((item, index) => (
+              <div
+                key={item.questionId}
+                style={{
+                  padding: '1rem 1.2rem',
+                  marginBottom: '0.85rem',
+                  borderRadius: '0.8rem',
+                  border: item.correct
+                    ? '1px solid #cce8d6'
+                    : '1px solid #f2d5cd',
+                  background: item.correct
+                    ? '#f5fbf7'
+                    : '#fff8f5',
+                }}
+              >
+                <strong>
+                  {index + 1}. {item.question}
+                </strong>
+
+                <p>
+                  {item.correct ? '✓ ' : '✕ '}
+                  Tu respuesta: {item.selectedAnswer}
+                </p>
+
+                {!item.correct && (
+                  <p>
+                    <strong>
+                      Respuesta correcta: {item.correctAnswer}
+                    </strong>
+                  </p>
+                )}
+
+                <small>
+                  {item.pointsEarned}/{item.pointsPossible}
+                  {' '}puntos
+                </small>
               </div>
-            );
-          })}
-          <button type="submit" className="btn btn-primary mt-4">Enviar Respuestas</button>
-        </form>
+            ))}
+          </section>
+
+          {result.passed ? (
+            <button
+              type="button"
+              className="btn btn-primary mt-4"
+              onClick={() => onSuccess?.(result)}
+            >
+              Terminar revisión →
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="btn btn-primary mt-4"
+              onClick={() => {
+                setResult(null);
+                setAnswers({});
+                setError('');
+              }}
+            >
+              Intentar nuevamente →
+            </button>
+          )}
+        </>
+      ) : (
+        questions.length > 0 && (
+          <form onSubmit={handleSubmit}>
+            {questions.map((question, index) => {
+              const options =
+                question.Options || question.options || [];
+
+              return (
+                <fieldset
+                  key={question.id}
+                  className={styles.questionBlock}
+                >
+                  <legend className={styles.questionText}>
+                    {index + 1}. {question.text}
+                  </legend>
+
+                  <div className={styles.optionsList}>
+                    {options.map((option) => (
+                      <label
+                        key={option.id}
+                        className={styles.optionLabel}
+                      >
+                        <input
+                          type="radio"
+                          name={`question-${question.id}`}
+                          value={option.id}
+                          checked={
+                            String(answers[question.id]) ===
+                            String(option.id)
+                          }
+                          onChange={() =>
+                            handleOptionChange(
+                              question.id,
+                              option.id
+                            )
+                          }
+                        />
+                        <span>{option.text}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              );
+            })}
+
+            <button
+              type="submit"
+              className="btn btn-primary mt-4"
+              disabled={submitting}
+            >
+              {submitting
+                ? 'Enviando...'
+                : 'Enviar respuestas'}
+            </button>
+          </form>
+        )
       )}
     </div>
   );

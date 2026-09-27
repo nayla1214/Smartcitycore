@@ -3,6 +3,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { api } from '../services/api';
 
 export const AuthContext = createContext();
 
@@ -16,7 +17,12 @@ export const AuthProvider = ({ children }) => {
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
-      } catch {
+      } catch (error) {
+        console.error(
+          'No se pudo recuperar la sesión:',
+          error,
+        );
+
         localStorage.removeItem('user');
         localStorage.removeItem('token');
       }
@@ -31,6 +37,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem(
       'user',
       JSON.stringify(userData),
+
     );
 
     if (userData.token) {
@@ -38,20 +45,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateUser = (newInformation) => {
-    setUser((currentUser) => {
-      const updatedUser = {
-        ...currentUser,
-        ...newInformation,
-      };
+  const updateUser = async (profileData) => {
+    const updatedProfile = await api.put(
+      '/users/me',
+      profileData,
+    );
 
-      localStorage.setItem(
-        'user',
-        JSON.stringify(updatedUser),
-      );
+    const updatedUser = {
+      ...user,
+      ...updatedProfile,
+      token: user?.token,
+    };
 
-      return updatedUser;
-    });
+    setUser(updatedUser);
+
+    localStorage.setItem(
+      'user',
+      JSON.stringify(updatedUser),
+    );
+
+    return updatedUser;
   };
 
   const logout = () => {
