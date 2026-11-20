@@ -1,9 +1,8 @@
 /**
- * Datos de cursos utilizados por el frontend.
+ * Datos del curso utilizados por el frontend.
  *
- * Las preguntas de la evaluación 1.1 se consultan al backend.
- * Las evaluaciones de 1.2, 1.3, 1.4 y la evaluación final del
- * módulo se agregarán cuando desarrollemos esos contenidos.
+ * El progreso, las preguntas y las calificaciones se consultan
+ * al backend. Los IDs registrados se conservan aquí.
  */
 
 export const COURSES = [
@@ -33,66 +32,136 @@ export const COURSES = [
             url: '2HS6SITpfOY',
             duration: 180,
           },
+          {
+            id: 2,
+            moduleId: 1,
+            order_number: 2,
+            title:
+              'Tema 1.2: Gobernanza inteligente y ciudadanía digital',
+            description:
+              'Gobernanza inteligente, gobierno abierto y ciudadanía digital.',
+            url: 't7Yng5_mHzw',
+            duration: 163,
+          },
+          {
+            id: 3,
+            moduleId: 1,
+            order_number: 3,
+            title:
+              'Tema 1.3: Evolución de las ciudades tradicionales a ciudades inteligentes',
+            description:
+              'De la ciudad tradicional a la ciudad digital, conectada e inteligente.',
+            url: '1u7iqnn2Saw',
+            duration: 374,
+          },
+          {
+            id: 4,
+            moduleId: 1,
+            order_number: 4,
+            title:
+              'Tema 1.4: Plataforma web de urbanismo inteligente',
+            description:
+              'Información territorial, mapas e indicadores para apoyar las decisiones municipales.',
+            url: '9oOPvXQliTo',
+            duration: 429,
+          },
         ],
 
+        // Se conserva para los componentes del tema 1.1.
         evaluation: {
           id: 1,
           moduleId: 1,
           courseId: 1,
-          title: 'Evaluación — Tema 1.1: Concepto de Ciudad Inteligente',
+          title:
+            'Evaluación — Tema 1.1: Concepto de Ciudad Inteligente',
           is_final: false,
         },
+
+        evaluations: [
+          {
+            id: 1,
+            moduleId: 1,
+            courseId: 1,
+            topicNumber: '1.1',
+            title:
+              'Evaluación — Tema 1.1: Concepto de Ciudad Inteligente',
+            is_final: false,
+          },
+          {
+            id: 2,
+            moduleId: 1,
+            courseId: 1,
+            topicNumber: '1.2',
+            title:
+              'Evaluación — Tema 1.2: Gobernanza inteligente y ciudadanía digital',
+            is_final: false,
+          },
+          {
+            id: 3,
+            moduleId: 1,
+            courseId: 1,
+            topicNumber: '1.3',
+            title:
+              'Evaluación — Tema 1.3: Evolución de las ciudades tradicionales a ciudades inteligentes',
+            is_final: false,
+          },
+          {
+            id: 4,
+            moduleId: 1,
+            courseId: 1,
+            topicNumber: '1.4',
+            title:
+              'Evaluación — Tema 1.4: Plataforma web de urbanismo inteligente',
+            is_final: false,
+          },
+        ],
       },
 
       {
         id: 2,
         courseId: 1,
         order_number: 2,
-        title: 'Gobierno Digital y Transformación Pública',
+        title: 'Infraestructura Sostenible y Movilidad',
         description:
-          'Aprende cómo los GADs pueden implementar el gobierno digital para mejorar sus servicios ciudadanos.',
+          'Infraestructura verde, transporte sostenible y espacios urbanos para mejorar la calidad de vida.',
 
         videos: [
           {
-            id: 2,
+            id: 5,
             moduleId: 2,
             order_number: 1,
-            title: 'Video 1: Qué es el Gobierno Digital',
+            title: 'Tema 2.1: Infraestructura verde',
             description:
-              'Conceptos de e-government y transformación digital en el sector público ecuatoriano.',
-            url: 'aqz-KE-bpKQ',
-            duration: 600,
+              'Infraestructura verde y su contribución a la sostenibilidad y la calidad de vida en las ciudades.',
+            url: 'Fiy6pRrVWnA',
+            duration: 392,
           },
         ],
+
+        // Agregaremos la evaluación cuando quede registrada.
+        evaluations: [],
       },
 
       {
         id: 3,
         courseId: 1,
         order_number: 3,
-        title: 'Gestión Sostenible y Participación Ciudadana',
+        title: 'Inteligencia Artificial y Aprendizaje',
         description:
-          'Estrategias para involucrar a los ciudadanos en la gestión del GAD y promover el desarrollo sostenible.',
+          'Inteligencia artificial aplicada a los servicios urbanos, educación inteligente y gemelos digitales.',
 
-        videos: [
-          {
-            id: 3,
-            moduleId: 3,
-            order_number: 1,
-            title: 'Video 1: Participación Ciudadana y Sostenibilidad',
-            description:
-              'Mecanismos modernos para involucrar a la comunidad en la toma de decisiones del GAD.',
-            url: 'dQw4w9WgXcQ',
-            duration: 210,
-          },
-        ],
+        // Los videos se incorporarán al desarrollar estos temas.
+        videos: [],
+        evaluations: [],
       },
     ],
   },
 ];
 
 export const getCourseById = (courseId) =>
-  COURSES.find((course) => course.id === Number(courseId)) || null;
+  COURSES.find(
+    (course) => course.id === Number(courseId)
+  ) || null;
 
 export const getModuleById = (moduleId) => {
   for (const course of COURSES) {
@@ -113,13 +182,14 @@ export const getModuleById = (moduleId) => {
 
 export const getModulesByCourse = (courseId) => {
   const course = getCourseById(courseId);
+
   return course ? course.modules : [];
 };
 
 export const getVideoById = (videoId) => {
   for (const course of COURSES) {
     for (const module of course.modules) {
-      const video = module.videos.find(
+      const video = (module.videos || []).find(
         (item) => item.id === Number(videoId)
       );
 
@@ -131,11 +201,23 @@ export const getVideoById = (videoId) => {
 };
 
 export const getEvaluationById = (evaluationId) => {
+  const requestedId = Number(evaluationId);
+
   for (const course of COURSES) {
     for (const module of course.modules) {
-      if (module.evaluation?.id === Number(evaluationId)) {
+      if (module.evaluation?.id === requestedId) {
         return module.evaluation;
       }
+
+      const evaluation = (module.evaluations || []).find(
+        (item) => item.id === requestedId
+      );
+
+      if (evaluation) return evaluation;
+    }
+
+    if (course.finalEvaluation?.id === requestedId) {
+      return course.finalEvaluation;
     }
   }
 
@@ -144,5 +226,6 @@ export const getEvaluationById = (evaluationId) => {
 
 export const getEvaluationByCourseId = (courseId) => {
   const course = getCourseById(courseId);
+
   return course?.finalEvaluation || null;
 };

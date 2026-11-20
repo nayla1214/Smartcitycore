@@ -1,9 +1,5 @@
-import {
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useContext, useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { api } from '../services/api';
 import { getCourseById } from '../data/courseData';
@@ -14,26 +10,26 @@ const COURSE_STRUCTURE = [
   {
     title: 'Fundamentos de las Ciudades Inteligentes',
     topics: [
-    'Concepto de Ciudad Inteligente',
-    'Gobernanza Inteligente y Ciudadanía Digital',
-    'Evolución de las Ciudades Tradicionales a Ciudades Inteligentes',
-    'Plataforma web de urbanismo inteligente',
+      'Concepto de Ciudad Inteligente',
+      'Gobernanza Inteligente y Ciudadanía Digital',
+      'Evolución de las Ciudades Tradicionales a Ciudades Inteligentes',
+      'Plataforma web de urbanismo inteligente',
     ],
   },
   {
     title: 'Infraestructura Sostenible y Movilidad',
     topics: [
-    'Infraestructura Verde (Smart Environment)',
-    'Transporte Sostenible (Smart Transport)',
-    'Espacios Urbanos (Smart Living)',
+      'Infraestructura Verde (Smart Environment)',
+      'Transporte Sostenible (Smart Transport)',
+      'Espacios Urbanos (Smart Living)',
     ],
   },
   {
     title: 'Inteligencia Artificial y Aprendizaje',
     topics: [
-    'Inteligencia Artificial aplicada a los Servicios Urbanos',
-    'Educación Inteligente (Smart Education)',
-    'Gemelos Digitales y Simulación Urbana',
+      'Inteligencia Artificial aplicada a los Servicios Urbanos',
+      'Educación Inteligente (Smart Education)',
+      'Gemelos Digitales y Simulación Urbana',
     ],
   },
 ];
@@ -51,13 +47,16 @@ const CourseDetail = () => {
   const [loading, setLoading] = useState(true);
   const [showFinalEval, setShowFinalEval] = useState(false);
   const [error, setError] = useState('');
+  const [lockedMessage, setLockedMessage] = useState('');
   const [selectedModuleIndex, setSelectedModuleIndex] = useState(0);
+  const [topic13Passed, setTopic13Passed] = useState(false);
 
   const isAdmin = user?.role === 'ADMIN';
 
   const fetchData = async () => {
     try {
       setError('');
+      setTopic13Passed(false);
 
       let courseData = getCourseById(courseId);
 
@@ -75,10 +74,6 @@ const CourseDetail = () => {
         finalScore: null,
       };
 
-      /*
-       * El progreso se solicita únicamente para usuarios.
-       * El administrador no realiza los cursos.
-       */
       if (!isAdmin) {
         try {
           progressData = await api.get(
@@ -89,14 +84,42 @@ const CourseDetail = () => {
             'Error al cargar el progreso:',
             progressError
           );
+
+          setError(
+            'No se pudo consultar tu avance. Actualiza la página.'
+          );
+        }
+
+        // La evaluación del tema 1.3 está registrada con ID 3.
+        // Se consulta directamente para habilitar el tema 1.4.
+        if (Number(courseId) === 1) {
+          try {
+            const evaluationProgress = await api.get(
+              '/evaluations/3/progress'
+            );
+
+            setTopic13Passed(evaluationProgress?.passed === true);
+          } catch (evaluationError) {
+            console.error(
+              'Error al consultar la evaluación 1.3:',
+              evaluationError
+            );
+
+            setError(
+              'No se pudo consultar todo tu avance. Actualiza la página para volver a intentarlo.'
+            );
+          }
         }
       }
 
       setCourse(courseData);
       setProgress(progressData);
-    } catch (error) {
-      console.error('Error cargando el curso:', error);
-      setError('No fue posible cargar la información del curso.');
+    } catch (loadError) {
+      console.error('Error cargando el curso:', loadError);
+
+      setError(
+        'No fue posible cargar la información del curso.'
+      );
     } finally {
       setLoading(false);
     }
@@ -105,6 +128,8 @@ const CourseDetail = () => {
   useEffect(() => {
     setLoading(true);
     setSelectedModuleIndex(0);
+    setLockedMessage('');
+    setShowFinalEval(false);
     fetchData();
   }, [courseId, isAdmin]);
 
@@ -123,11 +148,12 @@ const CourseDetail = () => {
         <div className={styles.messageCard}>
           <span>!</span>
           <h2>Curso no encontrado</h2>
-          <p>
-            No fue posible encontrar el curso solicitado.
-          </p>
+          <p>No fue posible encontrar el curso solicitado.</p>
 
-          <Link to="/dashboard" className={styles.backButton}>
+          <Link
+            to="/dashboard"
+            className={styles.backButton}
+          >
             Regresar al panel
           </Link>
         </div>
@@ -136,7 +162,6 @@ const CourseDetail = () => {
   }
 
   const moduleList = course.modules || course.Modules || [];
-
   const selectedModule = moduleList[selectedModuleIndex];
 
   const getModuleTitle = (mod, index) =>
@@ -153,33 +178,62 @@ const CourseDetail = () => {
       ? topic
       : topic.title || topic.name || 'Tema sin título';
 
+  const getModuleProgress = (mod) =>
+    progress.modules?.find(
+      (item) => Number(item.moduleId) === Number(mod?.id)
+    );
+
   const isModuleAvailable = (mod, index) => {
-    if (isAdmin) return true;
-    if (progress.isCompleted) return true;
-    if (index === 0) return true;
+    if (isAdmin || progress.isCompleted || index === 0) {
+      return true;
+    }
 
     const previousModule = moduleList[index - 1];
 
-    const previousProgress = progress.modules?.find(
-      (item) => item.moduleId === previousModule.id
-    );
-
-    return previousProgress?.passed === true;
+    return getModuleProgress(previousModule)?.passed === true;
   };
 
   const isModulePassed = (mod) => {
     if (progress.isCompleted) return true;
 
-    return (
-      progress.modules?.find(
-        (item) => item.moduleId === mod.id
-      )?.passed === true
-    );
+    return getModuleProgress(mod)?.passed === true;
   };
 
   const allModulesPassed =
     moduleList.length > 0 &&
     moduleList.every((mod) => isModulePassed(mod));
+
+  const getLockedMessage = (moduleIndex) => {
+    const previousModule = moduleList[moduleIndex - 1];
+    const previousProgress = getModuleProgress(previousModule);
+
+    const pendingTopic = previousProgress?.topics?.find(
+      (topic) => !topic.passed
+    );
+
+    if (!pendingTopic) {
+      return `Completa el módulo ${moduleIndex} para desbloquear el módulo ${moduleIndex + 1}.`;
+    }
+
+    if (
+      pendingTopic.percentage !== null &&
+      pendingTopic.percentage !== undefined
+    ) {
+      return `Te falta aprobar el tema ${pendingTopic.topicNumber}. Obtuviste ${Number(pendingTopic.percentage).toFixed(0)} % y necesitas al menos 70 %.`;
+    }
+
+    return `Te falta aprobar el tema ${pendingTopic.topicNumber} para desbloquear el módulo ${moduleIndex + 1}.`;
+  };
+
+  const topic11Passed =
+    getModuleProgress(moduleList[0])
+      ?.topics?.find((topic) => topic.topicNumber === '1.1')
+      ?.passed === true;
+
+  const topic12Passed =
+    getModuleProgress(moduleList[0])
+      ?.topics?.find((topic) => topic.topicNumber === '1.2')
+      ?.passed === true;
 
   const finalEvalInfo =
     course.finalEvaluation || course.FinalEvaluation;
@@ -216,9 +270,7 @@ const CourseDetail = () => {
               <div className={styles.informationItem}>
                 <strong>{moduleList.length}</strong>
                 <span>
-                  {moduleList.length === 1
-                    ? 'Módulo'
-                    : 'Módulos'}
+                  {moduleList.length === 1 ? 'Módulo' : 'Módulos'}
                 </span>
               </div>
 
@@ -231,6 +283,7 @@ const CourseDetail = () => {
 
               <div className={styles.courseStatus}>
                 <span className={styles.heroStatusDot}></span>
+
                 <span>
                   {isAdmin
                     ? 'Modo administrador'
@@ -246,6 +299,7 @@ const CourseDetail = () => {
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 6.1C10.2 4.7 7.7 4 4.5 4H3v14h1.5c3.1 0 5.5.7 7.5 2.1V6.1Zm0 0C13.8 4.7 16.3 4 19.5 4H21v14h-1.5c-3.1 0-5.5.7-7.5 2.1V6.1Z" />
             </svg>
+
             <span className={styles.iconSpark}></span>
           </div>
 
@@ -254,7 +308,7 @@ const CourseDetail = () => {
         </section>
 
         {error && (
-          <div className={styles.errorMessage}>
+          <div className={styles.errorMessage} role="alert">
             {error}
           </div>
         )}
@@ -262,19 +316,17 @@ const CourseDetail = () => {
         {!isAdmin && progress.isCompleted && (
           <section className={styles.completedMessage}>
             <div className={styles.completedIcon}>
-              <svg
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="m9 16.2-4.2-4.2-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2Z" />
               </svg>
             </div>
 
             <div>
               <h3>¡Curso completado!</h3>
+
               <p>
-                Aprobaste la evaluación final con una
-                calificación de <strong>{finalScore}%</strong>.
+                Aprobaste la evaluación final con una calificación de{' '}
+                <strong>{finalScore}%</strong>.
               </p>
             </div>
 
@@ -309,11 +361,15 @@ const CourseDetail = () => {
 
             <span className={styles.moduleCount}>
               {moduleList.length}{' '}
-              {moduleList.length === 1
-                ? 'módulo'
-                : 'módulos'}
+              {moduleList.length === 1 ? 'módulo' : 'módulos'}
             </span>
           </div>
+
+          {lockedMessage && (
+            <p className={styles.lockedMessage} role="status">
+              🔒 {lockedMessage}
+            </p>
+          )}
 
           <div className={styles.courseContentLayout}>
             <aside className={styles.modulesSidebar}>
@@ -325,13 +381,22 @@ const CourseDetail = () => {
                   <button
                     key={mod.id}
                     type="button"
-                    disabled={!available}
-                    onClick={() => setSelectedModuleIndex(index)}
+                    onClick={() => {
+                      if (!available) {
+                        setLockedMessage(getLockedMessage(index));
+                        return;
+                      }
+
+                      setLockedMessage('');
+                      setSelectedModuleIndex(index);
+                    }}
                     className={`${styles.sidebarModule} ${
                       selectedModuleIndex === index
                         ? styles.activeModule
                         : ''
-                    } ${!available ? styles.sidebarLocked : ''}`}
+                    } ${
+                      !available ? styles.sidebarLocked : ''
+                    }`}
                   >
                     <span className={styles.sidebarNumber}>
                       MÓDULO {index + 1}
@@ -360,12 +425,14 @@ const CourseDetail = () => {
                     <span className={styles.moduleNumber}>
                       Módulo {selectedModuleIndex + 1}
                     </span>
+
                     <h3>
                       {getModuleTitle(
                         selectedModule,
                         selectedModuleIndex
                       )}
                     </h3>
+
                     {selectedModule.description && (
                       <p>{selectedModule.description}</p>
                     )}
@@ -380,34 +447,99 @@ const CourseDetail = () => {
                 <div className={styles.topicsList}>
                   {selectedTopics.map((topic, topicIndex) => {
                     const isFirstTopic =
-                      selectedModuleIndex === 0 && topicIndex === 0;
+                      selectedModuleIndex === 0 &&
+                      topicIndex === 0;
+
+                    const isSecondTopic =
+                      selectedModuleIndex === 0 &&
+                      topicIndex === 1;
+
+                    const isThirdTopic =
+                      selectedModuleIndex === 0 &&
+                      topicIndex === 2;
+
+                    const isFourthTopic =
+                      selectedModuleIndex === 0 &&
+                      topicIndex === 3;
+
+                                    const isTopic21 =
+                      selectedModuleIndex === 1 &&
+                      topicIndex === 0;
+
+                    const isTopic22 =
+                      selectedModuleIndex === 1 &&
+                      topicIndex === 1;
+
+                    const isTopic23 =
+                      selectedModuleIndex === 1 &&
+                      topicIndex === 2;
+
+                    const module2Topics =
+                      getModuleProgress(selectedModule)?.topics || [];
+
+                    const topic21Passed = module2Topics.some(
+                      (item) =>
+                        item.topicNumber === '2.1' &&
+                        item.passed === true
+                    );
+
+                    const topic22Passed = module2Topics.some(
+                      (item) =>
+                        item.topicNumber === '2.2' &&
+                        item.passed === true
+                    );
+
+                    const module2Available = isModuleAvailable(
+                      selectedModule,
+                      selectedModuleIndex
+                    );
+
+                    const canOpenTopic =
+                      isFirstTopic ||
+                      (isSecondTopic &&
+                        (isAdmin || topic11Passed)) ||
+                      (isThirdTopic &&
+                        (isAdmin || topic12Passed)) ||
+                      (isFourthTopic &&
+                        (isAdmin || topic13Passed)) ||
+                      (isTopic21 && module2Available) ||
+                      (isTopic22 &&
+                        module2Available &&
+                        (isAdmin || topic21Passed)) ||
+                      (isTopic23 &&
+                        module2Available &&
+                        (isAdmin || topic22Passed));
+
+                    const topicNumber =
+                      `${selectedModuleIndex + 1}.${topicIndex + 1}`;
 
                     const topicContent = (
                       <>
                         <span
                           className={`${styles.topicNumber} ${
-                            isFirstTopic ? styles.firstTopicIcon : ''
+                            isFirstTopic
+                              ? styles.firstTopicIcon
+                              : ''
                           }`}
                         >
                           {isFirstTopic ? (
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <svg
+                              viewBox="0 0 24 24"
+                              aria-hidden="true"
+                            >
                               <path d="M3 21V10l5-3v14H3Zm7 0V3l7 4v14h-7Zm9 0v-8l3 2v6h-3ZM5 12v2h1v-2H5Zm0 4v2h1v-2H5Zm7-9v2h2V7h-2Zm0 4v2h2v-2h-2Zm0 4v2h2v-2h-2Z" />
                             </svg>
                           ) : (
-                            <>
-                              {selectedModuleIndex + 1}.{topicIndex + 1}
-                            </>
+                            topicNumber
                           )}
                         </span>
 
                         <div>
-                          <small>
-                            TEMA {selectedModuleIndex + 1}.{topicIndex + 1}
-                          </small>
+                          <small>TEMA {topicNumber}</small>
                           <h4>{getTopicTitle(topic)}</h4>
                         </div>
 
-                        {isFirstTopic && (
+                        {canOpenTopic && (
                           <span
                             className={styles.topicArrow}
                             aria-hidden="true"
@@ -420,14 +552,14 @@ const CourseDetail = () => {
                       </>
                     );
 
-                    if (isFirstTopic) {
+                    if (canOpenTopic) {
                       return (
                         <Link
                           key={
                             topic.id ||
                             `${selectedModule.id}-${topicIndex}`
                           }
-                          to={`/module/${selectedModule.id}/topic/1.1`}
+                          to={`/module/${selectedModule.id}/topic/${topicNumber}`}
                           className={`${styles.topicItem} ${styles.topicLink}`}
                         >
                           {topicContent}
@@ -453,7 +585,6 @@ const CourseDetail = () => {
           </div>
 
           <div className={styles.modulesList}>
-
             {finalEvalInfo && (
               <article
                 className={`${styles.moduleItem} ${
@@ -473,15 +604,11 @@ const CourseDetail = () => {
                 <div className={styles.moduleBody}>
                   <div className={styles.moduleHeader}>
                     <div>
-                      <span
-                        className={styles.moduleNumber}
-                      >
+                      <span className={styles.moduleNumber}>
                         Evaluación final
                       </span>
 
-                      <h3>
-                        Evaluación final del curso
-                      </h3>
+                      <h3>Evaluación final del curso</h3>
 
                       <p>
                         Comprueba los conocimientos adquiridos
@@ -500,9 +627,7 @@ const CourseDetail = () => {
                               : styles.badgeLocked
                       }
                     >
-                      <span
-                        className={styles.statusDot}
-                      ></span>
+                      <span className={styles.statusDot}></span>
 
                       {isAdmin
                         ? 'Configurada'
@@ -527,9 +652,7 @@ const CourseDetail = () => {
                     !showFinalEval && (
                       <button
                         type="button"
-                        onClick={() =>
-                          setShowFinalEval(true)
-                        }
+                        onClick={() => setShowFinalEval(true)}
                         className={styles.moduleButton}
                       >
                         Tomar evaluación final
@@ -540,15 +663,9 @@ const CourseDetail = () => {
                   {!isAdmin &&
                     showFinalEval &&
                     !progress.isCompleted && (
-                      <div
-                        className={
-                          styles.evaluationContainer
-                        }
-                      >
+                      <div className={styles.evaluationContainer}>
                         <EvaluationForm
-                          evaluationId={
-                            finalEvalInfo.id
-                          }
+                          evaluationId={finalEvalInfo.id}
                           courseId={course.id}
                           onSuccess={() => {
                             fetchData();
