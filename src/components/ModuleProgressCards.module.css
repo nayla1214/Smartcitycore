@@ -1,0 +1,30 @@
+.modules { display: grid; gap: 18px; margin-top: 22px; }
+.module { padding: 20px; border: 1px solid #e1e7f0; border-left: 4px solid var(--accent); border-radius: 14px; background: #fff; min-width: 0; }
+.header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.header span { color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: 1px; }
+.header h4 { margin: 5px 0 0; color: #15233b; font-size: 16px; line-height: 1.5; }
+.header > strong { color: var(--accent); font-size: 22px; white-space: nowrap; }
+.bar { height: 7px; overflow: hidden; background: #edf0f5; border-radius: 10px; margin: 16px 0; }
+.bar span { display: block; height: 100%; background: var(--accent); border-radius: inherit; }
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.metrics div { display: flex; flex-direction: column; gap: 5px; padding: 12px 8px; border-radius: 10px; background: #f5f8fc; }
+.metrics strong { color: var(--accent); font-size: 18px; }
+.metrics span { color: #65758b; font-size: 10px; }
+.module h5 { color: #15233b; margin: 0 0 12px; font-size: 13px; }
+.tableWrap { overflow-x: auto; }
+.module table { width: 100%; border-collapse: collapse; text-align: left; font-size: 11px; }
+.module th, .module td { padding: 12px 8px; border-bottom: 1px solid #e8edf4; color: #42536b; }
+.module thead th { background: #f5f8fc; font-weight: 700; }
+.module .passed { color: #168467; font-weight: 700; }
+.module .pending { color: #69768b; }
+.total { margin: 12px 0 18px; color: #65758b; font-size: 11px; }
+.integrative { padding: 16px; border: 1px solid #e2e8f2; border-radius: 11px; background: #f8faff; }
+.integrative dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 0; }
+.integrative dt { color: #65758b; font-size: 10px; }
+.integrative dd { margin: 7px 0 0; font-size: 13px; color: #15233b; font-weight: 700; }
+.readings { margin-top: 16px; font-size: 12px; color: #42536b; }
+.readings summary { cursor: pointer; font-weight: 700; color: var(--accent); }
+.readings ul { padding: 0; list-style: none; margin: 10px 0 0; }
+.readings li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid #edf0f5; }
+.note { margin: 16px 0 0; font-size: 10px; color: #768398; line-height: 1.7; }
+@media (max-width: 600px) { .module { padding: 14px; } .metrics { grid-template-columns: 1fr; } .integrative dl { grid-template-columns: 1fr; } .header { flex-wrap: wrap; } }

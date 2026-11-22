@@ -1,18 +1,23 @@
+import RequiredReadings, { useRequiredReadings } from '../components/RequiredReadings';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import VideoPlayer from '../components/VideoPlayer';
-import styles from './TopicDetail.module.css';
+import sharedStyles from './TopicDetail.module.css';
+import module3Styles from './Topic3Design.module.css';
+const styles = { ...sharedStyles, ...module3Styles };
 import Topic31Activities from '../components/Topic31Activities';
+const Module3Art = ({ topic }) => (<svg viewBox="0 0 280 210" role="img" aria-label={topic === '3.1' ? 'Inteligencia artificial para los servicios urbanos' : topic === '3.2' ? 'Educación y aprendizaje digital' : 'Gemelo digital de una ciudad'}><ellipse cx="140" cy="108" rx="122" ry="90" fill="#eee8fa"/><circle cx="229" cy="39" r="18" fill="#fff0cc"/>{topic === '3.2' ? <><rect x="55" y="42" width="173" height="115" rx="12" fill="white" stroke="#ad92db" strokeWidth="2"/><path d="M107 181h72m-37-23v23" stroke="#9976cb" strokeWidth="5" strokeLinecap="round"/><path d="M141 83c-20-12-44-12-58-4v48c18-6 37-5 58 6 21-11 40-12 58-6V79c-14-8-38-8-58 4Z" fill="#e2d6f4" stroke="#a58aca" strokeWidth="2"/><path d="M141 83v49m-44-39 28 5m-28 10 28 5m31-15 28-5m-28 20 28-5" stroke="#a58aca" strokeWidth="2"/></> : topic === '3.1' ? <><rect x="85" y="49" width="111" height="111" rx="18" fill="white" stroke="#a78bce" strokeWidth="2"/><rect x="111" y="74" width="60" height="60" rx="10" fill="#d9c8f1"/>{[104,125,146,167].map(x=><g key={x} stroke="#a98acb" strokeWidth="3"><path d={`M${x} 36v13m0 111v13`}/></g>)}{[70,91,112,133].map(y=><path key={y} d={`M72 ${y}h13m111 0h13`} stroke="#a98acb" strokeWidth="3"/>)}<circle cx="130" cy="98" r="5" fill="#7854c5"/><circle cx="153" cy="98" r="5" fill="#7854c5"/><path d="M128 116h27" stroke="#7854c5" strokeWidth="3" strokeLinecap="round"/><path d="M25 183h231" stroke="#c4b0e5" strokeWidth="2"/></> : <><path d="m39 139 57-32 57 32-57 33Z" fill="#d9c9f0" stroke="#aa8ace"/><path d="M67 120V63l31-16v76m0-76 27 16v61" fill="white" stroke="#a58aca" strokeWidth="2"/><path d="m153 139 57-32 47 28-54 34Z" fill="#e2d8f4" stroke="#aa8ace" strokeDasharray="5 4"/><path d="M180 123V66l30-17v77m0-77 27 17v60" fill="#f9f6ff" stroke="#a58aca" strokeWidth="2" strokeDasharray="5 4"/><path d="M128 88h37m-9-9 9 9-9 9" fill="none" stroke="#9976cb" strokeWidth="3" strokeLinecap="round"/><path d="M29 185h229" stroke="#c4b0e5" strokeWidth="2"/></>}</svg>);
+
 const topic31Articles = [
   {
     id: 'unesco-competencies',
     type:
-      'UNESCO · COMPETENCIAS DIGITALES · 2022 · INGLÉS',
+      'UNESCO · COMPETENCIAS DIGITALES · INGLÉS',
     title:
       'Artificial Intelligence and Digital Transformation Competencies for Civil Servants',
     description:
-      'Presenta un marco de competencias para apoyar la transformación digital y el uso de inteligencia artificial en el sector público. Aborda la planificación, el uso y la gobernanza de datos y la gestión de iniciativas digitales.',
+      'Presenta un marco de competencias para apoyar la transformación digital y el uso de inteligencia artificial en el sector público.',
     url:
       'https://unesdoc.unesco.org/ark:/48223/pf0000383325',
     linkLabel: 'Consultar publicación',
@@ -46,7 +51,12 @@ const topic31Articles = [
 const Topic31Intro = ({ moduleData }) => {
   const courseId = moduleData.courseId || 1;
 
-  const [section, setSection] = useState('index');
+  const [section, setSectionState] = useState('index');
+  const readingGate = useRequiredReadings('3.1', moduleData?.id ?? '3');
+  const setSection = (next) => setSectionState((current) => {
+    const destination = typeof next === 'function' ? next(current) : next;
+    return ['forum', 'evaluation'].includes(destination) && !readingGate.complete ? 'article' : destination;
+  });
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
 
@@ -274,10 +284,8 @@ const Topic31Intro = ({ moduleData }) => {
               ← Volver al curso
             </Link>
 
-            <h2>
-              Tema 3.1: Inteligencia artificial
-              aplicada a servicios urbanos
-            </h2>
+            <h2 className={styles.moduleHeading}><span>Tema 3.1: Inteligencia artificial
+              </span>aplicada a servicios urbanos</h2>
 
             <p
               className={styles.pendingNote}
@@ -291,7 +299,7 @@ const Topic31Intro = ({ moduleData }) => {
                 to="/module/2/topic/2.3"
                 className={styles.nextButton}
               >
-                Volver al tema 2.3 →
+                Volver al tema 2.3 
               </Link>
             )}
 
@@ -377,7 +385,7 @@ const Topic31Intro = ({ moduleData }) => {
                     MÓDULO 3 · TEMA 3.1
                   </span>
 
-                  <h1>
+                  <h1 className={styles.moduleHeading}>
                     Inteligencia artificial aplicada
                     a <span>servicios urbanos</span>
                   </h1>
@@ -468,7 +476,7 @@ const Topic31Intro = ({ moduleData }) => {
               <div
                 className={styles.introNavigation}
               >
-                {navigation}
+                <Link to={`/course/${courseId}`} className={styles.backLink}>Volver al curso ↗</Link>
               </div>
 
               <span
@@ -477,10 +485,8 @@ const Topic31Intro = ({ moduleData }) => {
                 INTRODUCCIÓN · TEMA 3.1
               </span>
 
-              <h2>
-                Inteligencia artificial al servicio
-                de la ciudad
-              </h2>
+              <div className={styles.greenWelcome}><div><h2 className={styles.moduleHeading}><span>Inteligencia artificial al servicio
+                </span>de la ciudad</h2>
 
               <p className={styles.introLead}>
                 Los municipios reciben información sobre
@@ -490,7 +496,7 @@ const Topic31Intro = ({ moduleData }) => {
                 información, identificar patrones y
                 apoyar decisiones para atender problemas
                 concretos de la ciudad.
-              </p>
+              </p></div><div className={styles.greenArt}><Module3Art topic="3.1" /></div></div>
 
               <div className={styles.introBlock}>
                 <span
@@ -582,15 +588,15 @@ const Topic31Intro = ({ moduleData }) => {
                 </ul>
               </div>
 
-              <button
+              <div className={styles.lessonActionGroup}><button
                 type="button"
                 className={styles.nextButton}
                 onClick={() =>
                   setSection('video')
                 }
               >
-                Ir al video →
-              </button>
+                Empezar 
+              </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('index')}>← Anterior</button></div>
             </section>
           </div>
         ) : section === 'video' ? (
@@ -609,16 +615,10 @@ const Topic31Intro = ({ moduleData }) => {
                 </span>
 
                 <div>
-                  <span
-                    className={styles.videoEyebrow}
-                  >
-                    APRENDE CON EL VIDEO
-                  </span>
+                  
 
-                  <h2>
-                    Inteligencia artificial aplicada
-                    a servicios urbanos
-                  </h2>
+                  <h2 className={styles.moduleHeading}><span>Inteligencia artificial aplicada
+                    </span>a servicios urbanos</h2>
                 </div>
               </div>
 
@@ -632,7 +632,7 @@ const Topic31Intro = ({ moduleData }) => {
                     ? '✓ Video completado'
                     : '○ Pendiente de completar'}
                 </span>
-              </div>
+              <span>ⓘ No adelantes el video: las partes que saltes no contarán en tu progreso.</span></div>
 
               {error && (
                 <p
@@ -665,15 +665,15 @@ const Topic31Intro = ({ moduleData }) => {
               </div>
 
               {videoCompleted ? (
-                <button
+                <div className={styles.lessonActionGroup}><button
                   type="button"
                   className={styles.nextButton}
                   onClick={() =>
                     setSection('article')
                   }
                 >
-                  Ir a Información →
-                </button>
+                  Siguiente 
+                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>
               ) : (
                 <>
                   <p
@@ -697,11 +697,11 @@ const Topic31Intro = ({ moduleData }) => {
                   </button>
                 </>
               )}
-            </section>
+            {!videoCompleted && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>}</section>
           </div>
         ) : section === 'article' &&
           videoCompleted ? (
-          <div className={styles.lessonContent}>
+          <RequiredReadings gate={readingGate}><div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
               <div
                 className={styles.introNavigation}
@@ -712,13 +712,9 @@ const Topic31Intro = ({ moduleData }) => {
               <header
                 className={styles.articleHeader}
               >
-                <span
-                  className={styles.sectionLabel}
-                >
-                  LECTURAS COMPLEMENTARIAS · TEMA 3.1
-                </span>
+                
 
-                <h2>Explora y profundiza</h2>
+                <h2 className={styles.plainHeading}>Explora y profundiza</h2>
 
                 <p className={styles.introLead}>
                   Profundiza en las competencias necesarias
@@ -786,11 +782,7 @@ const Topic31Intro = ({ moduleData }) => {
                 className={styles.cepalBanner}
               >
                 <div>
-                  <span
-                    className={styles.cepalEyebrow}
-                  >
-                    RECURSO INSTITUCIONAL · UNESCO
-                  </span>
+         
 
                   <h3>
                     Inteligencia artificial y
@@ -818,11 +810,7 @@ const Topic31Intro = ({ moduleData }) => {
                 className={styles.cepalBanner}
               >
                 <div>
-                  <span
-                    className={styles.cepalEyebrow}
-                  >
-                    RECURSO INSTITUCIONAL · OCDE
-                  </span>
+          
 
                   <h3>
                     Aplicaciones de IA para
@@ -850,29 +838,18 @@ const Topic31Intro = ({ moduleData }) => {
                 className={styles.articleNextStep}
               >
                 <div>
-                  <strong>
-                    Relaciona las lecturas con tu ciudad
-                  </strong>
-
-                  <p>
-                    Piensa en un servicio municipal que
-                    podría mejorar con apoyo de inteligencia
-                    artificial. ¿Qué problema atendería,
-                    qué datos necesitaría y cómo comprobarías
-                    sus resultados?
-                  </p>
                 </div>
 
-             <button
+             <div className={styles.lessonActionGroup}><button
   type="button"
   className={styles.nextButton}
   onClick={() => setSection('forum')}
 >
-  Ir al foro →
-</button>
+  Siguiente 
+</button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('video')}>← Anterior</button></div>
               </div>
             </section>
-          </div>
+          </div></RequiredReadings>
                 ) : (
           section === 'forum' ||
           section === 'evaluation'
@@ -910,7 +887,12 @@ const Topic31Intro = ({ moduleData }) => {
 export const Topic32Content = ({ moduleData }) => {
   const courseId = moduleData.courseId || 1;
 
-  const [section, setSection] = useState('index');
+  const [section, setSectionState] = useState('index');
+  const readingGate = useRequiredReadings('3.2', moduleData?.id ?? '3');
+  const setSection = (next) => setSectionState((current) => {
+    const destination = typeof next === 'function' ? next(current) : next;
+    return ['forum', 'evaluation'].includes(destination) && !readingGate.complete ? 'article' : destination;
+  });
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
 
@@ -1143,9 +1125,7 @@ export const Topic32Content = ({ moduleData }) => {
               ← Volver al curso
             </Link>
 
-            <h2>
-              Tema 3.2: Educación inteligente
-            </h2>
+            <h2 className={styles.moduleHeading}><span>Tema 3.2: </span>Educación inteligente</h2>
 
             <p
               className={styles.pendingNote}
@@ -1159,7 +1139,7 @@ export const Topic32Content = ({ moduleData }) => {
                 to={`/module/${moduleData.id}/topic/3.1`}
                 className={styles.nextButton}
               >
-                Volver al tema 3.1 →
+                Volver al tema 3.1 
               </Link>
             )}
 
@@ -1245,7 +1225,7 @@ export const Topic32Content = ({ moduleData }) => {
                     MÓDULO 3 · TEMA 3.2
                   </span>
 
-                  <h1>
+                  <h1 className={styles.moduleHeading}>
                     Educación <span>inteligente</span>
                   </h1>
 
@@ -1335,7 +1315,7 @@ export const Topic32Content = ({ moduleData }) => {
               <div
                 className={styles.introNavigation}
               >
-                {navigation}
+                <Link to={`/course/${courseId}`} className={styles.backLink}>Volver al curso ↗</Link>
               </div>
 
               <span
@@ -1344,9 +1324,7 @@ export const Topic32Content = ({ moduleData }) => {
                 INTRODUCCIÓN · TEMA 3.2
               </span>
 
-              <h2>
-                Aprender en una ciudad inteligente
-              </h2>
+              <div className={styles.greenWelcome}><div><h2 className={styles.moduleHeading}><span>Aprender en una </span>ciudad inteligente</h2>
 
               <p className={styles.introLead}>
                 La educación inteligente utiliza plataformas
@@ -1355,7 +1333,7 @@ export const Topic32Content = ({ moduleData }) => {
                 debe considerar las necesidades de las
                 personas, el acceso a la tecnología y el
                 acompañamiento durante la formación.
-              </p>
+              </p></div><div className={styles.greenArt}><Module3Art topic="3.2" /></div></div>
 
               <div className={styles.introBlock}>
                 <span
@@ -1445,15 +1423,15 @@ export const Topic32Content = ({ moduleData }) => {
                 </ul>
               </div>
 
-              <button
+              <div className={styles.lessonActionGroup}><button
                 type="button"
                 className={styles.nextButton}
                 onClick={() =>
                   setSection('video')
                 }
               >
-                Ir al video →
-              </button>
+                Empezar 
+              </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('index')}>← Anterior</button></div>
             </section>
           </div>
         ) : section === 'video' ? (
@@ -1472,13 +1450,9 @@ export const Topic32Content = ({ moduleData }) => {
                 </span>
 
                 <div>
-                  <span
-                    className={styles.videoEyebrow}
-                  >
-                    APRENDE CON EL VIDEO
-                  </span>
+                  
 
-                  <h2>Educación inteligente</h2>
+                  <h2 className={styles.moduleHeading}><span>Educación </span>inteligente</h2>
                 </div>
               </div>
 
@@ -1492,7 +1466,7 @@ export const Topic32Content = ({ moduleData }) => {
                     ? '✓ Video completado'
                     : '○ Pendiente de completar'}
                 </span>
-              </div>
+              <span>ⓘ No adelantes el video: las partes que saltes no contarán en tu progreso.</span></div>
 
               {error && (
                 <p
@@ -1525,15 +1499,15 @@ export const Topic32Content = ({ moduleData }) => {
               </div>
 
               {videoCompleted ? (
-                <button
+                <div className={styles.lessonActionGroup}><button
                   type="button"
                   className={styles.nextButton}
                   onClick={() =>
                     setSection('article')
                   }
                 >
-                  Ir a Información →
-                </button>
+                  Siguiente 
+                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>
               ) : (
                 <>
                   <p
@@ -1557,11 +1531,11 @@ export const Topic32Content = ({ moduleData }) => {
                   </button>
                 </>
               )}
-            </section>
+            {!videoCompleted && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>}</section>
           </div>
               ) : section === 'article' &&
           videoCompleted ? (
-          <div className={styles.lessonContent}>
+          <RequiredReadings gate={readingGate}><div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
               <div
                 className={styles.introNavigation}
@@ -1572,13 +1546,9 @@ export const Topic32Content = ({ moduleData }) => {
               <header
                 className={styles.articleHeader}
               >
-                <span
-                  className={styles.sectionLabel}
-                >
-                  LECTURAS COMPLEMENTARIAS · TEMA 3.2
-                </span>
+                
 
-                <h2>Explora y profundiza</h2>
+                <h2 className={styles.plainHeading}>Explora y profundiza</h2>
 
                 <p className={styles.introLead}>
                   Conoce principios para diseñar plataformas
@@ -1620,21 +1590,7 @@ export const Topic32Content = ({ moduleData }) => {
                     derecho y un bien público.
                   </p>
 
-                  <p>
-                    Aborda la importancia de ofrecer
-                    oportunidades equitativas, contenidos
-                    educativos de calidad y entornos
-                    seguros para aprender.
-                  </p>
-
-                  <p>
-                    <strong>Para esta lectura:</strong>{' '}
-                    identifica qué características debería
-                    tener una plataforma para que personas
-                    con distintas condiciones de acceso
-                    y habilidades digitales puedan
-                    utilizarla.
-                  </p>
+             
 
                   <a
                     href="https://www.unicef.org/digitaleducation/CharterforPublicDigitalLearningPlatforms"
@@ -1659,7 +1615,7 @@ export const Topic32Content = ({ moduleData }) => {
                   <span
                     className={styles.articleType}
                   >
-                    APRENDIZAJE FLEXIBLE · 2020 · INGLÉS
+                    APRENDIZAJE FLEXIBLE · INGLÉS
                   </span>
 
                   <h3>
@@ -1674,23 +1630,8 @@ export const Topic32Content = ({ moduleData }) => {
                     de China durante la pandemia de COVID-19.
                   </p>
 
-                  <p>
-                    Considera la infraestructura de red,
-                    las herramientas de aprendizaje, los
-                    recursos digitales, la organización
-                    de las actividades y el apoyo a docentes
-                    y estudiantes.
-                  </p>
+            
 
-                  <p>
-                    <strong>Para esta lectura:</strong>{' '}
-                    revisa los apartados sobre selección
-                    de herramientas y recursos y sobre
-                    servicios de apoyo. Explica cómo
-                    organizarías una capacitación digital
-                    para participantes con distintas
-                    necesidades.
-                  </p>
 
                   <a
                     href="https://iite.unesco.org/publications/handbook-on-facilitating-flexible-learning-during-educational-disruption/"
@@ -1716,7 +1657,7 @@ export const Topic32Content = ({ moduleData }) => {
                     className={styles.articleType}
                   >
                     ARTÍCULO ACADÉMICO · LMS E IMS-LD
-                    · 2018 · INGLÉS
+                    · INGLÉS
                   </span>
 
                   <h3>
@@ -1733,22 +1674,7 @@ export const Topic32Content = ({ moduleData }) => {
                     con la especificación IMS Learning
                     Design.
                   </p>
-
-                  <p>
-                    Analiza cómo representar elementos
-                    pedagógicos y relacionar la organización
-                    del entorno digital con las necesidades
-                    de quienes participan en el aprendizaje.
-                  </p>
-
-                  <p>
-                    <strong>Para esta lectura:</strong>{' '}
-                    identifica cómo se relacionan los
-                    roles, las actividades y los recursos.
-                    Piensa cómo organizarías una unidad
-                    que combine un video, un foro y una
-                    evaluación.
-                  </p>
+       
 
                   <a
                     href="https://doi.org/10.1145/3286606.3286816"
@@ -1765,11 +1691,7 @@ export const Topic32Content = ({ moduleData }) => {
                 className={styles.cepalBanner}
               >
                 <div>
-                  <span
-                    className={styles.cepalEyebrow}
-                  >
-                    RECURSO INSTITUCIONAL
-                  </span>
+
 
                   <h3>
                     Plataformas digitales para
@@ -1796,35 +1718,19 @@ export const Topic32Content = ({ moduleData }) => {
                 className={styles.articleNextStep}
               >
                 <div>
-                  <strong>
-                    Relaciona las lecturas con
-                    una capacitación municipal
-                  </strong>
-
-                  <p>
-                    Si tu municipio ofreciera un curso
-                    virtual, ¿cómo organizarías los
-                    contenidos, las actividades y el
-                    acompañamiento para que los
-                    participantes puedan aprender?
-                  </p>
-
-                  <p>
-                    Las lecturas son recursos de apoyo
-                    y su consulta es opcional.
-                  </p>
+     
                 </div>
 
-              <button
+              <div className={styles.lessonActionGroup}><button
   type="button"
   className={styles.nextButton}
   onClick={() => setSection('forum')}
 >
-  Ir al foro →
-</button>
+  Siguiente 
+</button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('video')}>← Anterior</button></div>
               </div>
             </section>
-          </div>
+          </div></RequiredReadings>
            ) : (
           section === 'forum' ||
           section === 'evaluation'
@@ -1863,7 +1769,12 @@ export const Topic32Content = ({ moduleData }) => {
 export const Topic33Content = ({ moduleData }) => {
   const courseId = moduleData.courseId || 1;
 
-  const [section, setSection] = useState('index');
+  const [section, setSectionState] = useState('index');
+  const readingGate = useRequiredReadings('3.3', moduleData?.id ?? '3');
+  const setSection = (next) => setSectionState((current) => {
+    const destination = typeof next === 'function' ? next(current) : next;
+    return ['forum', 'evaluation'].includes(destination) && !readingGate.complete ? 'article' : destination;
+  });
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
 
@@ -1880,7 +1791,7 @@ export const Topic33Content = ({ moduleData }) => {
     {
       id: 'jrc-digital-age',
       type:
-        'COMISIÓN EUROPEA · JRC · 2022 · INGLÉS',
+        'COMISIÓN EUROPEA · JRC · INGLÉS',
       title: 'Cities fit for the digital age',
       description:
         'Analiza cómo las tecnologías digitales pueden apoyar los servicios urbanos y mejorar la calidad de vida. Destaca la necesidad de partir de problemas reales, compartir datos y utilizar soluciones interoperables.',
@@ -1892,7 +1803,7 @@ export const Topic33Content = ({ moduleData }) => {
     {
       id: 'itu-y4600',
       type:
-        'UIT-T · RECOMENDACIÓN Y.4600 · 2022 · INGLÉS',
+        'UIT-T · RECOMENDACIÓN Y.4600 · INGLÉS',
       title:
         'Requirements and capabilities of a digital twin system for smart cities',
       description:
@@ -2123,10 +2034,8 @@ const [evaluationPassed, setEvaluationPassed] =
               ← Volver al curso
             </Link>
 
-            <h2>
-              Tema 3.3: Gemelos digitales
-              y simulación urbana
-            </h2>
+            <h2 className={styles.moduleHeading}><span>Tema 3.3: Gemelos digitales
+              </span>y simulación urbana</h2>
 
             <p
               role="alert"
@@ -2140,7 +2049,7 @@ const [evaluationPassed, setEvaluationPassed] =
                 to={`/module/${moduleData.id}/topic/3.2`}
                 className={styles.nextButton}
               >
-                Volver al tema 3.2 →
+                Volver al tema 3.2 
               </Link>
             )}
 
@@ -2225,7 +2134,7 @@ const [evaluationPassed, setEvaluationPassed] =
                     MÓDULO 3 · TEMA 3.3
                   </span>
 
-                  <h1>
+                  <h1 className={styles.moduleHeading}>
                     Gemelos digitales y{' '}
                     <span>simulación urbana</span>
                   </h1>
@@ -2310,7 +2219,7 @@ const [evaluationPassed, setEvaluationPassed] =
               <div
                 className={styles.introNavigation}
               >
-                {navigation}
+                <Link to={`/course/${courseId}`} className={styles.backLink}>Volver al curso ↗</Link>
               </div>
 
               <span
@@ -2319,9 +2228,7 @@ const [evaluationPassed, setEvaluationPassed] =
                 INTRODUCCIÓN · TEMA 3.3
               </span>
 
-              <h2>
-                Probar escenarios antes de actuar
-              </h2>
+              <div className={styles.greenWelcome}><div><h2 className={styles.moduleHeading}><span>Probar escenarios antes </span>de actuar</h2>
 
               <p className={styles.introLead}>
                 Los gemelos digitales urbanos son
@@ -2331,7 +2238,7 @@ const [evaluationPassed, setEvaluationPassed] =
                 y datos de sensores para analizar
                 situaciones y apoyar la comparación
                 de alternativas.
-              </p>
+              </p></div><div className={styles.greenArt}><Module3Art topic="3.3" /></div></div>
 
               <div className={styles.introBlock}>
                 <span
@@ -2420,15 +2327,15 @@ const [evaluationPassed, setEvaluationPassed] =
                 </ul>
               </div>
 
-              <button
+              <div className={styles.lessonActionGroup}><button
                 type="button"
                 className={styles.nextButton}
                 onClick={() =>
                   setSection('video')
                 }
               >
-                Ir al video →
-              </button>
+                Empezar 
+              </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('index')}>← Anterior</button></div>
             </section>
           </div>
         ) : section === 'video' ? (
@@ -2447,16 +2354,10 @@ const [evaluationPassed, setEvaluationPassed] =
                 </span>
 
                 <div>
-                  <span
-                    className={styles.videoEyebrow}
-                  >
-                    APRENDE CON EL VIDEO
-                  </span>
+                  
 
-                  <h2>
-                    Gemelos digitales y
-                    simulación urbana
-                  </h2>
+                  <h2 className={styles.moduleHeading}><span>Gemelos digitales y
+                    </span>simulación urbana</h2>
                 </div>
               </div>
 
@@ -2470,7 +2371,7 @@ const [evaluationPassed, setEvaluationPassed] =
                     ? '✓ Video completado'
                     : '○ Pendiente de completar'}
                 </span>
-              </div>
+              <span>ⓘ No adelantes el video: las partes que saltes no contarán en tu progreso.</span></div>
 
               {error && (
                 <p
@@ -2503,15 +2404,15 @@ const [evaluationPassed, setEvaluationPassed] =
               </div>
 
               {videoCompleted ? (
-                <button
+                <div className={styles.lessonActionGroup}><button
                   type="button"
                   className={styles.nextButton}
                   onClick={() =>
                     setSection('article')
                   }
                 >
-                  Ir a Información →
-                </button>
+                  Siguiente 
+                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>
               ) : (
                 <>
                   <p
@@ -2535,11 +2436,11 @@ const [evaluationPassed, setEvaluationPassed] =
                   </button>
                 </>
               )}
-            </section>
+            {!videoCompleted && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>}</section>
           </div>
         ) : section === 'article' &&
           videoCompleted ? (
-          <div className={styles.lessonContent}>
+          <RequiredReadings gate={readingGate}><div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
               <div
                 className={styles.introNavigation}
@@ -2550,13 +2451,9 @@ const [evaluationPassed, setEvaluationPassed] =
               <header
                 className={styles.articleHeader}
               >
-                <span
-                  className={styles.sectionLabel}
-                >
-                  LECTURAS COMPLEMENTARIAS · TEMA 3.3
-                </span>
+                
 
-                <h2>Explora y profundiza</h2>
+                <h2 className={styles.plainHeading}>Explora y profundiza</h2>
 
                 <p className={styles.introLead}>
                   Explora los fundamentos de los
@@ -2591,12 +2488,6 @@ const [evaluationPassed, setEvaluationPassed] =
                     <h3>{item.title}</h3>
                     <p>{item.description}</p>
 
-                    <p>
-                      <strong>
-                        Para esta lectura:
-                      </strong>{' '}
-                      {item.guidance}
-                    </p>
 
                     <a
                       href={item.url}
@@ -2614,11 +2505,6 @@ const [evaluationPassed, setEvaluationPassed] =
                 className={styles.cepalBanner}
               >
                 <div>
-                  <span
-                    className={styles.cepalEyebrow}
-                  >
-                    RECURSO INSTITUCIONAL · UIT
-                  </span>
 
                   <h3>
                     Gemelos digitales para
@@ -2646,35 +2532,21 @@ const [evaluationPassed, setEvaluationPassed] =
                 className={styles.articleNextStep}
               >
                 <div>
-                  <strong>
-                    Imagina un escenario para tu ciudad
-                  </strong>
-
-                  <p>
-                    ¿Qué cambio te gustaría simular
-                    antes de aplicarlo? Identifica
-                    los datos necesarios y qué resultados
-                    compararías para elegir una alternativa.
-                  </p>
-
-                  <p>
-                    Estas lecturas son recursos de apoyo
-                    y su consulta es opcional.
-                  </p>
+     
                 </div>
 
-                <button
+                <div className={styles.lessonActionGroup}><button
                   type="button"
                   className={styles.nextButton}
                   onClick={() =>
                     setSection('forum')
                   }
                 >
-                  Ir al foro →
-                </button>
+                  Siguiente 
+                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('video')}>← Anterior</button></div>
               </div>
             </section>
-          </div>
+          </div></RequiredReadings>
         ) : (
           section === 'forum' ||
           section === 'evaluation'

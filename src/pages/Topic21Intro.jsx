@@ -1,10 +1,13 @@
+import RequiredReadings, { useRequiredReadings } from '../components/RequiredReadings';
 import PracticalEvaluationForm from '../components/PracticalEvaluationForm';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../services/api';
 import VideoPlayer from '../components/VideoPlayer';
 import EvaluationForm from '../components/EvaluationForm';
-import styles from './TopicDetail.module.css';
+import sharedStyles from './TopicDetail.module.css';
+import topic21Styles from './Topic21Design.module.css';
+const styles = sharedStyles;
 
 const EVALUATION_ID = 5;
 
@@ -76,7 +79,7 @@ const forumGuide21 = [
     number: '03',
     title: 'Comprueba los resultados',
     description:
-      'Describe qué observarías después para saber si disminuyó el calor o la acumulación de agua.',
+      'Describe qué observarías para ver los resultados',
   },
   {
     number: '04',
@@ -86,8 +89,37 @@ const forumGuide21 = [
   },
 ];
 
+const GreenInfrastructureArt = () => (
+  <svg viewBox="0 0 280 210" role="img" aria-label="Parque urbano con árboles, sendero y jardín de lluvia">
+    <ellipse cx="143" cy="108" rx="122" ry="92" fill="#e4efff" />
+    <circle cx="229" cy="38" r="19" fill="#fff1c9" />
+    <path d="M24 160h232v25H24z" fill="#d0e8de" />
+    <path d="M114 184c-22-20 42-24 17-49" fill="none" stroke="#fff" strokeWidth="18" />
+    <rect x="111" y="57" width="48" height="89" rx="7" fill="#fff" stroke="#8cb3ec" strokeWidth="2" />
+    <rect x="162" y="85" width="34" height="61" rx="5" fill="#c9ddfc" />
+    {[70,89,108].map(y => <g key={y} fill="#9abdf0"><rect x="122" y={y} width="9" height="9" rx="2"/><rect x="139" y={y} width="9" height="9" rx="2"/></g>)}
+    <path d="M68 102v63m151-54v52" stroke="#67a58d" strokeWidth="4" />
+    <ellipse cx="68" cy="88" rx="30" ry="39" fill="#a8d3c0" />
+    <ellipse cx="219" cy="104" rx="23" ry="31" fill="#b9ddcc" />
+    <path d="M166 171c10-19 37-19 51 0-13 12-37 12-51 0" fill="#9bcbee" />
+    <path d="M169 163l4-13m24 11 5-15m-20 9-4-12" stroke="#6aa889" strokeWidth="3" strokeLinecap="round" />
+    <path d="M27 185h229" stroke="#adc9e9" strokeWidth="2" />
+    <rect x="27" y="24" width="48" height="39" rx="12" fill="#fff" stroke="#d5e3fa" />
+    <path d="M42 51c-7-15 7-20 19-19-1 14-8 23-19 19m1 0 12-13" fill="#badfcb" stroke="#629c80" strokeWidth="2" />
+  </svg>
+);
+
+const MobilityArt = () => (<svg viewBox="0 0 280 210" role="img" aria-label="Autobús y bicicleta para una movilidad sostenible"><ellipse cx="140" cy="108" rx="121" ry="88" fill="#e4efff"/><circle cx="229" cy="42" r="18" fill="#fff0c9"/><path d="M22 174h237" stroke="#adc7ec" strokeWidth="3"/><rect x="50" y="66" width="149" height="89" rx="17" fill="#c5daf9" stroke="#83abe3" strokeWidth="2"/><rect x="64" y="79" width="121" height="35" rx="7" fill="white"/><path d="M102 80v33m40-33v33" stroke="#a9c5ec" strokeWidth="3"/><rect x="64" y="125" width="17" height="7" rx="3" fill="#fff1c9"/><rect x="168" y="125" width="17" height="7" rx="3" fill="#fff1c9"/><circle cx="79" cy="156" r="13" fill="#5f85bc"/><circle cx="169" cy="156" r="13" fill="#5f85bc"/><circle cx="79" cy="156" r="5" fill="white"/><circle cx="169" cy="156" r="5" fill="white"/><g fill="none" stroke="#5d9e86" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="204" cy="154" r="15"/><circle cx="250" cy="154" r="15"/><path d="m204 154 16-28 15 28h-31l12-21h25m-6 21 8-37h-8m-25 9h15"/></g><path d="M28 122V84" stroke="#6caa91" strokeWidth="4"/><ellipse cx="28" cy="72" rx="18" ry="28" fill="#aed6c3"/></svg>);
+const PublicSpaceArt = () => (<svg viewBox="0 0 280 210" role="img" aria-label="Plaza accesible con árboles, banco y personas"><ellipse cx="140" cy="106" rx="122" ry="89" fill="#e5efff"/><circle cx="229" cy="39" r="18" fill="#fff0c9"/><path d="M24 160h233v25H24z" fill="#d6e9e1"/><path d="m123 185 18-49h29l22 49" fill="white"/><path d="M57 108v55m166-56v56" stroke="#6da48b" strokeWidth="4"/><ellipse cx="57" cy="84" rx="27" ry="38" fill="#add4c0"/><ellipse cx="223" cy="87" rx="26" ry="35" fill="#bedecd"/><g stroke="#89aee0" strokeWidth="4" strokeLinecap="round"><path d="M79 127h48m-48 12h48m-41 1v21m35-21v21"/></g><rect x="137" y="57" width="47" height="55" rx="9" fill="white" stroke="#acc8ed"/><path d="M151 75h20m-20 10h15m-15 10h18" stroke="#9dbdeb" strokeWidth="3"/><circle cx="181" cy="130" r="7" fill="#e3bb92"/><path d="M181 141v16m0-11 11 5m-11 6-8 18m8-18 8 18" stroke="#6e94ce" strokeWidth="5" strokeLinecap="round"/><circle cx="147" cy="136" r="6" fill="#e3bb92"/><path d="M147 146v13h14m-14-13 12 2m-12 9-8 9" fill="none" stroke="#86b6a0" strokeWidth="4" strokeLinecap="round"/><circle cx="150" cy="167" r="12" fill="none" stroke="#86b6a0" strokeWidth="3"/><path d="M25 185h232" stroke="#abc6e9" strokeWidth="2"/></svg>);
+
 const Topic21Content = ({ moduleData }) => {
-  const [section, setSection] = useState('index');
+  const styles = { ...sharedStyles, ...topic21Styles };
+  const [section, setSectionState] = useState('index');
+  const readingGate = useRequiredReadings('2.1', moduleData?.id ?? '2');
+  const setSection = (next) => setSectionState((current) => {
+    const destination = typeof next === 'function' ? next(current) : next;
+    return ['forum', 'evaluation'].includes(destination) && !readingGate.complete ? 'article' : destination;
+  });
 
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
@@ -498,7 +530,7 @@ const Topic21Content = ({ moduleData }) => {
               ← Volver al curso
             </Link>
 
-            <h2>Tema 2.1: Infraestructura verde</h2>
+            <h2 className={styles.moduleHeading}><span>Tema 2.1: </span>Infraestructura verde</h2>
 
             <p className={styles.pendingNote} role="alert">
               {error || 'No se pudo cargar el tema.'}
@@ -579,7 +611,7 @@ const Topic21Content = ({ moduleData }) => {
                     MÓDULO 2 · TEMA 2.1
                   </span>
 
-                  <h1>
+                  <h1 className={styles.moduleIndexTitle}>
                     Infraestructura <span>verde</span>
                   </h1>
 
@@ -641,10 +673,10 @@ const Topic21Content = ({ moduleData }) => {
           <div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
               <div className={styles.introNavigation}>
-                {navigation}
+                <Link to={`/course/${moduleData.courseId}`} className={styles.backLink}>Volver al curso ↗</Link>
               </div>
 
-              <h2>Introducción</h2>
+<div className={styles.greenWelcome}><div>              <h2 className={styles.plainHeading}>Introducción</h2>
 
               <p className={styles.introLead}>
                 Los parques, los árboles y otros espacios naturales
@@ -655,6 +687,7 @@ const Topic21Content = ({ moduleData }) => {
                 atención de las necesidades de la población.
               </p>
 
+</div><div className={styles.greenArt}><GreenInfrastructureArt /></div></div>
               <div className={styles.introBlock}>
                 <span className={styles.introBlockLabel}>
                   OBJETIVO
@@ -734,13 +767,13 @@ const Topic21Content = ({ moduleData }) => {
                 </ul>
               </div>
 
-              <button
+              <div className={styles.lessonActionGroup}><button
                 type="button"
                 className={styles.nextButton}
                 onClick={() => setSection('video')}
               >
-                Ir al video →
-              </button>
+                Empezar 
+              </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('index')}>← Anterior</button></div>
             </section>
           </div>
         ) : section === 'video' ? (
@@ -759,11 +792,7 @@ const Topic21Content = ({ moduleData }) => {
                 </span>
 
                 <div>
-                  <span className={styles.videoEyebrow}>
-                    APRENDE CON EL VIDEO
-                  </span>
-
-                  <h2>Infraestructura verde</h2>
+                  <h2 className={styles.moduleHeading}><span>Infraestructura </span>verde</h2>
                 </div>
               </div>
 
@@ -777,6 +806,7 @@ const Topic21Content = ({ moduleData }) => {
                     ? '✓ Video completado'
                     : '○ Pendiente de completar'}
                 </span>
+                <span>ⓘ No adelantes el video: las partes que saltes no contarán en tu progreso.</span>
               </div>
 
               {error && (
@@ -801,13 +831,13 @@ const Topic21Content = ({ moduleData }) => {
               </div>
 
               {videoCompleted ? (
-                <button
+                <div className={styles.lessonActionGroup}><button
                   type="button"
                   className={styles.nextButton}
                   onClick={() => setSection('article')}
                 >
-                  Ir a Información →
-                </button>
+                  Siguiente 
+                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>
               ) : (
                 <>
                   <p className={styles.pendingNote}>
@@ -827,30 +857,25 @@ const Topic21Content = ({ moduleData }) => {
                   </button>
                 </>
               )}
+              {!videoCompleted && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>}
             </section>
           </div>
         ) : section === 'article' && videoCompleted ? (
-          <div className={styles.lessonContent}>
+          <RequiredReadings gate={readingGate}><div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
               <div className={styles.introNavigation}>
                 {navigation}
               </div>
 
               <div className={styles.articleHeader}>
-                <span className={styles.sectionLabel}>
-                  LECTURAS COMPLEMENTARIAS
-                </span>
-
-                <h2>Explora y profundiza</h2>
+                <h2 className={styles.plainHeading}>Explora y profundiza</h2>
 
                 <p>
                   Consulta estas publicaciones sobre soluciones
                   basadas en la naturaleza, infraestructura
                   resiliente y financiamiento urbano, junto con
                   una lectura tecnológica complementaria y el
-                  informe Cities in Motion 2025. Son recursos
-                  opcionales que puedes revisar ahora o cuando
-                  lo necesites.
+                  informe Cities in Motion 2025. 
                 </p>
               </div>
 
@@ -888,9 +913,6 @@ const Topic21Content = ({ moduleData }) => {
 
               <aside className={styles.cepalBanner}>
                 <div>
-                  <span className={styles.cepalEyebrow}>
-                    FUENTE INSTITUCIONAL · IESE
-                  </span>
 
                   <h3>Explora Cities in Motion 2025</h3>
 
@@ -913,9 +935,7 @@ const Topic21Content = ({ moduleData }) => {
 
               <aside className={styles.cepalBanner}>
                 <div>
-                  <span className={styles.cepalEyebrow}>
-                    FUENTE INSTITUCIONAL · ONU-HÁBITAT
-                  </span>
+
 
                   <h3>
                     Conoce las publicaciones de ONU-Hábitat
@@ -940,24 +960,19 @@ const Topic21Content = ({ moduleData }) => {
 
               <div className={styles.articleNextStep}>
                 <div>
-                  <strong>¿Listo para participar en el foro?</strong>
-
-                  <p>
-                    Las lecturas son opcionales. Comparte tu
-                    propuesta para un espacio verde con una función.
-                  </p>
+                  
                 </div>
 
-                <button
+                <div className={styles.lessonActionGroup}><button
                   type="button"
                   className={styles.nextButton}
                   onClick={() => setSection('forum')}
                 >
-                  Ir al foro →
-                </button>
+                  Siguiente 
+                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('video')}>← Anterior</button></div>
               </div>
             </section>
-          </div>
+          </div></RequiredReadings>
         ) : section === 'forum' && videoCompleted ? (
           <div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
@@ -965,29 +980,7 @@ const Topic21Content = ({ moduleData }) => {
                 {navigation}
               </div>
 
-              <div className={styles.forumHero}>
-                <div
-                  className={styles.forumHeroIcon}
-                  aria-hidden="true"
-                >
-                  ✦
-                </div>
-
-                <div>
-                  <span className={styles.forumEyebrow}>
-                    ACTIVIDAD PARTICIPATIVA · TEMA 2.1
-                  </span>
-
-                  <h2>Un espacio verde con una función</h2>
-
-                  <p>
-                    Propón soluciones para el calor y la
-                    acumulación de agua, considerando a los
-                    vecinos y la biodiversidad.
-                  </p>
-                </div>
-              </div>
-
+<div className={styles.greenWelcome}><div><h2 className={styles.moduleHeading}><span>Un espacio verde</span> con una función</h2><p>Propón soluciones para el calor y la acumulación de agua, considerando a los vecinos y la biodiversidad.</p></div><div className={styles.greenArt}><GreenInfrastructureArt /></div></div>
               <div className={styles.forumPrompt}>
                 <p>
                   Un municipio dispone de un terreno público sin
@@ -1005,15 +998,10 @@ const Topic21Content = ({ moduleData }) => {
 
                 <p>
                   Explica cómo podrían participar los vecinos
-                  en su planificación y qué observarías después
-                  para saber si la intervención funcionó.
+                  en su planificación.
                 </p>
 
-                <p>
-                  Puedes leer las propuestas de tus compañeros
-                  y, si deseas, comentar con una sugerencia para
-                  cuidar la biodiversidad del lugar.
-                </p>
+        
               </div>
 
               <div className={styles.forumGuide}>
@@ -1034,18 +1022,7 @@ const Topic21Content = ({ moduleData }) => {
                 ))}
               </div>
 
-              <button
-                type="button"
-                className={styles.returnButton}
-                disabled={loadingForum || publishing}
-                onClick={() =>
-                  setForumRetry((value) => value + 1)
-                }
-              >
-                {loadingForum
-                  ? 'Actualizando foro...'
-                  : 'Actualizar foro'}
-              </button>
+              
 
               {forumError && (
                 <p className={styles.forumError} role="alert">
@@ -1073,43 +1050,38 @@ const Topic21Content = ({ moduleData }) => {
                     </p>
                   </div>
 
-                  <div className={styles.articleNextStep}>
+                  <div className={styles.forumEvaluationStep}>
                     <div>
                       <strong>
-                        ✓ Publicaste tu respuesta al foro
+                        ¿Estás preparado?
                       </strong>
 
                       <p>
-                        {evaluationPassed
-                          ? 'También aprobaste la evaluación. Puedes consultar tu resultado.'
-                          : 'Tu respuesta quedó guardada. Ya puedes realizar la evaluación. Comentar a tus compañeros es opcional.'}
+                        Es momento de realizar la evaluación.
                       </p>
                     </div>
 
-                    <button
+                    <div className={styles.lessonActionGroup}><button
                       type="button"
                       className={styles.nextButton}
                       disabled={!canOpenEvaluation}
                       onClick={() => setSection('evaluation')}
                     >
-                      {evaluationPassed
-                        ? 'Ver resultado →'
-                        : 'Ir a la evaluación →'}
-                    </button>
+                      Evaluación
+                    </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('article')}>← Anterior</button></div>
                   </div>
 
                   <div className={styles.otherPosts}>
                     <div className={styles.otherPostsHeading}>
-                      <h3>Propuestas de tus compañeros</h3>
-                    </div>
-
-                    <p>
-                      Lee sus respuestas. Si deseas, puedes
-                      comentar con una sugerencia para cuidar
-                      la biodiversidad del lugar.
-                    </p>
+                      <h3>Respuestas del foro</h3>
+                    <button type="button" className={styles.refreshForumButton} disabled={loadingForum || publishing} onClick={() => setForumRetry(value => value + 1)}>{loadingForum }</button></div>
 
                     <div className={styles.forumPostsGrid}>
+                      <article className={styles.forumPost}>
+                        <div className={styles.forumPostAuthor}><span aria-hidden="true">{(myPost.User?.name || posts.find(post => Number(post.id) === Number(myPost.id))?.User?.name || 'T').charAt(0).toUpperCase()}</span><strong>{myPost.User?.name || posts.find(post => Number(post.id) === Number(myPost.id))?.User?.name || 'Tu publicación'}</strong></div>
+                        <p style={{ whiteSpace: 'pre-wrap' }}>{myPost.content}</p>
+                        {(posts.find(post => Number(post.id) === Number(myPost.id))?.ForoComments || myPost.ForoComments || []).map(comment => <div key={comment.id} className={styles.myForumPost}><strong>{comment.User?.name || 'Participante'}:</strong> {comment.content}</div>)}
+                      </article>
                       {otherPosts.map((post) => {
                         const ownComment = (
                           post.ForoComments || []
@@ -1221,11 +1193,7 @@ const Topic21Content = ({ moduleData }) => {
 
                     {!loadingForum && otherPosts.length === 0 && (
                       <p className={styles.pendingNote}>
-                        Todavía no hay propuestas de compañeros.
-                        Tu respuesta quedó guardada y ya puedes
-                        realizar la evaluación. Cuando otros
-                        participantes publiquen, podrás leer
-                        sus propuestas y comentarlas si deseas.
+                        Cuando tus compañeros publiquen, sus respuestas aparecerán aquí. Puedes comentar sus propuestas si deseas.
                       </p>
                     )}
 
@@ -1291,6 +1259,7 @@ const Topic21Content = ({ moduleData }) => {
                   </button>
                 </form>
               ) : null}
+              {!myPost && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('article')}>← Anterior</button></div>}
             </section>
           </div>
         ) : section === 'evaluation' && canOpenEvaluation ? (
@@ -1300,31 +1269,13 @@ const Topic21Content = ({ moduleData }) => {
                 {navigation}
               </div>
 
-              <span className={styles.sectionLabel}>
-                EVALUACIÓN · TEMA 2.1
-              </span>
+             
 
-              <h2>Comprueba lo que aprendiste</h2>
-
-              <p>
-                Responde las cinco preguntas sobre
-                infraestructura verde.
-              </p>
-
-              <div className={styles.videoMeta}>
-                <span>5 preguntas</span>
-                <span>2 puntos por respuesta correcta · 20 %</span>
-                <span>Nota máxima: 10 puntos</span>
-                <span>Mínimo para aprobar: 70 %</span>
+<h2 className={`${styles.greenEvaluationTitle} ${styles.moduleHeading}`}><span>Comprueba</span> lo que aprendiste</h2>
+              <div className={styles.greenEvaluationInfo}>
+                <p>Responde cinco preguntas sobre infraestructura verde. Cada una vale 2 puntos y necesitas al menos un 70 % para aprobar.</p>
+                <div className={styles.greenEvaluationBadges}><span>5 preguntas</span><span>2 puntos por pregunta</span><span>Apruebas con 4 respuestas correctas</span></div>
               </div>
-
-              <p className={styles.pendingNote}>
-                Con cuatro respuestas correctas obtienes
-                8 de 10 puntos, equivalentes al 80 %, y apruebas.
-                Si no alcanzas el mínimo, puedes revisar tus
-                respuestas y volver a intentarlo.
-              </p>
-
               {loadingEvaluation ? (
                 <p className={styles.pendingNote}>
                   Consultando tu resultado...
@@ -1353,7 +1304,7 @@ const Topic21Content = ({ moduleData }) => {
                   role="status"
                 >
                   <div>
-                    <strong>✓ Aprobaste el tema 2.1</strong>
+                    <h3 className={styles.greenCongratulations}>¡Felicidades!</h3><p>Aprobaste el tema 2.1. Puedes pasar al siguiente tema.</p>
 
                     <p>
                       Calificación:{' '}
@@ -1364,12 +1315,12 @@ const Topic21Content = ({ moduleData }) => {
                     </p>
                   </div>
 
-                                   <Link
+                                   <div className={styles.lessonActionGroup}><Link
                     to={`/module/${moduleData.id}/topic/2.2`}
                     className={styles.nextButton}
                   >
-                    Tema 2.2 →
-                  </Link>
+                    Tema 2.2 
+                  </Link><button type="button" className={styles.previousLessonButton} onClick={() => setSection('forum')}>← Anterior</button></div>
                 </div>
               ) : (
                 <EvaluationForm
@@ -1377,6 +1328,7 @@ const Topic21Content = ({ moduleData }) => {
                   onSuccess={handleEvaluationSuccess21}
                 />
               )}
+              {!evaluationPassed && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('forum')}>← Anterior</button></div>}
             </section>
           </div>
         ) : null}
@@ -1385,9 +1337,15 @@ const Topic21Content = ({ moduleData }) => {
   );
 };
 const Topic22Content = ({ moduleData }) => {
+ const styles = { ...sharedStyles, ...topic21Styles };
   const evaluationId22 = 6;
 
-  const [section, setSection] = useState('index');
+  const [section, setSectionState] = useState('index');
+  const readingGate = useRequiredReadings('2.2', moduleData?.id ?? '2');
+  const setSection = (next) => setSectionState((current) => {
+    const destination = typeof next === 'function' ? next(current) : next;
+    return ['forum', 'evaluation'].includes(destination) && !readingGate.complete ? 'article' : destination;
+  });
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
   const [video, setVideo] = useState(null);
@@ -1430,7 +1388,7 @@ const Topic22Content = ({ moduleData }) => {
       id: 'urban-mobility-benchmarking',
       type: 'CEPAL · MOVILIDAD URBANA',
       title:
-        'Uso del análisis comparativo para mejorar la movilidad urbana: una nueva herramienta para construir ciudades inteligentes en países emergentes',
+        'Uso del análisis comparativo para mejorar la movilidad urbana.',
       description:
         'Estudio sobre cómo comparar ciudades con características similares para diagnosticar la movilidad y orientar mejoras en el transporte público, el uso de la bicicleta y la información en tiempo real.',
       url: 'https://www.cepal.org/es/publicaciones/81231-uso-analisis-comparativo-mejorar-la-movilidad-urbana-nueva-herramienta-construir',
@@ -1440,7 +1398,7 @@ const Topic22Content = ({ moduleData }) => {
       id: 'smart-education-sustainability',
       type: 'LECTURA COMPLEMENTARIA · EDUCACIÓN E IA',
       title:
-        'Smart Education and Sustainable Learning Environments in Smart Cities: Significant Role of AI Applications for Sustainable Education',
+        'Smart Education and Sustainable Learning Environments in Smart Cities',
       description:
         'Capítulo sobre aplicaciones de inteligencia artificial en educación, personalización del aprendizaje y gestión de recursos para apoyar entornos educativos sostenibles.',
       url: 'https://doi.org/10.4018/979-8-3693-7723-9.ch024',
@@ -1475,7 +1433,7 @@ const Topic22Content = ({ moduleData }) => {
       number: '03',
       title: 'Define un indicador',
       description:
-        'Indica cómo comprobarías sus resultados: tiempo de viaje, frecuencia del servicio o satisfacción de los usuarios.',
+        'Indica cómo comprobarías sus resultados',
     },
     {
       number: '04',
@@ -1865,7 +1823,7 @@ const Topic22Content = ({ moduleData }) => {
               ← Volver al curso
             </Link>
 
-            <h2>Tema 2.2: Transporte sostenible</h2>
+            <h2 className={styles.moduleHeading}><span>Tema 2.2: </span>Transporte sostenible</h2>
 
             <p className={styles.pendingNote} role="alert">
               {error || 'No se pudo cargar el tema.'}
@@ -1955,7 +1913,7 @@ const Topic22Content = ({ moduleData }) => {
                     MÓDULO 2 · TEMA 2.2
                   </span>
 
-                  <h1>
+                  <h1 className={styles.moduleIndexTitle}>
                     Transporte <span>sostenible</span>
                   </h1>
 
@@ -2018,10 +1976,10 @@ const Topic22Content = ({ moduleData }) => {
           <div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
               <div className={styles.introNavigation}>
-                {navigation}
+                <Link to={`/course/${moduleData.courseId}`} className={styles.backLink}>Volver al curso ↗</Link>
               </div>
 
-              <h2>Introducción</h2>
+              <div className={styles.greenWelcome}><div><h2 className={styles.plainHeading}>Introducción</h2>
 
               <p className={styles.introLead}>
                 La movilidad influye en el acceso al trabajo,
@@ -2030,7 +1988,7 @@ const Topic22Content = ({ moduleData }) => {
                 considerando las necesidades de las personas,
                 la eficiencia de los servicios y el cuidado
                 del ambiente.
-              </p>
+              </p></div><div className={styles.greenArt}><MobilityArt /></div></div>
 
               <div className={styles.introBlock}>
                 <span className={styles.introBlockLabel}>
@@ -2108,13 +2066,13 @@ const Topic22Content = ({ moduleData }) => {
                 </ul>
               </div>
 
-              <button
+              <div className={styles.lessonActionGroup}><button
                 type="button"
                 className={styles.nextButton}
                 onClick={() => setSection('video')}
               >
-                Ir al video →
-              </button>
+                Empezar 
+              </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('index')}>← Anterior</button></div>
             </section>
           </div>
         ) : section === 'video' ? (
@@ -2133,10 +2091,8 @@ const Topic22Content = ({ moduleData }) => {
                 </span>
 
                 <div>
-                  <span className={styles.videoEyebrow}>
-                    APRENDE CON EL VIDEO
-                  </span>
-                  <h2>Transporte sostenible</h2>
+                  
+                  <h2 className={styles.moduleHeading}>Transporte <span>sostenible</span></h2>
                 </div>
               </div>
 
@@ -2147,7 +2103,7 @@ const Topic22Content = ({ moduleData }) => {
                     ? '✓ Video completado'
                     : '○ Pendiente de completar'}
                 </span>
-              </div>
+              <span>ⓘ No adelantes el video: las partes que saltes no contarán en tu progreso.</span></div>
 
               {error && (
                 <p className={styles.pendingNote} role="alert">
@@ -2171,13 +2127,13 @@ const Topic22Content = ({ moduleData }) => {
               </div>
 
               {videoCompleted ? (
-                <button
+                <div className={styles.lessonActionGroup}><button
                   type="button"
                   className={styles.nextButton}
                   onClick={() => setSection('article')}
                 >
-                  Ir a Información →
-                </button>
+                  Siguiente 
+                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>
               ) : (
                 <>
                   <p className={styles.pendingNote}>
@@ -2197,21 +2153,19 @@ const Topic22Content = ({ moduleData }) => {
                   </button>
                 </>
               )}
-            </section>
+            {!videoCompleted && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>}</section>
           </div>
         ) : section === 'article' && videoCompleted ? (
-          <div className={styles.lessonContent}>
+          <RequiredReadings gate={readingGate}><div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
               <div className={styles.introNavigation}>
                 {navigation}
               </div>
 
               <div className={styles.articleHeader}>
-                <span className={styles.sectionLabel}>
-                  LECTURAS COMPLEMENTARIAS
-                </span>
+                
 
-                <h2>Explora y profundiza</h2>
+                <h2 className={styles.plainHeading}>Explora y profundiza</h2>
 
                 <p>
                   Consulta estas publicaciones sobre transporte
@@ -2257,9 +2211,7 @@ const Topic22Content = ({ moduleData }) => {
 
               <aside className={styles.cepalBanner}>
                 <div>
-                  <span className={styles.cepalEyebrow}>
-                    FUENTE INSTITUCIONAL · IESE
-                  </span>
+               
                   <h3>
                     Conoce las estrategias de movilidad sostenible
                   </h3>
@@ -2282,9 +2234,7 @@ const Topic22Content = ({ moduleData }) => {
 
               <aside className={styles.cepalBanner}>
                 <div>
-                  <span className={styles.cepalEyebrow}>
-                    FUENTE INSTITUCIONAL · CEPAL
-                  </span>
+                
                   <h3>
                     Explora la movilidad urbana desde el
                     análisis comparativo
@@ -2308,24 +2258,19 @@ const Topic22Content = ({ moduleData }) => {
 
               <div className={styles.articleNextStep}>
                 <div>
-                  <strong>¿Listo para participar en el foro?</strong>
-                  <p>
-                    Las lecturas son opcionales. Comparte
-                    una medida para mejorar la movilidad
-                    de tu ciudad.
-                  </p>
+               
                 </div>
 
-                <button
+                <div className={styles.lessonActionGroup}><button
                   type="button"
                   className={styles.nextButton}
                   onClick={() => setSection('forum')}
                 >
-                  Ir al foro →
-                </button>
+                  Siguiente 
+                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('video')}>← Anterior</button></div>
               </div>
             </section>
-          </div>
+          </div></RequiredReadings>
         ) : section === 'forum' && videoCompleted ? (
           <div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
@@ -2333,29 +2278,16 @@ const Topic22Content = ({ moduleData }) => {
                 {navigation}
               </div>
 
-              <div className={styles.forumHero}>
-                <div
-                  className={styles.forumHeroIcon}
-                  aria-hidden="true"
-                >
-                  ✦
-                </div>
+              <div className={styles.greenWelcome}><div>
+                
 
-                <div>
-                  <span className={styles.forumEyebrow}>
-                    ACTIVIDAD PARTICIPATIVA · TEMA 2.2
-                  </span>
-
-                  <h2>
-                    ¿Qué haría que dejaras el automóvil en casa?
-                  </h2>
+                  <h2 className={styles.moduleHeading}><span>¿Qué haría que dejaras </span>el automóvil en casa?</h2>
 
                   <p>
                     Prioriza una medida de movilidad y explica
                     cómo comprobarías sus resultados.
                   </p>
-                </div>
-              </div>
+                </div><div className={styles.greenArt}><MobilityArt /></div></div>
 
               <div className={styles.forumPrompt}>
                 <p>
@@ -2376,16 +2308,10 @@ const Topic22Content = ({ moduleData }) => {
                 <p>
                   Elige una medida, explica por qué la
                   priorizarías y menciona un indicador que
-                  permitiría comprobar si funcionó, como el
-                  tiempo de viaje, la frecuencia del servicio
-                  o la satisfacción de los usuarios.
+                  permitiría comprobar si funcionó.
                 </p>
 
-                <p>
-                  Puedes leer las respuestas de tus compañeros
-                  y, si deseas, comentar qué otra medida
-                  podría complementar su propuesta.
-                </p>
+             
               </div>
 
               <div className={styles.forumGuide}>
@@ -2406,18 +2332,7 @@ const Topic22Content = ({ moduleData }) => {
                 ))}
               </div>
 
-              <button
-                type="button"
-                className={styles.returnButton}
-                disabled={loadingForum || publishing}
-                onClick={() =>
-                  setForumRetry((value) => value + 1)
-                }
-              >
-                {loadingForum
-                  ? 'Actualizando foro...'
-                  : 'Actualizar foro'}
-              </button>
+              
 
               {forumError && (
                 <p className={styles.forumError} role="alert">
@@ -2444,44 +2359,36 @@ const Topic22Content = ({ moduleData }) => {
                     </p>
                   </div>
 
-                  <div className={styles.articleNextStep}>
+                  <div className={styles.forumEvaluationStep}>
                     <div>
                       <strong>
-                        ✓ Publicaste tu respuesta al foro
+                        ¿Estás preparado?
                       </strong>
 
                       <p>
-                        {evaluationPassed
-                          ? 'También aprobaste la evaluación. Puedes consultar tu resultado.'
-                          : 'Tu respuesta quedó guardada. Ya puedes realizar la evaluación. Comentar a tus compañeros es opcional.'}
+                        Es momento de realizar la evaluación.
                       </p>
                     </div>
 
-                    <button
+                    <div className={styles.lessonActionGroup}><button
                       type="button"
                       className={styles.nextButton}
                       disabled={!canOpenEvaluation}
                       onClick={() => setSection('evaluation')}
                     >
-                      {evaluationPassed
-                        ? 'Ver resultado →'
-                        : 'Ir a la evaluación →'}
-                    </button>
+                      Evaluación
+                    </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('article')}>← Anterior</button></div>
                   </div>
 
                   <div className={styles.otherPosts}>
                     <div className={styles.otherPostsHeading}>
-                      <h3>Propuestas de tus compañeros</h3>
-                    </div>
+                      <h3>Respuestas del foro</h3>
+                    <button type="button" className={styles.refreshForumButton} disabled={loadingForum || publishing} onClick={() => setForumRetry(value => value + 1)}>{loadingForum }</button></div>
 
-                    <p>
-                      Lee sus respuestas. Si deseas, comenta
-                      qué otra medida podría complementar
-                      su propuesta.
-                    </p>
+                    
 
                     <div className={styles.forumPostsGrid}>
-                      {otherPosts.map((post) => {
+                      <article className={styles.forumPost}><div className={styles.forumPostAuthor}><span aria-hidden="true">{(myPost.User?.name || posts.find(post => Number(post.id) === Number(myPost.id))?.User?.name || 'T').charAt(0).toUpperCase()}</span><strong>{myPost.User?.name || posts.find(post => Number(post.id) === Number(myPost.id))?.User?.name || 'Tu publicación'}</strong></div><p style={{ whiteSpace: 'pre-wrap' }}>{myPost.content}</p>{(posts.find(post => Number(post.id) === Number(myPost.id))?.ForoComments || myPost.ForoComments || []).map(comment => <div key={comment.id} className={styles.myForumPost}><strong>{comment.User?.name || 'Participante'}:</strong> {comment.content}</div>)}</article>{otherPosts.map((post) => {
                         const ownComment = (
                           post.ForoComments || []
                         ).some(
@@ -2590,16 +2497,6 @@ const Topic22Content = ({ moduleData }) => {
                       })}
                     </div>
 
-                    {!loadingForum && otherPosts.length === 0 && (
-                      <p className={styles.pendingNote}>
-                        Todavía no hay propuestas de compañeros.
-                        Tu respuesta quedó guardada y ya puedes
-                        realizar la evaluación. Cuando otros
-                        participantes publiquen, podrás leer
-                        sus respuestas y comentarlas si deseas.
-                      </p>
-                    )}
-
                     {commentError && (
                       <p
                         className={styles.forumError}
@@ -2662,7 +2559,7 @@ const Topic22Content = ({ moduleData }) => {
                   </button>
                 </form>
               ) : null}
-            </section>
+            {!myPost && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('article')}>← Anterior</button></div>}</section>
           </div>
         ) : section === 'evaluation' && canOpenEvaluation ? (
           <div className={styles.lessonContent}>
@@ -2671,32 +2568,9 @@ const Topic22Content = ({ moduleData }) => {
                 {navigation}
               </div>
 
-              <span className={styles.sectionLabel}>
-                EVALUACIÓN · TEMA 2.2
-              </span>
+            
 
-              <h2>Comprueba lo que aprendiste</h2>
-
-              <p>
-                Responde las cinco preguntas sobre
-                transporte sostenible.
-              </p>
-
-              <div className={styles.videoMeta}>
-                <span>5 preguntas</span>
-                <span>2 puntos por respuesta correcta · 20 %</span>
-                <span>Nota máxima: 10 puntos</span>
-                <span>Mínimo para aprobar: 70 %</span>
-              </div>
-
-              <p className={styles.pendingNote}>
-                Con cuatro respuestas correctas obtienes
-                8 de 10 puntos, equivalentes al 80 %, y apruebas.
-                Si no alcanzas el mínimo, puedes revisar tus
-                respuestas y volver a intentarlo.
-              </p>
-
-              {loadingEvaluation ? (
+              <h2 className={`${styles.greenEvaluationTitle} ${styles.moduleHeading}`}><span>Comprueba</span> lo que aprendiste</h2><div className={styles.greenEvaluationInfo}><p>Responde cinco preguntas sobre transporte sostenible. Cada una vale 2 puntos y necesitas al menos un 70 % para aprobar.</p><div className={styles.greenEvaluationBadges}><span>5 preguntas</span><span>2 puntos por pregunta</span><span>Apruebas con 4 respuestas correctas</span></div></div>{loadingEvaluation ? (
                 <p className={styles.pendingNote}>
                   Consultando tu resultado...
                 </p>
@@ -2724,7 +2598,7 @@ const Topic22Content = ({ moduleData }) => {
                   role="status"
                 >
                   <div>
-                    <strong>✓ Aprobaste el tema 2.2</strong>
+                    <h3 className={styles.greenCongratulations}>¡Felicidades!</h3><p>Aprobaste el tema 2.2. Puedes pasar al siguiente tema.</p>
 
                     <p>
                       Calificación:{' '}
@@ -2735,12 +2609,12 @@ const Topic22Content = ({ moduleData }) => {
                     </p>
                   </div>
 
-                  <Link
+                  <div className={styles.lessonActionGroup}><Link
                     to={`/module/${moduleData.id}/topic/2.3`}
                     className={styles.nextButton}
                   >
-                    Tema 2.3 →
-                  </Link>
+                    Tema 2.3 
+                  </Link><button type="button" className={styles.previousLessonButton} onClick={() => setSection('forum')}>← Anterior</button></div>
                 </div>
               ) : (
                 <EvaluationForm
@@ -2748,7 +2622,7 @@ const Topic22Content = ({ moduleData }) => {
                   onSuccess={handleEvaluationSuccess22}
                 />
               )}
-            </section>
+            {!evaluationPassed && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('forum')}>← Anterior</button></div>}</section>
           </div>
         ) : null}
       </div>
@@ -2757,7 +2631,13 @@ const Topic22Content = ({ moduleData }) => {
 };
 
 const Topic23Content = ({ moduleData }) => {
-  const [section, setSection] = useState('index');
+ const styles = { ...sharedStyles, ...topic21Styles };
+  const [section, setSectionState] = useState('index');
+  const readingGate = useRequiredReadings('2.3', moduleData?.id ?? '2');
+  const setSection = (next) => setSectionState((current) => {
+    const destination = typeof next === 'function' ? next(current) : next;
+    return ['forum', 'evaluation'].includes(destination) && !readingGate.complete ? 'article' : destination;
+  });
 
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
@@ -3210,7 +3090,7 @@ const Topic23Content = ({ moduleData }) => {
               ← Volver al curso
             </Link>
 
-            <h2>Tema 2.3: Espacios urbanos</h2>
+            <h2 className={styles.moduleHeading}><span>Tema 2.3: </span>Espacios urbanos</h2>
 
             <p
               className={styles.pendingNote}
@@ -3309,7 +3189,7 @@ const Topic23Content = ({ moduleData }) => {
                     MÓDULO 2 · TEMA 2.3
                   </span>
 
-                  <h1>
+                  <h1 className={styles.moduleIndexTitle}>
                     Espacios <span>urbanos</span>
                   </h1>
 
@@ -3400,10 +3280,10 @@ const Topic23Content = ({ moduleData }) => {
               <div
                 className={styles.introNavigation}
               >
-                {navigation}
+                <Link to={`/course/${moduleData.courseId}`} className={styles.backLink}>Volver al curso ↗</Link>
               </div>
 
-              <h2>Introducción</h2>
+              <div className={styles.greenWelcome}><div><h2 className={styles.plainHeading}>Introducción</h2>
 
               <p className={styles.introLead}>
                 Los espacios urbanos son lugares donde las
@@ -3413,7 +3293,7 @@ const Topic23Content = ({ moduleData }) => {
                 planificación debe considerar la diversidad
                 de quienes los utilizan y las necesidades
                 de la comunidad.
-              </p>
+              </p></div><div className={styles.greenArt}><PublicSpaceArt /></div></div>
 
               <div className={styles.introBlock}>
                 <span
@@ -3510,15 +3390,15 @@ const Topic23Content = ({ moduleData }) => {
                 </ul>
               </div>
 
-              <button
+              <div className={styles.lessonActionGroup}><button
                 type="button"
                 className={styles.nextButton}
                 onClick={() =>
                   setSection('video')
                 }
               >
-                Ir al video →
-              </button>
+                Empezar 
+              </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('index')}>← Anterior</button></div>
             </section>
           </div>
         ) : section === 'video' ? (
@@ -3537,13 +3417,9 @@ const Topic23Content = ({ moduleData }) => {
                 </span>
 
                 <div>
-                  <span
-                    className={styles.videoEyebrow}
-                  >
-                    APRENDE CON EL VIDEO
-                  </span>
+                  
 
-                  <h2>Espacios urbanos</h2>
+                  <h2 className={styles.moduleHeading}>Espacios <span>urbanos</span></h2>
                 </div>
               </div>
 
@@ -3557,7 +3433,7 @@ const Topic23Content = ({ moduleData }) => {
                     ? '✓ Video completado'
                     : '○ Pendiente de completar'}
                 </span>
-              </div>
+              <span>ⓘ No adelantes el video: las partes que saltes no contarán en tu progreso.</span></div>
 
               {error && (
                 <p
@@ -3590,15 +3466,15 @@ const Topic23Content = ({ moduleData }) => {
               </div>
 
               {videoCompleted ? (
-                <button
+                <div className={styles.lessonActionGroup}><button
                   type="button"
                   className={styles.nextButton}
                   onClick={() =>
                     setSection('article')
                   }
                 >
-                  Ir a Información →
-                </button>
+                  Siguiente 
+                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>
               ) : (
                 <>
                   <p
@@ -3622,11 +3498,11 @@ const Topic23Content = ({ moduleData }) => {
                   </button>
                 </>
               )}
-            </section>
+            {!videoCompleted && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>}</section>
           </div>
         ) : section === 'article' &&
           videoCompleted ? (
-          <section className={styles.lessonCard}>
+          <RequiredReadings gate={readingGate}><section className={styles.lessonCard}>
             <div
               className={styles.introNavigation}
             >
@@ -3636,13 +3512,9 @@ const Topic23Content = ({ moduleData }) => {
             <header
               className={styles.articleHeader}
             >
-              <span
-                className={styles.sectionLabel}
-              >
-                LECTURAS COMPLEMENTARIAS · TEMA 2.3
-              </span>
+              
 
-              <h2>Explora y profundiza</h2>
+              <h2 className={styles.plainHeading}>Explora y profundiza</h2>
 
               <p className={styles.introLead}>
                 Conoce cómo la planificación, la
@@ -3683,14 +3555,7 @@ const Topic23Content = ({ moduleData }) => {
                   comunidad.
                 </p>
 
-                <p>
-                  <strong>Para esta lectura:</strong>{' '}
-                  revisa los apartados sobre participación
-                  comunitaria y planificación urbana.
-                  Reflexiona sobre cómo las herramientas
-                  digitales pueden ayudar a mejorar los
-                  espacios de tu ciudad.
-                </p>
+           
 
                 <a
                   href="https://unhabitat.org/sites/default/files/2024/12/un_smart_city_outlook.pdf"
@@ -3731,13 +3596,6 @@ const Topic23Content = ({ moduleData }) => {
                   red conectada.
                 </p>
 
-                <p>
-                  <strong>Para esta lectura:</strong>{' '}
-                  elige uno de los casos y analiza cómo
-                  aborda el acceso, la inclusión y la
-                  participación ciudadana. Identifica una
-                  idea que podría adaptarse a tu municipio.
-                </p>
 
                 <a
                   href="https://unhabitat.org/sites/default/files/2020/03/cwpss_compendium_20200116-1.pdf"
@@ -3779,24 +3637,6 @@ const Topic23Content = ({ moduleData }) => {
                   de planificación del territorio.
                 </p>
 
-                <p>
-                  <strong>Para esta lectura:</strong>{' '}
-                  consulta la introducción y sus
-                  implicaciones para las políticas públicas.
-                  Relaciona el crecimiento urbano con la
-                  necesidad de contar con espacios públicos
-                  y servicios accesibles.
-                </p>
-
-                <p>
-                  <small>
-                    Publicado en 2019, este informe
-                    corresponde a la revisión de 2018.
-                    Sus cifras deben interpretarse según
-                    esa edición.
-                  </small>
-                </p>
-
                 <a
                   href="https://population.un.org/wup/assets/WUP2018-Report.pdf"
                   target="_blank"
@@ -3812,11 +3652,7 @@ const Topic23Content = ({ moduleData }) => {
               className={styles.cepalBanner}
             >
               <div>
-                <span
-                  className={styles.cepalEyebrow}
-                >
-                  RECURSOS INSTITUCIONALES
-                </span>
+           
 
                 <h3>
                   Ciudades y espacios públicos centrados
@@ -3843,25 +3679,19 @@ const Topic23Content = ({ moduleData }) => {
             <div
               className={styles.articleNextStep}
             >
-              <p>
-                <strong>Para reflexionar:</strong>{' '}
-                piensa en un espacio público de tu ciudad.
-                ¿Qué información necesitarías para mejorar
-                su accesibilidad, sus actividades y la
-                experiencia de quienes lo utilizan?
-              </p>
+            
 
-              <button
+              <div className={styles.lessonActionGroup}><button
                 type="button"
                 className={styles.nextButton}
                 onClick={() =>
                   setSection('forum')
                 }
               >
-                Ir al foro →
-              </button>
+                Siguiente 
+              </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('video')}>← Anterior</button></div>
             </div>
-          </section>
+          </section></RequiredReadings>
         ) : section === 'forum' &&
           videoCompleted ? (
           <div className={styles.lessonContent}>
@@ -3870,33 +3700,18 @@ const Topic23Content = ({ moduleData }) => {
                 {navigation}
               </div>
 
-              <div className={styles.forumHero}>
-                <div
-                  className={styles.forumHeroIcon}
-                  aria-hidden="true"
-                >
-                  ✦
-                </div>
+              <div className={styles.greenWelcome}><div>
+              
 
-                <div>
-                  <span
-                    className={styles.forumEyebrow}
-                  >
-                    ACTIVIDAD PARTICIPATIVA · TEMA 2.3
-                  </span>
-
-                  <h2>
-                    ¿Un parque bonito es un buen
-                    espacio público?
-                  </h2>
+                  <h2 className={styles.moduleHeading}><span>¿Un parque bonito es </span>un buen
+                    espacio público?</h2>
 
                   <p>
                     Analiza cómo mejorar un parque para
                     que todas las personas puedan
                     utilizarlo.
                   </p>
-                </div>
-              </div>
+                </div><div className={styles.greenArt}><PublicSpaceArt /></div></div>
 
               <div
                 className={styles.forumPrompt}
@@ -3921,13 +3736,7 @@ const Topic23Content = ({ moduleData }) => {
                   cambios.
                 </p>
 
-                <p>
-                  Lee las respuestas de tus compañeros.
-                  Si deseas, añade una idea para que el
-                  parque pueda ser utilizado por personas
-                  de distintas edades y capacidades.
-                  Comentar es opcional.
-                </p>
+            
               </div>
 
               <div
@@ -3960,22 +3769,7 @@ const Topic23Content = ({ moduleData }) => {
                 ))}
               </div>
 
-              <button
-                type="button"
-                className={styles.returnButton}
-                disabled={
-                  loadingForum || publishing
-                }
-                onClick={() =>
-                  setForumRetry(
-                    (value) => value + 1
-                  )
-                }
-              >
-                {loadingForum
-                  ? 'Actualizando foro...'
-                  : 'Actualizar foro'}
-              </button>
+              
 
               {forumError && (
                 <p
@@ -4023,22 +3817,20 @@ const Topic23Content = ({ moduleData }) => {
 
                   <div
                     className={
-                      styles.articleNextStep
+                      styles.forumEvaluationStep
                     }
                   >
                     <div>
                       <strong>
-                        ✓ Publicaste tu respuesta al foro
+                        ¿Estás preparado?
                       </strong>
 
                       <p>
-                        {evaluationPassed
-                          ? 'También aprobaste la evaluación. Puedes consultar tu resultado.'
-                          : 'Tu respuesta quedó guardada. Ya puedes realizar la evaluación. Comentar a tus compañeros es opcional.'}
+                        Es momento de realizar la evaluación.
                       </p>
                     </div>
 
-                    <button
+                    <div className={styles.lessonActionGroup}><button
                       type="button"
                       className={styles.nextButton}
                       disabled={
@@ -4048,10 +3840,8 @@ const Topic23Content = ({ moduleData }) => {
                         setSection('evaluation')
                       }
                     >
-                      {evaluationPassed
-                        ? 'Ver resultado →'
-                        : 'Ir a la evaluación →'}
-                    </button>
+                      Evaluación
+                    </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('article')}>← Anterior</button></div>
                   </div>
 
                   <div
@@ -4063,22 +3853,18 @@ const Topic23Content = ({ moduleData }) => {
                       }
                     >
                       <h3>
-                        Propuestas de tus compañeros
+                        Respuestas del foro
                       </h3>
-                    </div>
+                    <button type="button" className={styles.refreshForumButton} disabled={loadingForum || publishing} onClick={() => setForumRetry(value => value + 1)}>{loadingForum }</button></div>
 
-                    <p>
-                      Lee sus respuestas. Si deseas,
-                      comenta cómo hacer el parque más
-                      accesible e inclusivo.
-                    </p>
+                    
 
                     <div
                       className={
                         styles.forumPostsGrid
                       }
                     >
-                      {otherPosts.map((post) => {
+                      <article className={styles.forumPost}><div className={styles.forumPostAuthor}><span aria-hidden="true">{(myPost.User?.name || posts.find(post => Number(post.id) === Number(myPost.id))?.User?.name || 'T').charAt(0).toUpperCase()}</span><strong>{myPost.User?.name || posts.find(post => Number(post.id) === Number(myPost.id))?.User?.name || 'Tu publicación'}</strong></div><p style={{ whiteSpace: 'pre-wrap' }}>{myPost.content}</p>{(posts.find(post => Number(post.id) === Number(myPost.id))?.ForoComments || myPost.ForoComments || []).map(comment => <div key={comment.id} className={styles.myForumPost}><strong>{comment.User?.name || 'Participante'}:</strong> {comment.content}</div>)}</article>{otherPosts.map((post) => {
                         const ownComment = (
                           post.ForoComments || []
                         ).some(
@@ -4228,22 +4014,7 @@ const Topic23Content = ({ moduleData }) => {
                       })}
                     </div>
 
-                    {!loadingForum &&
-                      otherPosts.length === 0 && (
-                        <p
-                          className={
-                            styles.pendingNote
-                          }
-                        >
-                          Todavía no hay propuestas de
-                          compañeros. Tu respuesta quedó
-                          guardada y ya puedes realizar la
-                          evaluación. Cuando otros
-                          participantes publiquen, podrás
-                          leer sus respuestas y comentarlas
-                          si deseas.
-                        </p>
-                      )}
+                    
 
                     {commentError && (
                       <p
@@ -4312,7 +4083,7 @@ const Topic23Content = ({ moduleData }) => {
 
                   <small>
                     Escribe entre 30 y 3000 caracteres.
-                    Publicar tu respuesta habilita la
+                    Publicar tu respuesta hgradabilita la
                     evaluación.
                   </small>
 
@@ -4327,7 +4098,7 @@ const Topic23Content = ({ moduleData }) => {
                   </button>
                 </form>
               ) : null}
-            </section>
+            {!myPost && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('article')}>← Anterior</button></div>}</section>
           </div>
         ) : section === 'evaluation' &&
           canOpenEvaluation ? (
@@ -4339,22 +4110,13 @@ const Topic23Content = ({ moduleData }) => {
                 {navigation}
               </div>
 
-              <span
-                className={styles.sectionLabel}
-              >
-                EVALUACIÓN PRÁCTICA · TEMA 2.3
-              </span>
+             
 
-              <h2>
-                Rediseña un espacio público
-              </h2>
+              <h2 className={styles.moduleHeading}><span>Rediseña un </span>espacio público</h2>
 
-              <p>
-                Aplica los principios de Smart Living
-                a un lugar de tu localidad.
-              </p>
+            
 
-              <div className={styles.videoMeta}>
+              <div className={styles.greenEvaluationInfo}><div className={styles.greenEvaluationBadges}>
                 <span>
                   6 respuestas obligatorias
                 </span>
@@ -4366,17 +4128,18 @@ const Topic23Content = ({ moduleData }) => {
                 <span>
                   Entrega completa: 10/10 puntos · 100 %
                 </span>
-              </div>
+              </div></div>
 
-              <PracticalEvaluationForm
+              {evaluationPassed && <div className={styles.practicalSuccess} role="status"><div><h3>¡Felicidades!</h3><p>Aprobaste el tema 2.3 — 10/10 puntos (100 %)</p><p>Tu actividad y la imagen quedaron guardadas.</p></div><div className={styles.lessonActionGroup}><Link to="/module/2/integrative-evaluation" className={styles.nextButton}>Evaluación integradora </Link><button type="button" className={styles.previousLessonButton} onClick={() => setSection('forum')}>← Anterior</button></div></div>}
+<div className={`${styles.practicalPresentation} ${evaluationPassed ? styles.practicalResultSaved : ""}`}><PracticalEvaluationForm
                 courseId={
                   moduleData.courseId || 1
                 }
                 onSuccess={
                   handleEvaluationSuccess23
                 }
-              />
-            </section>
+              /></div>
+            {!evaluationPassed && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('forum')}>← Anterior</button></div>}</section>
           </div>
         ) : null}
       </div>

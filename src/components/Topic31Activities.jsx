@@ -7,7 +7,25 @@ import {
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import EvaluationForm from './EvaluationForm';
-import styles from '../pages/TopicDetail.module.css';
+import sharedStyles from '../pages/TopicDetail.module.css';
+import module3Styles from '../pages/Topic3Design.module.css';
+const styles = { ...sharedStyles, ...module3Styles };
+
+const ForumTitle = ({ title }) => {
+  const words = title.split(' ');
+  const midpoint = Math.ceil(words.length / 2);
+  return <h2 className={styles.moduleHeading}><span>{words.slice(0, midpoint).join(' ')}</span>{' '}{words.slice(midpoint).join(' ')}</h2>;
+};
+
+const ForumArt = ({ topicNumber }) => (
+  <svg viewBox="0 0 260 190" role="img" aria-label={topics[topicNumber].title}>
+    <ellipse cx="132" cy="97" rx="110" ry="81" fill="#eae1f7" />
+    <rect x="46" y="43" width="167" height="105" rx="14" fill="white" stroke="#ad92d4" strokeWidth="2" />
+    {topicNumber === '3.1' ? <><rect x="104" y="66" width="52" height="52" rx="12" fill="#d8c7ef"/><circle cx="120" cy="86" r="4" fill="#7854c5"/><circle cx="141" cy="86" r="4" fill="#7854c5"/><path d="M118 103h25m-52-24H77m14 23H77m92-23h14m-14 23h14" stroke="#a78bce" strokeWidth="3" strokeLinecap="round"/></> : topicNumber === '3.2' ? <><path d="M130 77c-20-13-39-12-51-6v48c16-5 32-2 51 7 19-9 35-12 51-7V71c-12-6-31-7-51 6Z" fill="#e4d8f5" stroke="#ad92d4" strokeWidth="2"/><path d="M130 77v48m-37-38 23 6m-23 8 23 6m28-14 23-6m-23 20 23-6" stroke="#ad92d4" strokeWidth="2"/></> : <><path d="m80 93 27-15 27 15-27 16Zm27 16v25m-27-41v25l27 16 27-16V93" fill="#e1d3f2" stroke="#a78bce" strokeWidth="2"/><path d="m152 84 21-12 21 12-21 12Zm21 12v20m-21-32v20l21 12 21-12V84" fill="#f5f0fc" stroke="#a78bce" strokeWidth="2" strokeDasharray="4 3"/><path d="M126 64h34m-8-7 8 7-8 7" fill="none" stroke="#a78bce" strokeWidth="2"/></>}
+    <path d="M130 150v18m-33 0h66" stroke="#ad92d4" strokeWidth="4" strokeLinecap="round"/>
+    <circle cx="215" cy="38" r="15" fill="#fff0ce"/>
+  </svg>
+);
 
 const topics = {
   '3.1': {
@@ -379,14 +397,15 @@ const Topic31Activities = ({
           EVALUACIÓN · TEMA {topicNumber}
         </span>
 
-        <h2>Comprueba lo que aprendiste</h2>
+        <h2 className={styles.moduleHeading}><span>Comprueba</span> lo que aprendiste</h2>
+<div className={styles.greenEvaluationInfo}>
 
         <p>
           Responde las cinco preguntas sobre{' '}
           {topic.subject}.
         </p>
 
-        <div className={styles.videoMeta}>
+        <div className={styles.greenEvaluationBadges}>
           <span>5 preguntas</span>
           <span>
             2 puntos por respuesta correcta · 20 %
@@ -402,6 +421,7 @@ const Topic31Activities = ({
           y vuelve a intentarlo.
         </p>
 
+</div>
         {evaluationLoading ? (
           <p>Consultando tu resultado...</p>
         ) : evaluationError ? (
@@ -429,9 +449,8 @@ const Topic31Activities = ({
             role="status"
           >
             <div>
-              <strong>
-                ✓ Aprobaste el tema {topicNumber}
-              </strong>
+              <h3 className={styles.greenCongratulations}>¡Felicidades!</h3>
+              <p>Aprobaste el tema {topicNumber}.</p>
 
               <p>
                 Calificación:{' '}
@@ -440,6 +459,7 @@ const Topic31Activities = ({
               </p>
             </div>
 
+<div className={styles.lessonActionGroup}>
           {topic.next ? (
   <Link
     className={styles.nextButton}
@@ -450,11 +470,12 @@ const Topic31Activities = ({
 ) : (
   <Link
     className={styles.nextButton}
-    to="/course/1"
+    to="/module/3/integrative-evaluation"
   >
-    Volver al curso →
+    Evaluación integradora 
   </Link>
 )}
+<button type="button" className={styles.previousLessonButton} onClick={() => onSectionChange('forum')}>← Anterior</button></div>
           </div>
         ) : (
           <EvaluationForm
@@ -467,6 +488,7 @@ const Topic31Activities = ({
             }}
           />
         )}
+        {!passed && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => onSectionChange('forum')}>← Anterior</button></div>}
       </>
     );
   }
@@ -480,23 +502,9 @@ const Topic31Activities = ({
 
   return (
     <>
-      <div className={styles.forumHero}>
-        <div
-          className={styles.forumHeroIcon}
-          aria-hidden="true"
-        >
-          ✦
-        </div>
-
-        <div>
-          <span className={styles.forumEyebrow}>
-            ACTIVIDAD PARTICIPATIVA · TEMA{' '}
-            {topicNumber}
-          </span>
-
-          <h2>{topic.title}</h2>
-          <p>{topic.lead}</p>
-        </div>
+      <div className={styles.greenWelcome}>
+        <div><span className={styles.forumEyebrow}>ACTIVIDAD PARTICIPATIVA · TEMA {topicNumber}</span><ForumTitle title={topic.title} /><p>{topic.lead}</p></div>
+        <div className={styles.greenArt}><ForumArt topicNumber={topicNumber} /></div>
       </div>
 
       <div className={styles.forumPrompt}>
@@ -529,16 +537,7 @@ const Topic31Activities = ({
         )}
       </div>
 
-      <button
-        type="button"
-        className={styles.returnButton}
-        disabled={loading || busy}
-        onClick={() =>
-          setRetry((value) => value + 1)
-        }
-      >
-        Actualizar foro
-      </button>
+
 
       {error && (
         <p
@@ -567,36 +566,28 @@ const Topic31Activities = ({
             </p>
           </div>
 
-          <div className={styles.articleNextStep}>
+          <div className={styles.forumEvaluationStep}>
             <div>
-              <strong>
-                Ya puedes realizar la evaluación
-              </strong>
+              <strong>¿Estás preparado?</strong>
 
               <p>
-                Leer las propuestas te permite
-                conocer otras perspectivas.
-                Comentar es opcional.
+                Es momento de realizar la evaluación.
               </p>
             </div>
 
-            <button
+<div className={styles.lessonActionGroup}>            <button
               type="button"
               className={styles.nextButton}
               onClick={() =>
                 onSectionChange('evaluation')
               }
             >
-              {passed
-                ? 'Ver resultado →'
-                : 'Ir a la evaluación →'}
-            </button>
+              Evaluación
+            </button><button type="button" className={styles.previousLessonButton} onClick={() => onSectionChange('article')}>← Anterior</button></div>
           </div>
 
           <div className={styles.otherPosts}>
-            <h3>
-              Respuestas de tus compañeros
-            </h3>
+            <div className={styles.otherPostsHeading}><h3>Respuestas del foro</h3><button type="button" className={styles.refreshForumButton} disabled={loading || busy} onClick={() => setRetry(value => value + 1)}>Actualizar foro</button></div>
 
             {!loading &&
               others.length === 0 && (
@@ -619,6 +610,11 @@ const Topic31Activities = ({
             <div
               className={styles.forumPostsGrid}
             >
+              <article className={styles.forumPost}>
+                <div className={styles.forumPostAuthor}><span aria-hidden="true">{(myPost.User?.name || posts.find(post => Number(post.id) === Number(myPost.id))?.User?.name || 'T').charAt(0).toUpperCase()}</span><strong>{myPost.User?.name || posts.find(post => Number(post.id) === Number(myPost.id))?.User?.name || 'Tu publicación'}</strong></div>
+                <p style={{ whiteSpace: 'pre-wrap' }}>{myPost.content}</p>
+                {(posts.find(post => Number(post.id) === Number(myPost.id))?.ForoComments || myPost.ForoComments || []).map(item => <div key={item.id} className={styles.myForumPost}><strong>{item.User?.name || 'Participante'}:</strong><p style={{ whiteSpace: 'pre-wrap' }}>{item.content}</p></div>)}
+              </article>
               {others.map((post) => (
                 <article
                   key={post.id}
@@ -793,6 +789,7 @@ const Topic31Activities = ({
           </button>
         </form>
       ) : null}
+      {!myPost && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => onSectionChange('article')}>← Anterior</button></div>}
     </>
   );
 };

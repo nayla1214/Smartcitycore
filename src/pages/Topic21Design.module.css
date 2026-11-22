@@ -1,0 +1,137 @@
+/* Estos estilos se combinan con TopicDetail.module.css solo dentro del tema 2.1. */
+.greenWelcome {
+  display: grid; grid-template-columns: minmax(0, 1fr) 220px; align-items: center;
+  gap: 26px; padding: 30px; margin: 0 0 28px; border: 1px solid #d7e5ff;
+  border-radius: 22px; background: linear-gradient(110deg, #f6f9ff, #eef4ff);
+}
+.greenWelcome h2 { margin: 0 0 14px; color: #153956; font-size: 36px; line-height: 1.2; }
+.greenWelcome h2 span, .greenEvaluationTitle span { color: #2d65c4; }
+.greenWelcome p { margin: 0; color: #426284; font-size: 15px; line-height: 1.9; }
+.greenArt { width: 100%; }
+.greenArt svg { display: block; width: 100%; height: auto; }
+.introNavigation { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+.lessonActionGroup {
+  display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center;
+  gap: 10px; width: fit-content; max-width: 100%; margin: 24px 0 0 auto;
+}
+.lessonActionGroup .nextButton, .lessonActionGroup .previousLessonButton {
+  box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; min-width: 136px; min-height: 50px; padding: 13px 23px;
+  margin: 0; border: 1px solid transparent; border-radius: 11px;
+  font: inherit; font-weight: 800; line-height: 1.4; cursor: pointer; text-decoration: none;
+}
+.nextButton { background: #2560ed; color: white; }
+.previousLessonButton { background: #f0f5ff; color: #285b9d; border-color: #cdddf4 !important; }
+.lessonActionGroup button:disabled { opacity: .55; cursor: not-allowed; }
+.lessonActionGroup a:hover, .lessonActionGroup button:not(:disabled):hover { filter: brightness(.96); }
+.lessonActionGroup a:focus-visible, .lessonActionGroup button:focus-visible { outline: 3px solid #92baff; outline-offset: 3px; }
+.videoHeading { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+.videoHeading h2 { margin: 0; color: #153956; font-size: 30px; }
+.videoMeta { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 18px; }
+.videoMeta > span { padding: 10px 13px; background: #eaf2ff; border: 1px solid #d7e5ff; border-radius: 12px; color: #245ba9; font-size: 12px; }
+.articleGrid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; counter-reset: greenReading; }
+.articleCard { --reading-accent: #2d65c4; --reading-corner: #e5eefc; --reading-border: #d6e4fc; position: relative; display: flex; flex-direction: column; padding: 76px 22px 24px; overflow: hidden; border: 1px solid var(--reading-border); border-radius: 18px; background: #f6f9ff; counter-increment: greenReading; }
+.articleCard::before { content: ''; position: absolute; top: 0; right: 0; width: 95px; height: 95px; border-bottom-left-radius: 100%; background: var(--reading-corner); pointer-events: none; }
+.articleCard::after { content: counter(greenReading, decimal-leading-zero); position: absolute; top: 22px; right: 22px; display: grid; place-items: center; box-sizing: border-box; width: 40px; height: 40px; border: 1px solid var(--reading-accent); border-radius: 12px; background: #ffffffd9; color: var(--reading-accent); font-size: 13px; font-weight: 800; }
+.articleCard:nth-child(2) { --reading-accent: #7950c5; --reading-corner: #eee7fa; --reading-border: #e4d8fb; background: #faf7ff; }
+.articleCard:nth-child(3) { --reading-accent: #b65b30; --reading-corner: #fcebe0; --reading-border: #f4dfd2; background: #fff9f5; }
+.articleType { color: var(--reading-accent); font-size: 12px; font-weight: 800; line-height: 1.45; letter-spacing: .45px; }
+.articleCard .articleLink { color: var(--reading-accent); }
+.articleIcon { display: none; }
+.articleCard h3 { font-size: 17px; line-height: 1.45; }
+.articleCard p { line-height: 1.8; }
+.articleCard a { margin-top: auto; padding-top: 20px; }
+.articleNextStep { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 24px; padding: 26px; margin: 24px 0; border: 1px solid #d3e1ff; border-radius: 18px; background: linear-gradient(110deg,#edf4ff,#f7f3ff); }
+.articleNextStep > div:first-child { flex: 1 1 260px; min-width: 0; }
+.articleNextStep > .lessonActionGroup { flex: 0 1 auto; margin: 0 0 0 auto; }
+.articleNextStep strong { color: #205b9d; font-size: 18px; }
+.articleNextStep p { margin: 8px 0 0; color: #426284; line-height: 1.8; }
+.forumPrompt { padding: 22px 26px; border: 1px solid #d7e5ff; border-radius: 18px; background: white; text-align: center; margin-bottom: 22px; }
+.forumPrompt::before { content: 'SITUACIÓN PROPUESTA'; display: block; margin-bottom: 14px; color: #37639e; font-size: 11px; font-weight: 800; letter-spacing: 1px; }
+.forumPrompt p { font-size: 14px; line-height: 1.85; }
+.forumPrompt h3 { color: #153956; font-size: 19px; line-height: 1.5; }
+.greenEvaluationTitle { font-size: 36px; line-height: 1.2; color: #153956; }
+.greenEvaluationInfo { margin: 24px 0; padding: 26px; border: 1px solid #d7e5ff; border-radius: 18px; background: #f0f5ff; }
+.greenEvaluationInfo p { margin: 0 0 18px; color: #426284; line-height: 1.85; font-size: 14px; }
+.greenEvaluationBadges { display: flex; flex-wrap: wrap; gap: 9px; }
+.greenEvaluationBadges span { border: 1px solid #d5e3fa; padding: 9px 12px; border-radius: 9px; background: white; color: #285b9d; font-size: 12px; font-weight: 600; }
+.greenCongratulations { margin: 0 0 8px; color: #245eaa; font-size: 24px; font-weight: 800; }
+@media (max-width: 1000px) { .articleGrid { grid-template-columns: repeat(2,minmax(0,1fr)); } .greenWelcome { grid-template-columns: minmax(0,1fr) 175px; gap: 18px; } .greenWelcome h2 { font-size: 30px; } }
+@media (max-width: 650px) { .greenWelcome { grid-template-columns: 1fr; padding: 24px; } .greenArt { width: 180px; justify-self: center; } .articleGrid { grid-template-columns: 1fr; } .greenWelcome h2, .greenEvaluationTitle { font-size: 28px; } .articleNextStep { padding: 22px; gap: 18px; } .articleNextStep > div:first-child { flex-basis: 100%; } .lessonActionGroup { gap: 9px; } .forumPrompt { padding: 20px; } }
+
+/* Navegación superior y llamada a la evaluación del foro. */
+.introNavigation > a:only-child { margin-left: auto; }
+.articleHeader h2 { margin: 0 0 12px; font-size: 36px; line-height: 1.2; color: #153956; }
+.articleHeader > p { margin: 0 0 26px; color: #426284; font-size: 14px; line-height: 1.85; }
+.forumEvaluationStep { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; margin: 24px 0 32px; padding: 26px; border: 1px solid #cbdcff; border-radius: 18px; background: #eaf2ff; }
+.forumEvaluationStep > div:first-child { flex: 1 1 250px; min-width: 0; }
+.forumEvaluationStep strong { color: #205b9d; font-size: 18px; }
+.forumEvaluationStep p { color: #426284; margin: 8px 0 0; font-size: 14px; line-height: 1.7; }
+.forumEvaluationStep > .lessonActionGroup { flex: 0 1 auto; margin: 0 0 0 auto; }
+.otherPosts { border-top: 1px solid #dce5f3; margin-top: 32px; padding-top: 32px; }
+.otherPostsHeading h3 { margin: 0 0 24px; color: #153956; font-size: 20px; }
+@media (max-width: 650px) { .forumEvaluationStep { padding: 22px; gap: 18px; } .forumEvaluationStep > div:first-child { flex-basis: 100%; } .articleHeader h2 { font-size: 28px; } }
+/* Ajustes del foro compartidos por los tres temas del módulo 2. */
+.forumGuide { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin: 20px 0; }
+.myForumPost { padding: 22px; margin: 20px 0 0; border: 1px solid #c9e6db; border-radius: 16px; background: #f1faf6; color: #39677a; }
+.myForumPost p { margin: 14px 0 0; line-height: 1.8; }
+.forumPostHeading { display: flex; align-items: center; gap: 10px; }
+.forumPostHeading > span { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; color: #267b70; background: #d8f1e4; }
+.otherPostsHeading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
+.otherPostsHeading h3 { margin: 0; }
+.refreshForumButton { padding: 7px 0; border: 0; background: none; color: #3268bd; font: inherit; font-size: 12px; cursor: pointer; }
+.refreshForumButton:disabled { opacity: .6; cursor: wait; }
+.refreshForumButton:focus-visible { outline: 2px solid #83aaf0; outline-offset: 4px; border-radius: 4px; }
+@media (max-width: 650px) { .forumGuide { grid-template-columns: 1fr; } }
+/* Presentación de la evaluación práctica: sin modificar su contenido ni guardado. */
+.greenEvaluationInfo .greenEvaluationBadges span { display: inline-flex; align-items: center; min-height: 36px; box-sizing: border-box; padding: 9px 13px; color: #285b9d; font-size: 12px; font-weight: 700; border: 1px solid #cdddf7; border-radius: 10px; background: #fff; }
+.practicalPresentation { margin-top: 24px; color: #345678; }
+.practicalPresentation > div > div[role='status'] { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 24px !important; border: 1px solid #d5dfff !important; border-radius: 18px !important; background: linear-gradient(110deg,#eef4ff,#f7f3ff) !important; }
+.practicalPresentation > div > div[role='status'] > strong { color: #245eaa; font-size: 18px; line-height: 1.5; flex: 1 1 100%; }
+.practicalPresentation > div > div[role='status'] > p { flex: 1 1 100%; margin: 0; font-size: 14px; line-height: 1.8; }
+.practicalPresentation a[href^='/course/'] { display: none; }
+.practicalPresentation a[href*='/topic/'] { display: inline-flex; align-items: center; justify-content: center; min-height: 50px; min-width: 136px; box-sizing: border-box; padding: 13px 23px; margin: 8px 0 0 auto; border: 1px solid #2560ed; border-radius: 11px; background: #2560ed; color: #fff; font: inherit; font-weight: 800; text-decoration: none; }
+.practicalPresentation > div > h3 { margin: 30px 0 18px !important; color: #153956; font-size: 22px; }
+.practicalPresentation > div > div:not([role]):has(> strong) { position: relative; box-sizing: border-box; margin-top: 14px !important; padding: 20px 24px !important; border: 1px solid #d9e5f7 !important; border-left: 3px solid #a7c2ed !important; border-radius: 15px !important; background: #f8fbff; }
+.practicalPresentation > div > div:not([role]):has(> strong) > strong { display: block; margin-bottom: 9px; color: #285b9d; font-size: 13px; font-weight: 800; }
+.practicalPresentation > div > div:not([role]):has(> strong) > p { margin: 0; color: #426284; font-size: 14px; line-height: 1.85; overflow-wrap: anywhere; }
+.practicalPresentation img { display: block; width: 100%; max-width: 100% !important; height: auto; max-height: 480px !important; box-sizing: border-box; object-fit: contain !important; margin: 22px auto 0 !important; padding: 12px; border: 1px solid #d6e4fa; border-radius: 18px !important; background: #f2f6fc; }
+.practicalPresentation form fieldset > div { background: #f8fbff; }
+.practicalPresentation textarea { color: #345678; background: #fff; line-height: 1.7; }
+.practicalPresentation textarea:focus { outline: 2px solid #acc8f6; outline-offset: 2px; }
+@media (max-width: 650px) { .practicalPresentation > div > div[role='status'] { padding: 20px !important; } .practicalPresentation img { padding: 8px; max-height: 340px !important; } }
+/* Verde del módulo 2: el mismo acento utilizado en Course.module.css. */
+.moduleHeading { color: #153956; }
+.moduleHeading > span, .greenWelcome .moduleHeading > span, .greenEvaluationTitle.moduleHeading > span { color: #168467; }
+.practicalSuccess { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; padding: 26px; margin: 24px 0; border: 1px solid #cfe5dd; border-radius: 18px; background: linear-gradient(110deg,#eff8f4,#f4f8ff); }
+.practicalSuccess > div:first-child { flex: 1 1 270px; min-width: 0; }
+.practicalSuccess h3 { margin: 0 0 10px; color: #168467; font-size: 24px; font-weight: 800; }
+.practicalSuccess p { margin: 8px 0 0; color: #426284; font-size: 14px; line-height: 1.8; }
+.practicalSuccess > .lessonActionGroup { flex: 0 1 auto; margin: 0 0 0 auto; }
+.practicalResultSaved > div > div[role='status'] { display: none !important; }
+@media (max-width: 650px) { .practicalSuccess { padding: 22px; gap: 18px; } .practicalSuccess > div:first-child { flex-basis: 100%; } }
+
+/* Colores específicos solicitados para los encabezados. */
+.moduleIndexTitle > span { color: #168467 !important; }
+.plainHeading, .greenWelcome .plainHeading, .articleHeader .plainHeading { color: #15233b; }
+.practicalSuccess h3, .greenCongratulations { color: #245eaa; }
+/* Enlaces destacados de las lecturas */
+.articleCard .articleLink {
+  color: var(--reading-accent, #2d65c4);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+.articleCard .articleLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.articleCard .articleLink:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 5px;
+  border-radius: 4px;
+}

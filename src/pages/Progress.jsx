@@ -1,7 +1,10 @@
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import ModuleProgressCards from '../components/ModuleProgressCards';
+import { syncLocalReadings } from '../services/syncLocalReadings';
 import { useEffect, useState } from 'react';
 import {
   FiActivity,
-  FiAward,
   FiBookOpen,
   FiCheckCircle,
   FiClock,
@@ -33,6 +36,8 @@ const initialProgress = {
 };
 
 const Progress = () => {
+  const { user } = useContext(AuthContext);
+  const [readingSyncError, setReadingSyncError] = useState(false);
   const [progress, setProgress] = useState(initialProgress);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -42,6 +47,8 @@ const Progress = () => {
     setError('');
 
     try {
+      const synchronization = await syncLocalReadings(user);
+      setReadingSyncError(!synchronization);
       const data = await api.get('/users/me/progress');
 
       setProgress({
@@ -64,7 +71,7 @@ const Progress = () => {
 
   useEffect(() => {
     loadProgress();
-  }, []);
+  }, [user?.id, user?._id, user?.email]);
 
   const formatTime = (seconds) => {
     const totalSeconds = Number(seconds || 0);
@@ -101,6 +108,7 @@ const Progress = () => {
   if (loading) {
     return (
       <main className={styles.progressPage}>
+      {readingSyncError && <div className={styles.errorMessage}>No se pudieron sincronizar algunas lecturas de este navegador. <button type="button" onClick={loadProgress}>Reintentar</button></div>}
         <div className={styles.loading}>
           <FiRefreshCw />
           <span>Cargando tu avance...</span>
@@ -111,6 +119,7 @@ const Progress = () => {
 
   return (
     <main className={styles.progressPage}>
+      {readingSyncError && <div className={styles.errorMessage}>No se pudieron sincronizar algunas lecturas de este navegador. <button type="button" onClick={loadProgress}>Reintentar</button></div>}
       <section className={styles.pageHeader}>
         <div>
           <span className={styles.eyebrow}>
@@ -276,7 +285,7 @@ const Progress = () => {
                           <span>
                             <FiBookOpen />
                             {course.completedModules} de{' '}
-                            {course.totalModules} módulos
+                            {course.totalModules} módulos aprobados
                           </span>
 
                           <span>
@@ -285,13 +294,9 @@ const Progress = () => {
                             {course.totalVideos} videos
                           </span>
 
-                          <span>
-                            <FiAward />
-                            Nota:{' '}
-                            {course.finalScore ??
-                              'Pendiente'}
-                          </span>
+
                         </div>
+                        <ModuleProgressCards modules={course.modules || []} />
                       </article>
                     ))}
                   </div>
@@ -347,40 +352,7 @@ const Progress = () => {
             </div>
 
             <aside className={styles.sideColumn}>
-             <article className={styles.panel}>
-  <div className={styles.panelHeader}>
-    <div>
-      <span className={styles.eyebrow}>
-        Rendimiento
-      </span>
 
-      <h2>Evaluaciones</h2>
-    </div>
-
-    <FiAward />
-  </div>
-                <div className={styles.performance}>
-                  <div className={styles.scoreMain}>
-                    <strong>{summary.averageScore}</strong>
-                    <span>Promedio general</span>
-                  </div>
-
-                  <div className={styles.performanceRow}>
-                    <span>Realizadas</span>
-                    <strong>{summary.evaluationsTaken}</strong>
-                  </div>
-
-                  <div className={styles.performanceRow}>
-                    <span>Aprobadas</span>
-                    <strong>{summary.evaluationsPassed}</strong>
-                  </div>
-
-                  <div className={styles.performanceRow}>
-                    <span>Mejor calificación</span>
-                    <strong>{summary.bestScore}</strong>
-                  </div>
-                </div>
-              </article>
 
               <article className={styles.panel}>
                 <div className={styles.panelHeader}>
@@ -389,7 +361,7 @@ const Progress = () => {
                       Módulos
                     </span>
 
-                    <h2>Contenido completado</h2>
+                    <h2>Módulos aprobados</h2>
                   </div>
 
                   <FiCheckCircle />
@@ -398,7 +370,7 @@ const Progress = () => {
                 <div className={styles.moduleProgress}>
                   <div>
                     <strong>{summary.completedModules}</strong>
-                    <span>Módulos completados</span>
+                    <span>Módulos aprobados</span>
                   </div>
 
                   <span className={styles.divider} />

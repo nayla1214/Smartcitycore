@@ -1,3 +1,4 @@
+import RequiredReadings, { useRequiredReadings } from '../components/RequiredReadings';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../services/api';
@@ -11,20 +12,57 @@ import Topic31Intro, {
   Topic33Content,
 } from './Topic31Intro';
 
+const IntroCityIllustration = () => (
+  <svg className={styles.introCityArt} viewBox="0 0 340 250" aria-hidden="true" focusable="false">
+    <ellipse cx="174" cy="127" rx="126" ry="103" fill="#e7f0ff" />
+    <circle cx="265" cy="54" r="24" fill="#fff0cb" />
+    <path d="M41 203h264" stroke="#b6cbee" strokeWidth="3" strokeLinecap="round" />
+    <path d="M70 202V104a7 7 0 0 1 7-7h40v105" fill="#bdd5f8" stroke="#729bd6" strokeWidth="2" />
+    <path d="M119 202V65a7 7 0 0 1 7-7h56a7 7 0 0 1 7 7v137" fill="#fff" stroke="#729bd6" strokeWidth="2" />
+    <path d="M191 202V117a7 7 0 0 1 7-7h40a7 7 0 0 1 7 7v85" fill="#d1e2fb" stroke="#729bd6" strokeWidth="2" />
+    {[80,103,126,149].map(y => <g key={y} fill="#9abded"><rect x="133" y={y} width="12" height="11" rx="2"/><rect x="161" y={y} width="12" height="11" rx="2"/></g>)}
+    {[116,141,166].map(y => <g key={y} fill="#f7faff"><rect x="82" y={y} width="10" height="11" rx="2"/><rect x="100" y={y} width="10" height="11" rx="2"/></g>)}
+    {[131,155,179].map(y => <g key={y} fill="#83a9df"><rect x="204" y={y} width="9" height="10" rx="2"/><rect x="223" y={y} width="9" height="10" rx="2"/></g>)}
+    <path d="M147 202v-28h17v28" fill="#4777ba" />
+    <path d="M51 202v-43m223 43v-48" stroke="#649a8a" strokeWidth="4" strokeLinecap="round" />
+    <ellipse cx="51" cy="151" rx="17" ry="25" fill="#bddfce" />
+    <ellipse cx="274" cy="146" rx="20" ry="29" fill="#afd3c2" />
+    <path d="M92 82c27-37 69-50 115-32" fill="none" stroke="#82a8df" strokeWidth="2" strokeDasharray="4 6" />
+    <circle cx="92" cy="82" r="6" fill="#4777ba" stroke="#fff" strokeWidth="3" />
+    <g transform="translate(213 47)">
+      <rect width="48" height="44" rx="13" fill="#fff" stroke="#d5e3f7" />
+      <path d="M14 26v-7m10 7V14m10 12v-9" stroke="#4777ba" strokeWidth="4" strokeLinecap="round" />
+    </g>
+    <g transform="translate(27 66)">
+      <rect width="45" height="40" rx="12" fill="#fff" stroke="#d5e3f7" />
+      <path d="M13 20c6-8 13-8 19 0m-15 4c3-4 7-4 10 0" fill="none" stroke="#4777ba" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="22" cy="28" r="2" fill="#4777ba" />
+    </g>
+  </svg>
+);
+
+const EvolutionIntroArt = () => (<svg viewBox="0 0 340 250" aria-hidden="true" focusable="false" style={{display:'block',width:'100%',height:'auto',maxWidth:310,margin:'0 auto'}}><ellipse cx="170" cy="128" rx="132" ry="105" fill="#e2edff"/><path d="M34 198h272" stroke="#a4bfe5" strokeWidth="3" strokeLinecap="round"/><rect x="46" y="127" width="56" height="69" rx="5" fill="#d1dfef" stroke="#96acc8" strokeWidth="2"/><path d="M39 128l35-30 35 30" fill="#e2eaf4" stroke="#96acc8" strokeWidth="2"/><rect x="61" y="146" width="11" height="13" rx="2" fill="white"/><rect x="81" y="146" width="11" height="13" rx="2" fill="white"/><rect x="69" y="175" width="12" height="22" fill="#a0b8d6"/><path d="M118 146h46m-12-10 12 10-12 10" fill="none" stroke="#729bda" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/><rect x="184" y="93" width="49" height="103" rx="6" fill="white" stroke="#83a7df" strokeWidth="2"/><rect x="237" y="119" width="47" height="77" rx="6" fill="#b8d0f3" stroke="#83a7df" strokeWidth="2"/>{[110,133,156].map(y=><g key={y} fill="#a6c4ef"><rect x="194" y={y} width="10" height="12" rx="2"/><rect x="214" y={y} width="10" height="12" rx="2"/></g>)}<path d="M211 77q19-20 38 0m-30 8q11-11 22 0" fill="none" stroke="#7aa1da" strokeWidth="3" strokeLinecap="round"/><circle cx="230" cy="92" r="3" fill="#7aa1da"/><circle cx="72" cy="73" r="17" fill="#fff0c7"/><path d="M289 195v-30" stroke="#83b4a2" strokeWidth="3"/><ellipse cx="289" cy="157" rx="13" ry="20" fill="#b5d8c9"/></svg>);
+
+const UrbanIntroArt = () => (<svg viewBox="0 0 340 250" aria-hidden="true" focusable="false" style={{display:'block',width:'100%',height:'auto',maxWidth:310,margin:'0 auto'}}><ellipse cx="170" cy="128" rx="132" ry="105" fill="#e2edff"/><rect x="44" y="55" width="249" height="139" rx="13" fill="white" stroke="#8eafe0" strokeWidth="2"/><path d="M45 80h247" stroke="#dae6f8" strokeWidth="2"/><circle cx="59" cy="68" r="3" fill="#97b6e5"/><circle cx="70" cy="68" r="3" fill="#c5d7f2"/><rect x="58" y="94" width="137" height="83" rx="7" fill="#eaf3ed"/><path d="M59 132l40-20 40 23 55-26m-79-14 4 81m43-81-10 81" fill="none" stroke="white" strokeWidth="7"/><path d="M127 119c-15-22-28-5-18 8l18 21 18-21c10-13-3-30-18-8Z" fill="#82a9e2"/><circle cx="127" cy="122" r="6" fill="white"/><rect x="208" y="95" width="69" height="34" rx="6" fill="#eef4ff"/><path d="M217 119v-9m12 9v-16m12 16v-12m12 12v-20m12 20v-15" stroke="#9dbbe7" strokeWidth="5" strokeLinecap="round"/><path d="M212 145h58m-58 11h43m-43 11h51" stroke="#bed1ed" strokeWidth="4" strokeLinecap="round"/><path d="M148 195v13h40v-13m-65 16h90" fill="#bad0ef" stroke="#97b5df" strokeWidth="3" strokeLinecap="round"/></svg>);
+
+const EvolutionForumArt = () => (<svg viewBox="0 0 340 250" aria-hidden="true" focusable="false" style={{display:'block',width:'100%',height:'auto',maxWidth:310,margin:'0 auto'}}><ellipse cx="170" cy="128" rx="132" ry="105" fill="#e2edff"/><rect x="55" y="55" width="104" height="139" rx="12" fill="white" stroke="#97b5e3" strokeWidth="2"/><rect x="71" y="75" width="72" height="13" rx="5" fill="#d3e2fa"/><path d="M75 107h61m-61 14h51m-51 14h56" stroke="#b1c9ed" strokeWidth="5" strokeLinecap="round"/><circle cx="108" cy="166" r="13" fill="#fff0c7"/><path d="M108 159v8l6 4" stroke="#c6a665" strokeWidth="2" fill="none" strokeLinecap="round"/><path d="M177 83h56l-12-12m12 12-12 12" stroke="#86aadd" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round"/><rect x="180" y="113" width="103" height="77" rx="12" fill="white" stroke="#97b5e3" strokeWidth="2"/><circle cx="231" cy="143" r="16" fill="#dcf0e7"/><path d="M223 143l6 6 12-14" fill="none" stroke="#70a58f" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M202 173h58" stroke="#c3d6f1" strokeWidth="4" strokeLinecap="round"/></svg>);
+
+const UrbanForumArt = () => (<svg viewBox="0 0 340 250" aria-hidden="true" focusable="false" style={{display:'block',width:'100%',height:'auto',maxWidth:310,margin:'0 auto'}}><ellipse cx="170" cy="128" rx="132" ry="105" fill="#e2edff"/><path d="M49 73l77-20 77 20 77-20v127l-77 20-77-20-77 20Z" fill="white" stroke="#9ab9e5" strokeWidth="2" strokeLinejoin="round"/><path d="M126 54v125m77-105v125" stroke="#cbdcf4" strokeWidth="2"/><path d="M58 126l62-20 79 28 71-18" fill="none" stroke="#e2ecfb" strokeWidth="12"/><path d="M80 91l24 85m53-97 18 101m59-95 17 86" stroke="#e2ecfb" strokeWidth="7"/><path d="M164 100c-17-26-39-8-26 11l26 32 26-32c13-19-9-37-26-11Z" fill="#83a9e0"/><circle cx="164" cy="103" r="9" fill="white"/><circle cx="88" cy="148" r="11" fill="#c2dfd1"/><circle cx="240" cy="79" r="14" fill="#fff0c7"/></svg>);
+
 const forumPrompts = [
   {
     number: '01',
     title: 'Identifica el problema',
-    description: '¿Qué ocurre en tu ciudad o cantón y a quiénes afecta?',
+    description: '¿Qué ocurre en tu cantón y a quiénes afecta?',
   },
   {
     number: '02',
     title: 'Reúne información',
-    description: '¿Qué datos debería recoger el municipio?',
+    description: '¿Qué datos se debería recoger?',
   },
   {
     number: '03',
-    title: 'Propón una decisión',
+    title: 'Propón una solución',
     description: '¿Cómo usaría esos datos para elegir una solución?',
   },
   {
@@ -121,7 +159,12 @@ const topic12Articles = [
   },
 ];
 const Topic12Intro = ({ moduleData }) => {
-  const [section, setSection] = useState('index');
+  const [section, setSectionState] = useState('index');
+  const readingGate = useRequiredReadings('1.2', moduleData?.id ?? '1');
+  const setSection = (next) => setSectionState((current) => {
+    const destination = typeof next === 'function' ? next(current) : next;
+    return ['forum', 'evaluation'].includes(destination) && !readingGate.complete ? 'article' : destination;
+  });
   const [checkingAccess, setCheckingAccess] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
   const [topicVideo, setTopicVideo] = useState(null);
@@ -471,13 +514,6 @@ const Topic12Intro = ({ moduleData }) => {
           <div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
               <div className={styles.introNavigation}>
-                <button
-                  type="button"
-                  className={styles.returnButton}
-                  onClick={() => setSection('index')}
-                >
-                  ← Contenido del tema
-                </button>
 
                 <Link
                   to={`/course/${moduleData.courseId}`}
@@ -487,13 +523,167 @@ const Topic12Intro = ({ moduleData }) => {
                 </Link>
               </div>
 
-              <h2>Introducción</h2>
-
-              <p className={styles.introLead}>
+              <header className={styles.introHero}>
+                <div className={styles.introHeroCopy}>
+                  <h2>Introducción</h2>
+                  <p className={styles.introLead}>
                 Una ciudad se gobierna mejor cuando sus autoridades
                 escuchan a la población, utilizan información para
                 decidir y ofrecen servicios accesibles.
               </p>
+                </div>
+               <div className={styles.introHeroVisual}>
+  <svg
+    viewBox="0 0 340 250"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    style={{
+      display: 'block',
+      width: '100%',
+      maxWidth: '310px',
+      height: 'auto',
+      margin: '0 auto',
+    }}
+  >
+    {/* Fondo pastel */}
+    <ellipse
+      cx="174"
+      cy="132"
+      rx="125"
+      ry="103"
+      fill="#E2EDFF"
+    />
+
+    <circle cx="283" cy="48" r="20" fill="#FFF0C7" />
+    <circle cx="48" cy="163" r="12" fill="#D2E9DE" />
+
+    {/* Conexiones con la ciudadanía */}
+    <path
+      d="M82 105 Q170 18 262 105"
+      fill="none"
+      stroke="#91B3EC"
+      strokeWidth="2"
+      strokeDasharray="4 6"
+    />
+
+    {/* Edificio municipal */}
+    <rect
+      x="108"
+      y="112"
+      width="126"
+      height="82"
+      rx="5"
+      fill="#FFFFFF"
+      stroke="#83A9E4"
+      strokeWidth="2"
+    />
+
+    <path
+      d="M98 112 L171 70 L244 112 Z"
+      fill="#B5CEF5"
+      stroke="#83A9E4"
+      strokeWidth="2"
+      strokeLinejoin="round"
+    />
+
+    <circle cx="171" cy="96" r="8" fill="#FFFFFF" />
+
+    <path
+      d="M167 96 L170 99 L176 92"
+      fill="none"
+      stroke="#497CC4"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+
+    {/* Columnas */}
+    <rect x="122" y="125" width="13" height="55" rx="3" fill="#C8DBF8" />
+    <rect x="148" y="125" width="13" height="55" rx="3" fill="#C8DBF8" />
+    <rect x="181" y="125" width="13" height="55" rx="3" fill="#C8DBF8" />
+    <rect x="207" y="125" width="13" height="55" rx="3" fill="#C8DBF8" />
+
+    <rect x="163" y="157" width="16" height="37" rx="3" fill="#6191D5" />
+
+    {/* Escalinata */}
+    <rect x="101" y="190" width="140" height="8" rx="3" fill="#B5CEF5" />
+    <rect x="93" y="199" width="156" height="8" rx="3" fill="#CDDEF8" />
+
+    {/* Burbuja de diálogo */}
+    <path
+      d="M46 48 H99 Q107 48 107 56 V84 Q107 92 99 92
+         H79 L66 104 V92 H46 Q38 92 38 84 V56 Q38 48 46 48 Z"
+      fill="#FFFFFF"
+      stroke="#97B7E9"
+      strokeWidth="2"
+      strokeLinejoin="round"
+    />
+
+    <circle cx="57" cy="70" r="3" fill="#5885CB" />
+    <circle cx="72" cy="70" r="3" fill="#5885CB" />
+    <circle cx="87" cy="70" r="3" fill="#5885CB" />
+
+    {/* Documento de transparencia */}
+    <rect
+      x="252"
+      y="85"
+      width="48"
+      height="57"
+      rx="9"
+      fill="#FFFFFF"
+      stroke="#A7C2ED"
+      strokeWidth="1.5"
+    />
+
+    <path
+      d="M264 101 H287 M264 110 H282 M264 119 H278"
+      stroke="#8AAEE4"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+
+    {/* Persona a la izquierda */}
+    <circle cx="73" cy="153" r="12" fill="#EFCDB4" />
+
+    <path
+      d="M51 199 V181 Q51 169 64 169 H82
+         Q95 169 95 181 V199 Z"
+      fill="#81A8E5"
+    />
+
+    <path
+      d="M73 172 V193"
+      stroke="#E9F1FF"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+
+    {/* Persona a la derecha */}
+    <circle cx="274" cy="165" r="12" fill="#EFCDB4" />
+
+    <path
+      d="M252 210 V193 Q252 181 265 181 H283
+         Q296 181 296 193 V210 Z"
+      fill="#9DCAB9"
+    />
+
+    <path
+      d="M274 184 V204"
+      stroke="#EAF6F0"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+
+    {/* Base */}
+    <path
+      d="M43 211 H305"
+      stroke="#9CB9E4"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+  </svg>
+</div>
+              </header>
 
               <div className={styles.introBlock}>
                 <span className={styles.introBlockLabel}>
@@ -528,40 +718,52 @@ const Topic12Intro = ({ moduleData }) => {
                 </ul>
               </div>
 
-              <div className={styles.introBlock}>
-                <span className={styles.introBlockLabel}>
-                  ASÍ AVANZARÁS EN EL TEMA
-                </span>
+     <div className={styles.introBlock}>
+  <span className={styles.introBlockLabel}>
+    ASÍ AVANZARÁS EN EL TEMA
+  </span>
 
-                <ul className={styles.learningPoints}>
-                  <li>
-                    <strong>Video:</strong> observa la clase completa.
-                    Adelantarlo no contará como progreso.
-                  </li>
-                  <li>
-                    <strong>Información:</strong> explora las lecturas
-                    y los informes de IESE 2025 y 2026.
-                  </li>
-                  <li>
-                    <strong>Foro:</strong> publica una propuesta para
-                    tu municipio y comenta la de un compañero.
-                  </li>
-                  <li>
-                    <strong>Evaluación:</strong> responde cinco
-                    preguntas de 2 puntos cada una. Necesitas al
-                    menos 70 % para aprobar; eso significa acertar
-                    cuatro de las cinco preguntas.
-                  </li>
-                </ul>
-              </div>
+  <ul className={styles.learningPoints}>
+    <li>
+      <strong>Video:</strong> observa la clase completa.
+      Adelantarlo no contará como progreso.
+    </li>
 
-              <button
-                type="button"
-                className={styles.nextButton}
-                onClick={() => setSection('video')}
-              >
-                Ir al video →
-              </button>
+    <li>
+      <strong>Información:</strong> explora las lecturas
+      y los informes de IESE 2025 y 2026.
+    </li>
+
+    <li>
+      <strong>Foro:</strong> publica una propuesta para
+      tu municipio y comenta la de un compañero.
+    </li>
+
+    <li>
+      <strong>Evaluación:</strong> responde cinco preguntas.
+      Necesitas cuatro respuestas correctas para aprobar
+      y avanzar al siguiente tema.
+    </li>
+  </ul>
+</div>        
+         <div className={styles.lessonActionGroup}>
+  <button
+    type="button"
+    className={styles.nextButton}
+    onClick={() => setSection('video')}
+  >
+    Empezar
+  </button>
+
+  <button
+    type="button"
+    className={styles.previousLessonButton}
+    onClick={() => setSection('index')}
+  >
+    <span aria-hidden="true">←</span>
+    Anterior
+  </button>
+</div>
             </section>
           </div>
         ) : section === 'video' ? (
@@ -584,23 +786,43 @@ const Topic12Intro = ({ moduleData }) => {
                 </Link>
               </div>
 
-              <div className={styles.videoHeading}>
-                <span
-                  className={styles.videoHeadingIcon}
-                  aria-hidden="true"
-                >
-                  ▶
-                </span>
 
-                <div>
-                  <span className={styles.videoEyebrow}>
-                    APRENDE CON EL VIDEO
-                  </span>
-                  <h2>Gobernanza inteligente y ciudadanía digital</h2>
-                </div>
-              </div>
+
+          <div className={styles.videoHeading}>
+  <span
+    className={styles.videoHeadingIcon}
+    aria-hidden="true"
+  >
+    ▶
+  </span>
+
+  <div>
+    <h2>Gobernanza inteligente y ciudadanía digital</h2>
+  </div>
+</div>
+
+<div className={styles.videoMeta}>
+  <span>
+    ◷ Duración: {Math.floor(
+      (Number(topicVideo?.duration) || 163) / 60
+    )} minutos y{' '}
+    {(Number(topicVideo?.duration) || 163) % 60} segundos
+  </span>
+
+  <span>
+    {videoCompleted
+      ? '✓ Video completado'
+      : '○ Pendiente de completar'}
+  </span>
+
+  <span>
+    ⓘ No adelantes el video: las partes que saltes
+    no contarán en tu progreso.
+  </span>
+</div>
 
               {topicVideo ? (
+                
                 <div className={styles.playerFrame}>
                   <VideoPlayer
                     ytVideoId="t7Yng5_mHzw"
@@ -623,24 +845,27 @@ const Topic12Intro = ({ moduleData }) => {
               )}
 
               {videoCompleted ? (
-                <button
+                <div className={styles.lessonActionGroup}><button
                   type="button"
                   className={styles.nextButton}
                   onClick={() => setSection('article')}
                 >
-                  Ir a Información →
-                </button>
+                  Siguiente
+                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
               ) : topicVideo ? (
                 <p className={styles.pendingNote}>
                   Mira el video completo. Adelantarlo no registrará
                   esa parte como vista.
                 </p>
               ) : null}
-            </section>
+            {!videoCompleted && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+</section>
           </div>
         ) : section === 'article' ? (
-          <div className={styles.lessonContent}>
+          <RequiredReadings gate={readingGate}><div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
+
+
               <button
                 type="button"
                 className={styles.returnButton}
@@ -650,9 +875,7 @@ const Topic12Intro = ({ moduleData }) => {
               </button>
 
               <div className={styles.articleHeader}>
-                <span className={styles.sectionLabel}>
-                  LECTURAS COMPLEMENTARIAS
-                </span>
+
 
                 <h2>Explora y profundiza</h2>
 
@@ -696,9 +919,7 @@ const Topic12Intro = ({ moduleData }) => {
 
               <aside className={styles.cepalBanner}>
                 <div>
-                  <span className={styles.cepalEyebrow}>
-                    FUENTE INSTITUCIONAL
-                  </span>
+
 
                   <h3>Explora los datos de IESE Cities in Motion</h3>
 
@@ -719,21 +940,17 @@ const Topic12Intro = ({ moduleData }) => {
               </aside>
 
               <div className={styles.articleNextStep}>
-                <div>
-                  <strong>¿Listo para participar?</strong>
-                  <p>Publica una propuesta para tu municipio.</p>
-                </div>
 
-                <button
+                <div className={styles.lessonActionGroup}><button
                   type="button"
                   className={styles.nextButton}
                   onClick={() => setSection('forum')}
                 >
-                  Ir al foro →
-                </button>
+                  Siguiente
+                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
               </div>
             </section>
-          </div>
+          </div></RequiredReadings>
         ) : section === 'forum' && videoCompleted ? (
           <div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
@@ -754,39 +971,217 @@ const Topic12Intro = ({ moduleData }) => {
                 </Link>
               </div>
 
-              <div className={styles.forumHero}>
-                <div
-                  className={styles.forumHeroIcon}
-                  aria-hidden="true"
-                >
-                  ✦
-                </div>
 
-                <div>
-                  <span className={styles.forumEyebrow}>
-                    ACTIVIDAD PARTICIPATIVA
-                  </span>
 
-                  <h2>Una propuesta para mi municipio</h2>
+              <header className={styles.forumWelcome}>
+  <div className={styles.forumWelcomeText}>
+    <h2>
+      <span>Una propuesta</span>
+      <br />
+      para mi municipio.
+    </h2>
 
-                  <p>
-                    Elige una función para mejorar la participación ciudadana.
-                  </p>
-                </div>
-              </div>
+    <p>
+      Elige una función para mejorar la participación
+      ciudadana.
+    </p>
+  </div>
 
-              <div className={styles.forumPrompt}>
-                <h3>¿Qué función incluirías primero?</h3>
+  <div className={styles.forumWelcomeArt} aria-hidden="true">
+  <svg
+    viewBox="0 0 280 220"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{
+      display: 'block',
+      width: '100%',
+      height: 'auto',
+    }}
+  >
+    {/* Fondo pastel */}
+    <ellipse
+      cx="143"
+      cy="115"
+      rx="100"
+      ry="85"
+      fill="#E0EBFF"
+    />
 
-                <p>
-                  Imagina que tu municipio quiere mejorar la
-                  participación ciudadana mediante una plataforma
-                  digital. ¿Qué función incluirías primero:
-                  consultar información pública, realizar trámites,
-                  reportar problemas o presentar propuestas?
-                </p>
-              </div>
+    <circle cx="228" cy="43" r="16" fill="#FFF0C7" />
 
+    {/* Conexiones */}
+    <path
+      d="M63 100 Q33 43 113 46 M197 159 Q251 175 237 101"
+      fill="none"
+      stroke="#A3BFEA"
+      strokeWidth="2"
+      strokeDasharray="4 6"
+    />
+
+    {/* Celular */}
+    <rect
+      x="99"
+      y="29"
+      width="88"
+      height="166"
+      rx="17"
+      fill="#FFFFFF"
+      stroke="#7FA6E2"
+      strokeWidth="2.5"
+    />
+
+    <rect
+      x="108"
+      y="48"
+      width="70"
+      height="127"
+      rx="6"
+      fill="#F0F5FF"
+    />
+
+    <path
+      d="M132 39 H154"
+      stroke="#A6C1E9"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+
+    <circle cx="143" cy="184" r="4" fill="#C0D5F3" />
+
+    {/* Perfil de usuario */}
+    <circle cx="143" cy="73" r="12" fill="#D3E2FA" />
+    <circle cx="143" cy="70" r="4" fill="#709BD8" />
+
+    <path
+      d="M136 81 Q136 75 143 75 Q150 75 150 81"
+      fill="#709BD8"
+    />
+
+    {/* Formulario de propuesta */}
+    <rect
+      x="116"
+      y="94"
+      width="54"
+      height="43"
+      rx="6"
+      fill="#FFFFFF"
+      stroke="#D6E3F7"
+    />
+
+    <path
+      d="M124 105 H161 M124 114 H157 M124 123 H146"
+      stroke="#ADC7ED"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+
+    {/* Botón de enviar */}
+    <rect
+      x="119"
+      y="145"
+      width="48"
+      height="19"
+      rx="7"
+      fill="#6B98DA"
+    />
+
+    <path
+      d="M137 154 H150 M146 150 L150 154 L146 158"
+      fill="none"
+      stroke="#FFFFFF"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+
+    {/* Tarjeta de idea */}
+    <rect
+      x="37"
+      y="66"
+      width="61"
+      height="62"
+      rx="13"
+      fill="#FFFFFF"
+      stroke="#BED2F1"
+      strokeWidth="1.5"
+      transform="rotate(-8 67 97)"
+    />
+
+    <path
+      d="M59 91 A11 11 0 1 1 77 99
+         Q73 102 73 107 H64 Q64 102 60 98 Z"
+      fill="#FFE7A0"
+      stroke="#D4B461"
+      strokeWidth="1.5"
+    />
+
+    <path
+      d="M65 112 H72 M66 116 H71"
+      stroke="#A8B9D2"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+    />
+
+    {/* Propuesta recibida */}
+    <rect
+      x="181"
+      y="91"
+      width="68"
+      height="58"
+      rx="12"
+      fill="#FFFFFF"
+      stroke="#BED2F1"
+      strokeWidth="1.5"
+      transform="rotate(7 215 120)"
+    />
+
+    <circle cx="215" cy="113" r="13" fill="#DDF1E7" />
+
+    <path
+      d="M209 113 L213 117 L221 108"
+      fill="none"
+      stroke="#64A28A"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+
+    <path
+      d="M201 135 H229"
+      stroke="#BED2EF"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+
+    {/* Detalles decorativos */}
+    <circle cx="61" cy="160" r="6" fill="#BCDCCC" />
+    <circle cx="208" cy="181" r="5" fill="#B6CFF3" />
+
+    <path
+      d="M72 191 H218"
+      stroke="#A7BFE2"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+  </svg>
+</div>
+</header>
+
+<div className={styles.forumChallenge}>
+  <div className={styles.forumChallengeTop}>
+    <span className={styles.forumChallengeLabel}>
+      SITUACIÓN PROPUESTA
+    </span>
+  </div>
+
+  <h3>¿Qué función incluirías primero?</h3>
+
+  <p>
+    Imagina que tu municipio quiere mejorar la participación
+    ciudadana mediante una plataforma digital. ¿Qué función
+    incluirías primero: por ejemplo consultar información pública,
+    realizar trámites, reportar problemas o presentar propuestas?
+  </p>
+</div>
               <div className={styles.forumGuide}>
                 <div className={styles.forumGuideCard}>
                   <span className={styles.forumGuideNumber}>01</span>
@@ -884,16 +1279,40 @@ const Topic12Intro = ({ moduleData }) => {
                     </p>
                   )}
 
-                  <div className={styles.otherPosts}>
+                  <div className={styles.evaluationInvitation}>
+  <div className={styles.evaluationInvitationText}>
+    <h3>¿Estás preparado?</h3>
+    <p>Es momento de realizar la evaluación.</p>
+  </div>
+  <div className={styles.lessonActionGroup}><button type="button" className={styles.nextButton}
+    onClick={() => setSection('evaluation')}>
+    Evaluación 
+  </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+</div>
+<div className={styles.otherPosts}>
                     <div className={styles.otherPostsHeading}>
-                      <h3>Propuestas de tus compañeros</h3>
+                      <h3>Respuestas del foro</h3>
                     </div>
 
-                    <p>
-                      Lee una propuesta y comenta con una sugerencia concreta.
-                    </p>
+                    
 
                     <div className={styles.forumPostsGrid}>
+<article className={styles.forumPost}>
+  <div className={styles.forumPostAuthor}>
+    <span aria-hidden="true">
+      {(myPost.User?.name || posts.find((post) => Number(post.id) === Number(myPost.id))?.User?.name || 'Usuario').charAt(0).toUpperCase()}
+    </span>
+    <strong>{myPost.User?.name || posts.find((post) => Number(post.id) === Number(myPost.id))?.User?.name || 'Tu publicación'}</strong>
+  </div>
+  <p>{myPost.content}</p>
+  {(myPost.ForoComments || []).map((comment) => (
+    <div key={comment.id} className={styles.myForumPost}>
+      <strong>{comment.User?.name || 'Participante'}:</strong>{' '}
+      {comment.content}
+    </div>
+  ))}
+</article>
+
                       {posts
                         .filter(
                           (post) =>
@@ -981,14 +1400,7 @@ const Topic12Intro = ({ moduleData }) => {
                         })}
                     </div>
 
-                    {posts.filter(
-                      (post) => Number(post.id) !== Number(myPost.id)
-                    ).length === 0 && (
-                      <p>
-                        Cuando un compañero publique su propuesta,
-                        podrás comentarla aquí.
-                      </p>
-                    )}
+                    
 
                     {commentError && (
                       <p className={styles.forumError} role="alert">
@@ -997,16 +1409,11 @@ const Topic12Intro = ({ moduleData }) => {
                     )}
                   </div>
 
-                  <button
-                    type="button"
-                    className={styles.nextButton}
-                    onClick={() => setSection('evaluation')}
-                  >
-                    Ir a la evaluación →
-                  </button>
+                
                 </>
               )}
-            </section>
+            {!myPost && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+</section>
           </div>
         ) : section === 'evaluation' && myPost ? (
           <div className={styles.lessonContent}>
@@ -1028,22 +1435,29 @@ const Topic12Intro = ({ moduleData }) => {
                 </Link>
               </div>
 
-              <span className={styles.sectionLabel}>
-                EVALUACIÓN · TEMA 1.2
-              </span>
 
-              <h2>Comprueba lo que aprendiste</h2>
 
-              <p>
-                Cinco preguntas de 2 puntos cada una.
-                Necesitas al menos 70 % para aprobar:
-                cuatro respuestas correctas.
-              </p>
+          <h2 className={styles.evaluationTitle}>
+  <span>Comprueba</span> lo que aprendiste
+</h2>
+
+<div className={styles.evaluationInstructions}>
+  <p>
+    Responde cinco preguntas. Cada una vale 2 puntos y
+    necesitas al menos un 70 % para aprobar.
+  </p>
+
+  <div className={styles.evaluationTags}>
+    <span>5 preguntas</span>
+    <span>2 puntos por pregunta</span>
+    <span>Apruebas con 4 respuestas correctas</span>
+  </div>
+</div>
 
               {evaluationPassed ? (
                 <div className={styles.articleNextStep} role="status">
                   <div>
-                    <strong>✓ Aprobaste el tema 1.2</strong>
+                    <h3 className={styles.evaluationCongratulations}>¡Felicidades!</h3><p className={styles.evaluationSuccessMessage}>Aprobaste el tema 1.2. Puedes pasar al siguiente tema.</p>
 
                     <p>
                       Calificación:{' '}
@@ -1054,12 +1468,12 @@ const Topic12Intro = ({ moduleData }) => {
                     </p>
                   </div>
 
-                  <Link
+                  <div className={styles.lessonActionGroup}><Link
                     to={`/module/${moduleData.id}/topic/1.3`}
                     className={styles.nextButton}
                   >
-                    Tema 1.3 →
-                  </Link>
+                    Tema 1.3 
+                  </Link><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                 </div>
               ) : (
                 <EvaluationForm
@@ -1070,7 +1484,8 @@ const Topic12Intro = ({ moduleData }) => {
                   }}
                 />
               )}
-            </section>
+            {!evaluationPassed && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+</section>
           </div>
         ) : null}
       </div>
@@ -1080,7 +1495,12 @@ const Topic12Intro = ({ moduleData }) => {
 const Topic13Intro = ({ moduleData }) => {
   const evaluationId13 = 3;
 
-  const [section, setSection] = useState('index');
+  const [section, setSectionState] = useState('index');
+  const readingGate = useRequiredReadings('1.3', moduleData?.id ?? '1');
+  const setSection = (next) => setSectionState((current) => {
+    const destination = typeof next === 'function' ? next(current) : next;
+    return ['forum', 'evaluation'].includes(destination) && !readingGate.complete ? 'article' : destination;
+  });
   const [checkingAccess, setCheckingAccess] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
   const [accessError, setAccessError] = useState('');
@@ -1671,15 +2091,21 @@ const Topic13Intro = ({ moduleData }) => {
                 {navigation}
               </div>
 
-              <h2>Introducción</h2>
-
-              <p className={styles.introLead}>
+              <header className={styles.introHero}>
+                <div className={styles.introHeroCopy}>
+                  <h2>Introducción</h2>
+                  <p className={styles.introLead}>
                 La transformación de una ciudad tradicional en una
                 ciudad inteligente es un proceso gradual. Parte de
                 reconocer las necesidades de sus habitantes y mejorar
                 la gestión municipal mediante planificación,
                 información, tecnología y participación ciudadana.
               </p>
+                </div>
+                <div className={styles.introHeroVisual}>
+                  <EvolutionIntroArt />
+                </div>
+              </header>
 
               <div className={styles.introBlock}>
                 <span className={styles.introBlockLabel}>
@@ -1734,7 +2160,7 @@ const Topic13Intro = ({ moduleData }) => {
                   <li>
                     <strong>Información:</strong> consulta las
                     publicaciones y las lecturas de apoyo.
-                    Son recursos opcionales.
+                    
                   </li>
                   <li>
                     <strong>Foro:</strong> explica si digitalizar
@@ -1753,13 +2179,24 @@ const Topic13Intro = ({ moduleData }) => {
                 </ul>
               </div>
 
-              <button
-                type="button"
-                className={styles.nextButton}
-                onClick={() => setSection('video')}
-              >
-                Ir al video →
-              </button>
+            <div className={styles.lessonActionGroup}>
+  <button
+    type="button"
+    className={styles.nextButton}
+    onClick={() => setSection('video')}
+  >
+    Empezar
+  </button>
+
+  <button
+    type="button"
+    className={styles.previousLessonButton}
+    onClick={() => setSection('index')}
+  >
+    <span aria-hidden="true">←</span>
+    Anterior
+  </button>
+</div>
             </section>
           </div>
         ) : section === 'video' ? (
@@ -1768,6 +2205,8 @@ const Topic13Intro = ({ moduleData }) => {
               <div className={styles.videoTopBar}>
                 {navigation}
               </div>
+
+
 
               <div className={styles.videoHeading}>
                 <span
@@ -1778,9 +2217,7 @@ const Topic13Intro = ({ moduleData }) => {
                 </span>
 
                 <div>
-                  <span className={styles.videoEyebrow}>
-                    APRENDE CON EL VIDEO
-                  </span>
+
 
                   <h2>
                     Evolución de las Ciudades Tradicionales
@@ -1789,15 +2226,7 @@ const Topic13Intro = ({ moduleData }) => {
                 </div>
               </div>
 
-              <div className={styles.videoMeta}>
-                <span>◷ Duración: 6 minutos y 14 segundos</span>
-
-                <span>
-                  {videoCompleted
-                    ? '✓ Video completado'
-                    : '○ Pendiente de completar'}
-                </span>
-              </div>
+              <div className={styles.videoMeta}><span>◷ Duración: 6 minutos y 14 segundos</span><span>{videoCompleted ? '✓ Video completado' : '○ Pendiente de completar'}</span><span>ⓘ No adelantes el video: las partes que saltes no contarán en tu progreso.</span></div>
 
               {loadingVideo ? (
                 <p className={styles.pendingNote}>
@@ -1832,13 +2261,13 @@ const Topic13Intro = ({ moduleData }) => {
 
                   {topicVideo &&
                     (videoCompleted ? (
-                      <button
+                      <div className={styles.lessonActionGroup}><button
                         type="button"
                         className={styles.nextButton}
                         onClick={() => setSection('article')}
                       >
-                        Ir a Información →
-                      </button>
+                        Siguiente
+                      </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                     ) : (
                       <p className={styles.pendingNote}>
                         Mira el video completo. Adelantarlo no
@@ -1847,19 +2276,20 @@ const Topic13Intro = ({ moduleData }) => {
                     ))}
                 </>
               )}
-            </section>
+            {!videoCompleted && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+</section>
           </div>
         ) : section === 'article' && videoCompleted ? (
-          <div className={styles.lessonContent}>
+          <RequiredReadings gate={readingGate}><div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
               <div className={styles.introNavigation}>
                 {navigation}
               </div>
 
+
+
               <div className={styles.articleHeader}>
-                <span className={styles.sectionLabel}>
-                  LECTURAS COMPLEMENTARIAS
-                </span>
+
 
                 <h2>Explora y profundiza</h2>
 
@@ -1867,8 +2297,7 @@ const Topic13Intro = ({ moduleData }) => {
                   Consulta estas publicaciones sobre ciudades
                   inteligentes, sostenibilidad y gestión de datos,
                   junto con lecturas sobre plataformas educativas.
-                  Son recursos opcionales que puedes revisar
-                  ahora o cuando lo necesites.
+                  
                 </p>
               </div>
 
@@ -1906,9 +2335,7 @@ const Topic13Intro = ({ moduleData }) => {
 
               <aside className={styles.cepalBanner}>
                 <div>
-                  <span className={styles.cepalEyebrow}>
-                    FUENTE INSTITUCIONAL
-                  </span>
+   
 
                   <h3>Conoce las guías de ONU-Hábitat</h3>
 
@@ -1930,24 +2357,20 @@ const Topic13Intro = ({ moduleData }) => {
 
               <div className={styles.articleNextStep}>
                 <div>
-                  <strong>¿Listo para participar en el foro?</strong>
+               
 
-                  <p>
-                    Las lecturas son opcionales. Comparte tu opinión
-                    sobre la digitalización de los servicios municipales.
-                  </p>
                 </div>
 
-                <button
+                <div className={styles.lessonActionGroup}><button
                   type="button"
                   className={styles.nextButton}
                   onClick={() => setSection('forum')}
                 >
-                  Ir al foro →
-                </button>
+                  Siguiente
+                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
               </div>
             </section>
-          </div>
+          </div></RequiredReadings>
         ) : section === 'forum' && videoCompleted ? (
           <div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
@@ -1955,29 +2378,17 @@ const Topic13Intro = ({ moduleData }) => {
                 {navigation}
               </div>
 
-              <div className={styles.forumHero}>
-                <div
-                  className={styles.forumHeroIcon}
-                  aria-hidden="true"
-                >
-                  ✦
-                </div>
 
-                <div>
-                  <span className={styles.forumEyebrow}>
-                    ACTIVIDAD PARTICIPATIVA · TEMA 1.3
-                  </span>
 
-                  <h2>¿Digitalizar es suficiente?</h2>
-
-                  <p>
-                    Analiza una situación municipal y propón
+              <header
+  className={`${styles.forumWelcome} ${styles.forumWelcome13}`}
+><div className={styles.forumWelcomeText}><h2><span>¿Digitalizar</span>es suficiente?</h2><p>
+                    Analiza una situación y propón
                     una acción para mejorar el servicio.
-                  </p>
-                </div>
-              </div>
+                  </p></div><div className={styles.forumWelcomeArt} aria-hidden="true"><EvolutionForumArt /></div></header>
 
-              <div className={styles.forumPrompt}>
+              <div className={styles.forumChallenge}>
+<div className={styles.forumChallengeTop}><span className={styles.forumChallengeLabel}>SITUACIÓN PROPUESTA</span></div>
                 <p>
                   Un municipio reemplaza los trámites en papel
                   por formularios en línea. Sin embargo, las personas
@@ -1991,10 +2402,7 @@ const Topic13Intro = ({ moduleData }) => {
 
                 <p>
                   Explica tu respuesta y propón una acción adicional
-                  que ayude a mejorar el servicio. Puedes considerar
-                  cómo se organiza la información, cómo se toman
-                  las decisiones y cómo se conoce la experiencia
-                  de la ciudadanía.
+                  que ayude a mejorar el servicio. 
                 </p>
               </div>
 
@@ -2093,17 +2501,40 @@ const Topic13Intro = ({ moduleData }) => {
 
                   {myPost && (
                     <>
-                      <div className={styles.otherPosts}>
+                      <div className={styles.evaluationInvitation}>
+  <div className={styles.evaluationInvitationText}>
+    <h3>¿Estás preparado?</h3>
+    <p>Es momento de realizar la evaluación.</p>
+  </div>
+  <div className={styles.lessonActionGroup}><button type="button" className={styles.nextButton}
+    onClick={() => setSection('evaluation')}>
+    Evaluación 
+  </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+</div>
+<div className={styles.otherPosts}>
                         <div className={styles.otherPostsHeading}>
-                          <h3>Reflexiones de tus compañeros</h3>
+                          <h3>Respuestas del foro</h3>
                         </div>
 
-                        <p>
-                          Lee una respuesta y comenta con una
-                          sugerencia concreta para mejorar el servicio.
-                        </p>
+                        
 
                         <div className={styles.forumPostsGrid}>
+<article className={styles.forumPost}>
+  <div className={styles.forumPostAuthor}>
+    <span aria-hidden="true">
+      {(myPost.User?.name || posts.find((post) => Number(post.id) === Number(myPost.id))?.User?.name || 'Usuario').charAt(0).toUpperCase()}
+    </span>
+    <strong>{myPost.User?.name || posts.find((post) => Number(post.id) === Number(myPost.id))?.User?.name || 'Tu publicación'}</strong>
+  </div>
+  <p>{myPost.content}</p>
+  {(myPost.ForoComments || []).map((comment) => (
+    <div key={comment.id} className={styles.myForumPost}>
+      <strong>{comment.User?.name || 'Participante'}:</strong>{' '}
+      {comment.content}
+    </div>
+  ))}
+</article>
+
                           {otherPosts.map((post) => {
                             const ownComment = (
                               post.ForoComments || []
@@ -2198,12 +2629,7 @@ const Topic13Intro = ({ moduleData }) => {
                           })}
                         </div>
 
-                        {otherPosts.length === 0 && (
-                          <p>
-                            Cuando un compañero publique su
-                            respuesta, podrás comentarla aquí.
-                          </p>
-                        )}
+                        
 
                         {commentError && (
                           <p
@@ -2215,32 +2641,13 @@ const Topic13Intro = ({ moduleData }) => {
                         )}
                       </div>
 
-                      <div className={styles.articleNextStep}>
-                        <div>
-                          <strong>✓ Completaste tu respuesta al foro</strong>
-
-                          <p>
-                            {evaluationPassed
-                              ? 'También aprobaste la evaluación. Puedes consultar tu resultado.'
-                              : 'Tu respuesta quedó guardada. Ahora puedes realizar la evaluación del tema 1.3.'}
-                          </p>
-                        </div>
-
-                        <button
-                          type="button"
-                          className={styles.nextButton}
-                          onClick={() => setSection('evaluation')}
-                        >
-                          {evaluationPassed
-                            ? 'Ver resultado →'
-                            : 'Ir a la evaluación →'}
-                        </button>
-                      </div>
+                      
                     </>
                   )}
                 </>
               )}
-            </section>
+            {!myPost && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+</section>
           </div>
         ) : section === 'evaluation' &&
           videoCompleted &&
@@ -2251,30 +2658,19 @@ const Topic13Intro = ({ moduleData }) => {
                 {navigation}
               </div>
 
+
+
               <span className={styles.sectionLabel}>
                 EVALUACIÓN · TEMA 1.3
               </span>
 
-              <h2>Comprueba lo que aprendiste</h2>
-
-              <p>
+              <h2 className={styles.evaluationTitle}><span>Comprueba</span> lo que aprendiste</h2><div className={styles.evaluationInstructions}><p>
                 Responde las cinco preguntas sobre la evolución
                 de las ciudades tradicionales a ciudades inteligentes.
-              </p>
+           </p><div className={styles.evaluationTags}><span>5 preguntas</span><span>2 puntos por pregunta</span><span>Apruebas con 4 respuestas correctas</span></div><p className={styles.evaluationHint}>
 
-              <div className={styles.videoMeta}>
-                <span>5 preguntas</span>
-                <span>2 puntos por respuesta correcta · 20 %</span>
-                <span>Nota máxima: 10 puntos</span>
-                <span>Mínimo para aprobar: 70 %</span>
-              </div>
 
-              <p className={styles.pendingNote}>
-                Con cuatro respuestas correctas obtienes
-                8 de 10 puntos, equivalentes al 80 %, y apruebas.
-                Si no alcanzas el mínimo, puedes revisar
-                tus respuestas y volver a intentarlo.
-              </p>
+              </p></div>
 
               {loadingEvaluation ? (
                 <p className={styles.pendingNote}>
@@ -2301,7 +2697,7 @@ const Topic13Intro = ({ moduleData }) => {
               ) : evaluationPassed ? (
                 <div className={styles.articleNextStep} role="status">
                   <div>
-                    <strong>✓ Aprobaste el tema 1.3</strong>
+                    <h3 className={styles.evaluationCongratulations}>¡Felicidades!</h3><p className={styles.evaluationSuccessMessage}>Aprobaste el tema 1.3. Puedes pasar al siguiente tema.</p>
 
                     <p>
                       Calificación:{' '}
@@ -2312,12 +2708,12 @@ const Topic13Intro = ({ moduleData }) => {
                     </p>
                   </div>
 
-                  <Link
+                  <div className={styles.lessonActionGroup}><Link
                     to={`/module/${moduleData.id}/topic/1.4`}
                     className={styles.nextButton}
                   >
-                    Tema 1.4 →
-                  </Link>
+                    Tema 1.4 
+                  </Link><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                 </div>
               ) : (
                 <EvaluationForm
@@ -2325,7 +2721,8 @@ const Topic13Intro = ({ moduleData }) => {
                   onSuccess={handleEvaluationSuccess13}
                 />
               )}
-            </section>
+            {!evaluationPassed && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+</section>
           </div>
         ) : null}
       </div>
@@ -2335,7 +2732,12 @@ const Topic13Intro = ({ moduleData }) => {
 const Topic14Intro = ({ moduleData }) => {
   const evaluationId14 = 4;
 
-  const [section, setSection] = useState('index');
+  const [section, setSectionState] = useState('index');
+  const readingGate = useRequiredReadings('1.4', moduleData?.id ?? '1');
+  const setSection = (next) => setSectionState((current) => {
+    const destination = typeof next === 'function' ? next(current) : next;
+    return ['forum', 'evaluation'].includes(destination) && !readingGate.complete ? 'article' : destination;
+  });
   const [checkingAccess, setCheckingAccess] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
   const [accessError, setAccessError] = useState('');
@@ -2950,9 +3352,11 @@ const Topic14Intro = ({ moduleData }) => {
                 {navigation}
               </div>
 
-              <h2>Introducción</h2>
-
-              <p className={styles.introLead}>
+              <header className={styles.introHero}>
+                <div className={styles.introHeroCopy}>
+ 
+                  <h2>Introducción</h2>
+                  <p className={styles.introLead}>
                 La planificación urbana requiere información
                 organizada sobre el territorio, sus servicios y las
                 necesidades de la población. Una plataforma web de
@@ -2960,6 +3364,11 @@ const Topic14Intro = ({ moduleData }) => {
                 de esa información y apoyar el trabajo de los
                 gobiernos municipales.
               </p>
+                </div>
+                <div className={styles.introHeroVisual}>
+                  <UrbanIntroArt />
+                </div>
+              </header>
 
               <div className={styles.introBlock}>
                 <span className={styles.introBlockLabel}>
@@ -3013,7 +3422,7 @@ const Topic14Intro = ({ moduleData }) => {
                   <li>
                     <strong>Información:</strong> consulta las
                     publicaciones y las lecturas de apoyo.
-                    Son recursos opcionales.
+                  
                   </li>
                   <li>
                     <strong>Foro:</strong> elige una sección para una
@@ -3032,13 +3441,24 @@ const Topic14Intro = ({ moduleData }) => {
                 </ul>
               </div>
 
-              <button
-                type="button"
-                className={styles.nextButton}
-                onClick={() => setSection('video')}
-              >
-                Ir al video →
-              </button>
+        <div className={styles.lessonActionGroup}>
+  <button
+    type="button"
+    className={styles.nextButton}
+    onClick={() => setSection('video')}
+  >
+    Empezar
+  </button>
+
+  <button
+    type="button"
+    className={styles.previousLessonButton}
+    onClick={() => setSection('index')}
+  >
+    <span aria-hidden="true">←</span>
+    Anterior
+  </button>
+</div>
             </section>
           </div>
         ) : section === 'video' ? (
@@ -3047,6 +3467,8 @@ const Topic14Intro = ({ moduleData }) => {
               <div className={styles.videoTopBar}>
                 {navigation}
               </div>
+
+
 
               <div className={styles.videoHeading}>
                 <span
@@ -3057,23 +3479,13 @@ const Topic14Intro = ({ moduleData }) => {
                 </span>
 
                 <div>
-                  <span className={styles.videoEyebrow}>
-                    APRENDE CON EL VIDEO
-                  </span>
+           
 
                   <h2>Plataforma web de urbanismo inteligente</h2>
                 </div>
               </div>
 
-              <div className={styles.videoMeta}>
-                <span>◷ Duración: 7 minutos y 9 segundos</span>
-
-                <span>
-                  {videoCompleted
-                    ? '✓ Video completado'
-                    : '○ Pendiente de completar'}
-                </span>
-              </div>
+              <div className={styles.videoMeta}><span>◷ Duración: 7 minutos y 9 segundos</span><span>{videoCompleted ? '✓ Video completado' : '○ Pendiente de completar'}</span><span>ⓘ No adelantes el video: las partes que saltes no contarán en tu progreso.</span></div>
 
               {loadingVideo ? (
                 <p className={styles.pendingNote}>
@@ -3106,13 +3518,13 @@ const Topic14Intro = ({ moduleData }) => {
 
                   {topicVideo &&
                     (videoCompleted ? (
-                      <button
+                      <div className={styles.lessonActionGroup}><button
                         type="button"
                         className={styles.nextButton}
                         onClick={() => setSection('article')}
                       >
-                        Ir a Información →
-                      </button>
+                        Siguiente
+                      </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                     ) : (
                       <p className={styles.pendingNote}>
                         Mira el video completo. Adelantarlo no
@@ -3121,19 +3533,20 @@ const Topic14Intro = ({ moduleData }) => {
                     ))}
                 </>
               )}
-            </section>
+            {!videoCompleted && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+</section>
           </div>
         ) : section === 'article' && videoCompleted ? (
-          <div className={styles.lessonContent}>
+          <RequiredReadings gate={readingGate}><div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
               <div className={styles.introNavigation}>
                 {navigation}
               </div>
 
+
+
               <div className={styles.articleHeader}>
-                <span className={styles.sectionLabel}>
-                  LECTURAS COMPLEMENTARIAS
-                </span>
+
 
                 <h2>Explora y profundiza</h2>
 
@@ -3141,8 +3554,7 @@ const Topic14Intro = ({ moduleData }) => {
                   Consulta estas publicaciones sobre ciudades
                   inteligentes, sostenibilidad y gestión de datos,
                   junto con lecturas sobre plataformas educativas.
-                  Son recursos opcionales que puedes revisar
-                  ahora o cuando lo necesites.
+                  
                 </p>
               </div>
 
@@ -3180,9 +3592,7 @@ const Topic14Intro = ({ moduleData }) => {
 
               <aside className={styles.cepalBanner}>
                 <div>
-                  <span className={styles.cepalEyebrow}>
-                    FUENTE INSTITUCIONAL
-                  </span>
+           
 
                   <h3>Conoce las guías de ONU-Hábitat</h3>
 
@@ -3204,24 +3614,19 @@ const Topic14Intro = ({ moduleData }) => {
 
               <div className={styles.articleNextStep}>
                 <div>
-                  <strong>¿Listo para participar en el foro?</strong>
-
-                  <p>
-                    Las lecturas son opcionales. Comparte tu opinión
-                    sobre la información que priorizarías en tu municipio.
-                  </p>
+                  
                 </div>
 
-                <button
+                <div className={styles.lessonActionGroup}><button
                   type="button"
                   className={styles.nextButton}
                   onClick={() => setSection('forum')}
                 >
-                  Ir al foro →
-                </button>
+                  Siguiente
+                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
               </div>
             </section>
-          </div>
+          </div></RequiredReadings>
         ) : section === 'forum' && videoCompleted ? (
           <div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
@@ -3229,43 +3634,25 @@ const Topic14Intro = ({ moduleData }) => {
                 {navigation}
               </div>
 
-              <div className={styles.forumHero}>
-                <div
-                  className={styles.forumHeroIcon}
-                  aria-hidden="true"
-                >
-                  ✦
-                </div>
 
-                <div>
-                  <span className={styles.forumEyebrow}>
-                    ACTIVIDAD PARTICIPATIVA · TEMA 1.4
-                  </span>
 
-                  <h2>¿Qué información mostrarías de tu ciudad?</h2>
-
-                  <p>
+              <header className={styles.forumWelcome}><div className={styles.forumWelcomeText}><h2><span>¿Qué información mostrarías</span><br />de tu ciudad?</h2><p>
                     Elige una prioridad y explica cómo una plataforma
                     puede ayudar a conocer mejor el territorio.
-                  </p>
-                </div>
-              </div>
+                  </p></div><div className={styles.forumWelcomeArt} aria-hidden="true"><UrbanForumArt /></div></header>
 
-              <div className={styles.forumPrompt}>
+              <div className={styles.forumChallenge}>
+<div className={styles.forumChallengeTop}><span className={styles.forumChallengeLabel}>SITUACIÓN PROPUESTA</span></div>
                 <p>
-                  Tu municipio quiere crear una plataforma web para que la
+                  Una institución quiere crear una plataforma web para que la
                   ciudadanía conozca mejor su territorio y participe en las
-                  decisiones. Solo puede comenzar con <strong>una</strong> de
-                  estas secciones: áreas verdes y ambiente, transporte,
-                  zonas de riesgo o proyectos urbanos.
+                  decisiones. Piensa en: áreas verdes y ambiente, transporte, zonas de riesgo o proyectos urbanos
                 </p>
 
                 <h3>¿Cuál elegirías y por qué?</h3>
 
                 <p>
-                  Explica qué información mostrarías en mapas o gráficos,
-                  cómo podrían utilizarla los ciudadanos y qué decisión
-                  ayudaría a tomar al municipio. Recuerda que la información
+                  Recuerda que la información
                   debe ser fácil de comprender y estar actualizada.
                 </p>
               </div>
@@ -3366,9 +3753,19 @@ const Topic14Intro = ({ moduleData }) => {
 
                   {myPost && (
                     <>
-                      <div className={styles.otherPosts}>
+                      <div className={styles.evaluationInvitation}>
+  <div className={styles.evaluationInvitationText}>
+    <h3>¿Estás preparado?</h3>
+    <p>Es momento de realizar la evaluación.</p>
+  </div>
+  <div className={styles.lessonActionGroup}><button type="button" className={styles.nextButton}
+    onClick={() => setSection('evaluation')}>
+    Evaluación 
+  </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+</div>
+<div className={styles.otherPosts}>
                         <div className={styles.otherPostsHeading}>
-                          <h3>Propuestas de tus compañeros</h3>
+                          <h3>Respuestas del foro</h3>
                         </div>
 
                         <p>
@@ -3377,6 +3774,22 @@ const Topic14Intro = ({ moduleData }) => {
                         </p>
 
                         <div className={styles.forumPostsGrid}>
+<article className={styles.forumPost}>
+  <div className={styles.forumPostAuthor}>
+    <span aria-hidden="true">
+      {(myPost.User?.name || posts.find((post) => Number(post.id) === Number(myPost.id))?.User?.name || 'Usuario').charAt(0).toUpperCase()}
+    </span>
+    <strong>{myPost.User?.name || posts.find((post) => Number(post.id) === Number(myPost.id))?.User?.name || 'Tu publicación'}</strong>
+  </div>
+  <p>{myPost.content}</p>
+  {(myPost.ForoComments || []).map((comment) => (
+    <div key={comment.id} className={styles.myForumPost}>
+      <strong>{comment.User?.name || 'Participante'}:</strong>{' '}
+      {comment.content}
+    </div>
+  ))}
+</article>
+
                           {otherPosts.map((post) => {
                             const ownComment = (
                               post.ForoComments || []
@@ -3471,12 +3884,7 @@ const Topic14Intro = ({ moduleData }) => {
                           })}
                         </div>
 
-                        {otherPosts.length === 0 && (
-                          <p>
-                            Cuando un compañero publique su
-                            respuesta, podrás comentarla aquí.
-                          </p>
-                        )}
+                        
 
                         {commentError && (
                           <p className={styles.forumError} role="alert">
@@ -3485,32 +3893,13 @@ const Topic14Intro = ({ moduleData }) => {
                         )}
                       </div>
 
-                      <div className={styles.articleNextStep}>
-                        <div>
-                          <strong>✓ Completaste tu respuesta al foro</strong>
-
-                          <p>
-                            {evaluationPassed
-                              ? 'También aprobaste la evaluación. Puedes consultar tu resultado.'
-                              : 'Tu respuesta quedó guardada. Ahora puedes realizar la evaluación del tema 1.4.'}
-                          </p>
-                        </div>
-
-                        <button
-                          type="button"
-                          className={styles.nextButton}
-                          onClick={() => setSection('evaluation')}
-                        >
-                          {evaluationPassed
-                            ? 'Ver resultado →'
-                            : 'Ir a la evaluación →'}
-                        </button>
-                      </div>
+                      
                     </>
                   )}
                 </>
               )}
-            </section>
+            {!myPost && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+</section>
           </div>
         ) : section === 'evaluation' &&
           videoCompleted &&
@@ -3521,31 +3910,18 @@ const Topic14Intro = ({ moduleData }) => {
                 {navigation}
               </div>
 
+
+
               <span className={styles.sectionLabel}>
                 EVALUACIÓN · TEMA 1.4
               </span>
 
-              <h2>Comprueba lo que aprendiste</h2>
-
-              <p>
+              <h2 className={styles.evaluationTitle}><span>Comprueba</span> lo que aprendiste</h2><div className={styles.evaluationInstructions}><p>
                 Responde las cinco preguntas sobre la plataforma
                 web de urbanismo inteligente.
-              </p>
+             </p><div className={styles.evaluationTags}><span>5 preguntas</span><span>2 puntos por pregunta</span><span>Apruebas con 4 respuestas correctas</span></div><p className={styles.evaluationHint}>
 
-              <div className={styles.videoMeta}>
-                <span>5 preguntas</span>
-                <span>2 puntos por respuesta correcta · 20 %</span>
-                <span>Nota máxima: 10 puntos</span>
-                <span>Mínimo para aprobar: 70 %</span>
-              </div>
-
-              <p className={styles.pendingNote}>
-                Con cuatro respuestas correctas obtienes
-                8 de 10 puntos, equivalentes al 80 %, y apruebas.
-                Si no alcanzas el mínimo, puedes revisar
-                tus respuestas y volver a intentarlo.
-              </p>
-
+</p></div>
               {loadingEvaluation ? (
                 <p className={styles.pendingNote}>
                   Consultando tu resultado...
@@ -3571,7 +3947,7 @@ const Topic14Intro = ({ moduleData }) => {
               ) : evaluationPassed ? (
                 <div className={styles.articleNextStep} role="status">
                   <div>
-                    <strong>✓ Aprobaste el tema 1.4</strong>
+                    <h3 className={styles.evaluationCongratulations}>¡Felicidades!</h3><p className={styles.evaluationSuccessMessage}>Aprobaste el tema 1.4.</p>
 
                     <p>
                       Calificación:{' '}
@@ -3582,12 +3958,12 @@ const Topic14Intro = ({ moduleData }) => {
                     </p>
                   </div>
 
-                  <Link
-                    to={`/course/${moduleData.courseId}`}
-                    className={styles.nextButton}
-                  >
-                    Volver al curso →
-                  </Link>
+                  <div className={styles.lessonActionGroup}><Link
+  to="/module/1/integrative-evaluation"
+  className={styles.nextButton}
+>
+  Evaluación integradora 
+</Link><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                 </div>
               ) : (
                 <EvaluationForm
@@ -3595,7 +3971,8 @@ const Topic14Intro = ({ moduleData }) => {
                   onSuccess={handleEvaluationSuccess14}
                 />
               )}
-            </section>
+            {!evaluationPassed && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+</section>
           </div>
         ) : null}
       </div>
@@ -3608,7 +3985,12 @@ const TopicDetail = () => {
   const video = moduleData?.videos?.[0];
   const evaluationId = moduleData?.evaluation?.id;
 
-  const [section, setSection] = useState('index');
+  const [section, setSectionState] = useState('index');
+  const readingGate = useRequiredReadings('1.1', moduleData?.id ?? '1');
+  const setSection = (next) => setSectionState((current) => {
+    const destination = typeof next === 'function' ? next(current) : next;
+    return ['forum', 'evaluation'].includes(destination) && !readingGate.complete ? 'article' : destination;
+  });
   const [videoCompleted, setVideoCompleted] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(true);
   const [myPost, setMyPost] = useState(null);
@@ -4009,13 +4391,7 @@ const TopicDetail = () => {
             {section === 'about' && (
               <section className={styles.lessonCard}>
                 <div className={styles.introNavigation}>
-                  <button
-                    type="button"
-                    className={styles.returnButton}
-                    onClick={() => setSection('index')}
-                  >
-                    ← Contenido del tema
-                  </button>
+           
 
                   <Link
                     to={`/course/${moduleData.courseId}`}
@@ -4025,14 +4401,20 @@ const TopicDetail = () => {
                   </Link>
                 </div>
 
-                <h2>Introducción</h2>
-
-                <p className={styles.introLead}>
+                <header className={styles.introHero}>
+                <div className={styles.introHeroCopy}>
+                  <h2>Introducción</h2>
+                  <p className={styles.introLead}>
                   Una ciudad inteligente mejora la vida de las
                   personas al combinar información, tecnología,
                   planificación y participación ciudadana para
                   resolver necesidades reales.
                 </p>
+                </div>
+                <div className={styles.introHeroVisual}>
+                  <IntroCityIllustration />
+                </div>
+              </header>
 
                 <div className={styles.introBlock}>
                   <span className={styles.introBlockLabel}>
@@ -4099,13 +4481,24 @@ const TopicDetail = () => {
                   </ul>
                 </div>
 
-                <button
-                  type="button"
-                  className={styles.nextButton}
-                  onClick={() => setSection('video')}
-                >
-                  Empezar →
-                </button>
+                <div className={styles.lessonActionGroup}>
+  <button
+    type="button"
+    className={styles.nextButton}
+    onClick={() => setSection('video')}
+  >
+    Empezar
+  </button>
+
+  <button
+    type="button"
+    className={styles.previousLessonButton}
+    onClick={() => setSection('index')}
+  >
+    <span aria-hidden="true">←</span>
+    Anterior
+  </button>
+</div>
               </section>
             )}
 
@@ -4128,6 +4521,8 @@ const TopicDetail = () => {
                   </Link>
                 </div>
 
+
+
                 <div className={styles.videoHeading}>
                   <span
                     className={styles.videoHeadingIcon}
@@ -4137,10 +4532,7 @@ const TopicDetail = () => {
                   </span>
 
                   <div>
-                    <span className={styles.videoEyebrow}>
-                      APRENDE CON EL VIDEO
-                    </span>
-
+            
                     <h2>¿Qué hace inteligente a una ciudad?</h2>
                   </div>
                 </div>
@@ -4174,19 +4566,20 @@ const TopicDetail = () => {
                 )}
 
                 {videoCompleted ? (
-                  <button
+                  <div className={styles.lessonActionGroup}><button
                     type="button"
                     className={styles.nextButton}
                     onClick={() => setSection('article')}
                   >
-                    Ir a Información →
-                  </button>
+                    Siguiente
+                  </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                 ) : (
                   <p className={styles.pendingNote}>
                     Termina el video para acceder a Información y al foro.
                   </p>
                 )}
-              </section>
+              {!videoCompleted && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+</section>
             )}
 
             {section === 'forum' && videoCompleted && (
@@ -4208,40 +4601,165 @@ const TopicDetail = () => {
                   </Link>
                 </div>
 
-                <div className={styles.forumHero}>
-                  <div
-                    className={styles.forumHeroIcon}
-                    aria-hidden="true"
-                  >
-                    ✦
-                  </div>
 
-                  <div>
-                    <span className={styles.forumEyebrow}>
-                      ACTIVIDAD PARTICIPATIVA
-                    </span>
 
-                    <h2>Una solución inteligente para tu ciudad</h2>
+                <header className={styles.forumWelcome}>
+  <div className={styles.forumWelcomeText}>
+   
 
-                    <p>
-                      Observa tu entorno, plantea una idea y
-                      compártela con los demás participantes.
-                    </p>
-                  </div>
-                </div>
+    <h2>
+      <span>Una solución inteligente</span>
+      <br />
+      para tu ciudad
+    </h2>
 
-                <div className={styles.forumPrompt}>
-                  <h3>
-                    ¿Cómo resolverías un problema de tu ciudad
-                    de forma inteligente?
-                  </h3>
+    <p>
+      Observa tu entorno y comparte una propuesta.
+      
+    </p>
+  </div>
 
-                  <p>
-                    Piensa en una calle dañada, dificultades
-                    en el transporte o demoras en un trámite.
-                    Publica una respuesta breve siguiendo estas ideas:
-                  </p>
-                </div>
+  <div
+    className={styles.forumWelcomeArt}
+    aria-hidden="true"
+  >
+    <svg
+      viewBox="0 0 280 220"
+      focusable="false"
+    >
+      <ellipse
+        cx="144"
+        cy="112"
+        rx="106"
+        ry="88"
+        fill="#e0ecff"
+      />
+
+      <circle
+        cx="232"
+        cy="42"
+        r="16"
+        fill="#fff0cb"
+      />
+
+      {/* Edificios */}
+
+      <rect
+        x="58"
+        y="108"
+        width="40"
+        height="76"
+        rx="5"
+        fill="#bdd4f5"
+      />
+
+      <rect
+        x="106"
+        y="78"
+        width="48"
+        height="106"
+        rx="6"
+        fill="#ffffff"
+        stroke="#8aabda"
+        strokeWidth="2"
+      />
+
+      <rect
+        x="162"
+        y="121"
+        width="37"
+        height="63"
+        rx="5"
+        fill="#a9c7ee"
+      />
+
+      <g fill="#7da5db">
+        <rect x="118" y="96" width="9" height="10" rx="2" />
+        <rect x="135" y="96" width="9" height="10" rx="2" />
+        <rect x="118" y="116" width="9" height="10" rx="2" />
+        <rect x="135" y="116" width="9" height="10" rx="2" />
+        <rect x="118" y="136" width="9" height="10" rx="2" />
+        <rect x="135" y="136" width="9" height="10" rx="2" />
+      </g>
+
+      <path
+        d="M43 185h179"
+        stroke="#9ab8df"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+
+      {/* Globo de conversación */}
+
+      <path
+        d="M159 40h65a12 12 0 0 1 12 12v34a12 12 0 0 1-12 12h-27l-17 15V98h-21a12 12 0 0 1-12-12V52a12 12 0 0 1 12-12Z"
+        fill="#ffffff"
+        stroke="#9cbae3"
+        strokeWidth="2"
+      />
+
+      <g fill="#4f7fc2">
+        <circle cx="171" cy="69" r="4" />
+        <circle cx="191" cy="69" r="4" />
+        <circle cx="211" cy="69" r="4" />
+      </g>
+
+      {/* Idea */}
+
+      <circle
+        cx="71"
+        cy="62"
+        r="25"
+        fill="#ffffff"
+        stroke="#d5e3f7"
+        strokeWidth="2"
+      />
+
+      <path
+        d="M64 62a9 9 0 1 1 14 0c-3 2-3 4-3 6h-8c0-2 0-4-3-6Z"
+        fill="#ffe7a3"
+        stroke="#c39b43"
+        strokeWidth="1.5"
+      />
+
+      <path
+        d="M68 72h6m-5 4h4"
+        stroke="#8e9bb1"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  </div>
+</header>
+
+<div className={styles.forumChallenge}>
+  <div className={styles.forumChallengeTop}>
+    <span
+      className={styles.forumChallengeIcon}
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 24 24">
+        <path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z" />
+        <circle cx="12" cy="9" r="2.5" />
+      </svg>
+    </span>
+
+    <span className={styles.forumChallengeLabel}>
+      SITUACIÓN PROPUESTA
+    </span>
+  </div>
+
+  <h3>
+    ¿Cómo resolverías un problema de tu ciudad
+    de forma inteligente?
+  </h3>
+
+  <p>
+    Elige un caso cercano: como por ejemplo una calle dañada,
+    dificultades de transporte o demoras en un trámite.
+    Organiza tu propuesta con la siguiente guía.
+  </p>
+</div>
 
                 <div className={styles.forumGuide}>
                   {forumPrompts.map((prompt) => (
@@ -4335,13 +4853,23 @@ const TopicDetail = () => {
                       </p>
                     )}
 
-                    <button
-                      type="button"
-                      className={styles.nextButton}
-                      onClick={() => setSection('evaluation')}
-                    >
-                      Ir a la evaluación →
-                    </button>
+                <div className={styles.evaluationInvitation}>
+  <div className={styles.evaluationInvitationText}>
+    <h3>¿Estás preparado?</h3>
+
+    <p>
+      Es momento de realizar la evaluación.
+    </p>
+  </div>
+
+  <div className={styles.lessonActionGroup}><button
+    type="button"
+    className={styles.nextButton}
+    onClick={() => setSection('evaluation')}
+  >
+    Evaluación 
+  </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+</div>
 
                     <div className={styles.otherPosts}>
                       <div className={styles.otherPostsHeading}>
@@ -4377,18 +4905,16 @@ const TopicDetail = () => {
             )}
 
             {section === 'article' && videoCompleted && (
-              <section className={styles.lessonCard}>
+              <RequiredReadings gate={readingGate}><section className={styles.lessonCard}>
+
+
                 <div className={styles.articleHeader}>
-                  <span className={styles.sectionLabel}>
-                    LECTURAS COMPLEMENTARIAS
-                  </span>
+    
 
                   <h2>Explora y profundiza</h2>
 
                   <p>
-                    Estas publicaciones son un refuerzo opcional.
-                    Puedes consultarlas ahora o regresar a ellas
-                    cuando quieras.
+                    Estas publicaciones debes revisarlas, son parte de tu progreso.
                   </p>
                 </div>
 
@@ -4426,9 +4952,7 @@ const TopicDetail = () => {
 
                 <aside className={styles.cepalBanner}>
                   <div>
-                    <span className={styles.cepalEyebrow}>
-                      FUENTE INSTITUCIONAL
-                    </span>
+        
 
                     <h3>Conoce más publicaciones de la CEPAL</h3>
 
@@ -4449,24 +4973,18 @@ const TopicDetail = () => {
                 </aside>
 
                 <div className={styles.articleNextStep}>
-                  <div>
-                    <strong>¿Listo para participar en el foro?</strong>
+                  
 
-                    <p>
-                      Las lecturas son opcionales.
-                      Continúa al foro para compartir tu propuesta.
-                    </p>
-                  </div>
-
-                  <button
+                  <div className={styles.lessonActionGroup}><button
                     type="button"
                     className={styles.nextButton}
                     onClick={() => setSection('forum')}
                   >
-                    Ir al foro →
-                  </button>
+                    Siguiente
+                  </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                 </div>
-              </section>
+              {!myPost && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+</section></RequiredReadings>
             )}
 
             {section === 'evaluation' && myPost && evaluationId && (
@@ -4488,21 +5006,37 @@ const TopicDetail = () => {
                   </Link>
                 </div>
 
-                <span className={styles.sectionLabel}>
-                  EVALUACIÓN · TEMA 1.1
-                </span>
 
-                <h2>Comprueba lo que aprendiste</h2>
 
-                <p>
-                  Responde cinco preguntas. Cada una vale 2 puntos y
-                  necesitas al menos 70 % para aprobar.
-                </p>
+             
+
+                <h2 className={styles.evaluationTitle}>
+  <span>Comprueba</span> lo que aprendiste
+</h2>
+
+<div className={styles.evaluationInstructions}>
+  <p>
+    Responde cinco preguntas. Cada una vale 2 puntos y
+    necesitas al menos un 70 % para aprobar.
+  </p>
+
+  <div className={styles.evaluationTags}>
+    <span>5 preguntas</span>
+    <span>2 puntos por pregunta</span>
+   <span>Apruebas con 4 respuestas correctas</span>
+  </div>
+</div>
 
                 {evaluationPassed ? (
                   <div className={styles.articleNextStep} role="status">
                     <div>
-                      <strong>✓ Aprobaste el tema 1.1</strong>
+                     <h3 className={styles.evaluationCongratulations}>
+  ¡Felicidades!
+</h3>
+
+<p className={styles.evaluationSuccessMessage}>
+  Aprobaste el tema 1.1. Puedes pasar al siguiente tema.
+</p>
 
                       <p>
                         Calificación:{' '}
@@ -4513,13 +5047,12 @@ const TopicDetail = () => {
                       </p>
                     </div>
 
-                    <button
-                      type="button"
-                      className={styles.nextButton}
-                      onClick={() => setSection('index')}
-                    >
-                      Tema 1.2 →
-                    </button>
+                <div className={styles.lessonActionGroup}><Link
+  to="/module/1/topic/1.2"
+  className={styles.nextButton}
+>
+  Tema 1.2 
+</Link><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                   </div>
                 ) : (
                   <EvaluationForm
@@ -4527,7 +5060,8 @@ const TopicDetail = () => {
                     onSuccess={handleEvaluationSuccess}
                   />
                 )}
-              </section>
+              {!evaluationPassed && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+</section>
             )}
           </div>
         )}

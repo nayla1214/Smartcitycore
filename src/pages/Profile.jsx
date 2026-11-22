@@ -1,3 +1,4 @@
+import { openCertificateExample } from '../services/certificateExample';
 import { useContext, useMemo, useState } from 'react';
 import {
   FiAward,
@@ -82,6 +83,12 @@ const handleSave = async (event) => {
     setSaving(false);
   }
 };
+
+  const handleCertificate = (print) => {
+    setError('');
+    try { openCertificateExample(user?.name || 'Nombre del participante', { print }); }
+    catch (certificateError) { setError(certificateError.message); }
+  };
 
   const handleCancel = () => {
     setFormData({
@@ -260,86 +267,22 @@ const handleSave = async (event) => {
             )}
           </article>
 
-          <article className={styles.card}>
-            <div className={styles.cardHeader}>
-              <div>
-                <span className={styles.cardEyebrow}>
-                  Rendimiento
-                </span>
-
-                <h2>Progreso general</h2>
-              </div>
-
-              <FiBookOpen className={styles.headerIcon} />
-            </div>
-
-            <div className={styles.progressInformation}>
-              <div className={styles.progressText}>
-                <span>Avance de la capacitación</span>
-                <strong>{statistics.progress}%</strong>
-              </div>
-
-              <div
-                className={styles.progressBar}
-                role="progressbar"
-                aria-valuenow={statistics.progress}
-                aria-valuemin="0"
-                aria-valuemax="100"
-              >
-                <span
-                  style={{
-                    width: `${Math.min(statistics.progress, 100)}%`,
-                  }}
-                />
-              </div>
-
-              <p>
-                Continúa aprendiendo para completar tus módulos y
-                obtener nuevos logros.
-              </p>
-            </div>
-          </article>
+          
         </div>
 
         <div className={styles.rightColumn}>
           <article className={styles.card}>
-            <div className={styles.cardHeader}>
-              <div>
-                <span className={styles.cardEyebrow}>
-                  Actividad
-                </span>
-
-                <h2>Estadísticas</h2>
+            <div className={styles.cardHeader}><div><span className={styles.cardEyebrow}>Certificación</span><h2>Mi certificado</h2></div><FiAward className={styles.headerIcon} /></div>
+            <div className={styles.certificateInformation}>
+              <div className={styles.certificateThumbnail} aria-hidden="true"><span>SMARTCITYCORE · UNESUM</span><strong>CERTIFICADO</strong><div /><small>{user?.name || 'Nombre del participante'}</small><i>EJEMPLO</i></div>
+              <span className={styles.exampleBadge}>Ejemplo de diseño</span>
+              <h3>Introducción a Ciudades Inteligentes</h3>
+              <p>Revisa cómo se verá tu certificado con tu nombre y los datos del curso.</p>
+              <div className={styles.certificateActions}>
+                <button type="button" className={styles.saveButton} onClick={() => handleCertificate(false)}>Ver ejemplo <span aria-hidden="true">↗</span></button>
+                <button type="button" className={styles.cancelButton} onClick={() => handleCertificate(true)}>Guardar ejemplo PDF</button>
               </div>
-            </div>
-
-            <div className={styles.statisticsGrid}>
-              <div className={styles.statistic}>
-                <div className={`${styles.statisticIcon} ${styles.blue}`}>
-                  <FiBookOpen />
-                </div>
-
-                <strong>{statistics.coursesStarted}</strong>
-                <span>Cursos iniciados</span>
-              </div>
-
-              <div className={styles.statistic}>
-                <div className={`${styles.statisticIcon} ${styles.green}`}>
-                  <FiCheckCircle />
-                </div>
-
-                <strong>{statistics.coursesCompleted}</strong>
-                <span>Cursos completados</span>
-              </div>
-
-              <div className={styles.statistic}>
-                <div className={`${styles.statisticIcon} ${styles.orange}`}>
-                  <FiPlayCircle />
-                </div>
-
-                <strong>{statistics.videosCompleted}</strong>
-                <span>Videos completados</span>
-              </div>
+              <p className={styles.certificateNote}>Esta es una muestra de diseño, sin validez. El certificado definitivo se habilitará cuando se conecte la validación de aprobación del curso.</p>
             </div>
           </article>
 
