@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { api } from '../services/api';
-import { getCourseById } from '../data/courseData';
 import EvaluationForm from '../components/EvaluationForm';
 import styles from './Course.module.css';
 
@@ -182,16 +181,32 @@ const CourseDetail = () => {
       setError('');
       setTopic13Passed(false);
 
-      let courseData = getCourseById(courseId);
+    const courseData = await api.get(
+  `/courses/${courseId}`
+);
+const modulesWithTopics = await Promise.all(
+  (courseData.Modules || courseData.modules || []).map(
+    async (module) => {
+      const topics = await api.get(
+        `/modules/${module.id}/topics`
+      );
 
-      if (!courseData) {
-        try {
-          courseData = await api.get(`/courses/${courseId}`);
-        } catch (apiError) {
-          console.error('Error al cargar el curso:', apiError);
-        }
+      if (!Array.isArray(topics)) {
+        throw new Error(
+          'No se pudieron consultar los temas del curso.'
+        );
       }
 
+      return {
+        ...module,
+        Topics: topics,
+      };
+    }
+  )
+);
+
+courseData.Modules = modulesWithTopics;
+courseData.modules = modulesWithTopics;
       let progressData = {
         modules: [],
         isCompleted: false,
@@ -285,17 +300,36 @@ const CourseDetail = () => {
     );
   }
 
-  const moduleList = course.modules || course.Modules || [];
+ const moduleList = [
+  ...(course.Modules || course.modules || []),
+].sort(
+  (first, second) =>
+    Number(first.order_number) -
+    Number(second.order_number)
+);
   const selectedModule = moduleList[selectedModuleIndex];
 
-  const getModuleTitle = (mod, index) =>
-    COURSE_STRUCTURE[index]?.title || mod.title;
+  // El título registrado por el administrador tiene prioridad.
+const getModuleTitle = (mod, index) =>
+  mod?.title ||
+  (
+    Number(courseId) === 1
+      ? COURSE_STRUCTURE[index]?.title
+      : null
+  ) ||
+  'Módulo sin título';
 
-  const selectedTopics =
-    COURSE_STRUCTURE[selectedModuleIndex]?.topics ||
-    selectedModule?.topics ||
-    selectedModule?.Topics ||
-    [];
+// Los temas actuales se conservan únicamente
+// para el curso original de Ciudades Inteligentes.
+const selectedTopics =
+  selectedModule?.Topics ||
+  selectedModule?.topics ||
+  (
+    Number(courseId) === 1
+      ? COURSE_STRUCTURE[selectedModuleIndex]?.topics
+      : []
+  ) ||
+  [];
 
   const getTopicTitle = (topic) =>
     typeof topic === 'string'
@@ -613,7 +647,13 @@ const CourseDetail = () => {
                 </div>
 
                 <div className={styles.topicsList}>
+                  {selectedTopics.length === 0 && (
+  <p role="status">
+    Los temas de este módulo están en preparación.
+  </p>
+)}
                   {selectedTopics.map((topic, topicIndex) => {
+                    
                     const isFirstTopic =
                       selectedModuleIndex === 0 &&
                       topicIndex === 0;
@@ -666,7 +706,7 @@ const CourseDetail = () => {
                     const module3Topics = getModuleProgress(selectedModule)?.topics || [];
                     const topic31Passed = module3Topics.some(item => item.topicNumber === '3.1' && item.passed === true);
                     const topic32Passed = module3Topics.some(item => item.topicNumber === '3.2' && item.passed === true);
-                    const canOpenTopic =
+                   const originalTopicAvailable =
                       isFirstTopic ||
                       (isSecondTopic &&
                         (isAdmin || topic11Passed)) ||
@@ -687,7 +727,19 @@ const CourseDetail = () => {
                           (topicIndex === 2 && topic32Passed)));
 
                     const topicNumber =
-                      `${selectedModuleIndex + 1}.${topicIndex + 1}`;
+  (
+    typeof topic === 'object' &&
+    topic !== null &&
+    topic.topicNumber
+  ) ||
+  `${selectedModule.order_number || selectedModuleIndex + 1}.${topicIndex + 1}`;
+
+// El curso original conserva sus requisitos.
+// Los cursos nuevos permiten abrir su contenido inicial.
+const canOpenTopic =
+  Number(courseId) === 1
+    ? originalTopicAvailable
+    : true;
 
                     const topicContent = (
                       <>

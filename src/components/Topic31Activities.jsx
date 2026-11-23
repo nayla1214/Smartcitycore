@@ -3,27 +3,138 @@ import {
   useRef,
   useState,
 } from 'react';
-
+import buttonStyles from './LessonButtons.module.css';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import EvaluationForm from './EvaluationForm';
 import sharedStyles from '../pages/TopicDetail.module.css';
 import module3Styles from '../pages/Topic3Design.module.css';
-const styles = { ...sharedStyles, ...module3Styles };
+
+const styles = {
+  ...sharedStyles,
+  ...module3Styles,
+};
 
 const ForumTitle = ({ title }) => {
   const words = title.split(' ');
   const midpoint = Math.ceil(words.length / 2);
-  return <h2 className={styles.moduleHeading}><span>{words.slice(0, midpoint).join(' ')}</span>{' '}{words.slice(midpoint).join(' ')}</h2>;
+
+  return (
+    <h2 className={styles.moduleHeading}>
+      <span>
+        {words.slice(0, midpoint).join(' ')}
+      </span>
+      {' '}
+      {words.slice(midpoint).join(' ')}
+    </h2>
+  );
 };
 
 const ForumArt = ({ topicNumber }) => (
-  <svg viewBox="0 0 260 190" role="img" aria-label={topics[topicNumber].title}>
-    <ellipse cx="132" cy="97" rx="110" ry="81" fill="#eae1f7" />
-    <rect x="46" y="43" width="167" height="105" rx="14" fill="white" stroke="#ad92d4" strokeWidth="2" />
-    {topicNumber === '3.1' ? <><rect x="104" y="66" width="52" height="52" rx="12" fill="#d8c7ef"/><circle cx="120" cy="86" r="4" fill="#7854c5"/><circle cx="141" cy="86" r="4" fill="#7854c5"/><path d="M118 103h25m-52-24H77m14 23H77m92-23h14m-14 23h14" stroke="#a78bce" strokeWidth="3" strokeLinecap="round"/></> : topicNumber === '3.2' ? <><path d="M130 77c-20-13-39-12-51-6v48c16-5 32-2 51 7 19-9 35-12 51-7V71c-12-6-31-7-51 6Z" fill="#e4d8f5" stroke="#ad92d4" strokeWidth="2"/><path d="M130 77v48m-37-38 23 6m-23 8 23 6m28-14 23-6m-23 20 23-6" stroke="#ad92d4" strokeWidth="2"/></> : <><path d="m80 93 27-15 27 15-27 16Zm27 16v25m-27-41v25l27 16 27-16V93" fill="#e1d3f2" stroke="#a78bce" strokeWidth="2"/><path d="m152 84 21-12 21 12-21 12Zm21 12v20m-21-32v20l21 12 21-12V84" fill="#f5f0fc" stroke="#a78bce" strokeWidth="2" strokeDasharray="4 3"/><path d="M126 64h34m-8-7 8 7-8 7" fill="none" stroke="#a78bce" strokeWidth="2"/></>}
-    <path d="M130 150v18m-33 0h66" stroke="#ad92d4" strokeWidth="4" strokeLinecap="round"/>
-    <circle cx="215" cy="38" r="15" fill="#fff0ce"/>
+  <svg
+    viewBox="0 0 260 190"
+    role="img"
+    aria-label={topics[topicNumber].title}
+  >
+    <ellipse
+      cx="132"
+      cy="97"
+      rx="110"
+      ry="81"
+      fill="#eae1f7"
+    />
+
+    <rect
+      x="46"
+      y="43"
+      width="167"
+      height="105"
+      rx="14"
+      fill="white"
+      stroke="#ad92d4"
+      strokeWidth="2"
+    />
+
+    {topicNumber === '3.1' ? (
+      <>
+        <rect
+          x="104"
+          y="66"
+          width="52"
+          height="52"
+          rx="12"
+          fill="#d8c7ef"
+        />
+        <circle
+          cx="120"
+          cy="86"
+          r="4"
+          fill="#7854c5"
+        />
+        <circle
+          cx="141"
+          cy="86"
+          r="4"
+          fill="#7854c5"
+        />
+        <path
+          d="M118 103h25m-52-24H77m14 23H77m92-23h14m-14 23h14"
+          stroke="#a78bce"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+      </>
+    ) : topicNumber === '3.2' ? (
+      <>
+        <path
+          d="M130 77c-20-13-39-12-51-6v48c16-5 32-2 51 7 19-9 35-12 51-7V71c-12-6-31-7-51 6Z"
+          fill="#e4d8f5"
+          stroke="#ad92d4"
+          strokeWidth="2"
+        />
+        <path
+          d="M130 77v48m-37-38 23 6m-23 8 23 6m28-14 23-6m-23 20 23-6"
+          stroke="#ad92d4"
+          strokeWidth="2"
+        />
+      </>
+    ) : (
+      <>
+        <path
+          d="m80 93 27-15 27 15-27 16Zm27 16v25m-27-41v25l27 16 27-16V93"
+          fill="#e1d3f2"
+          stroke="#a78bce"
+          strokeWidth="2"
+        />
+        <path
+          d="m152 84 21-12 21 12-21 12Zm21 12v20m-21-32v20l21 12 21-12V84"
+          fill="#f5f0fc"
+          stroke="#a78bce"
+          strokeWidth="2"
+          strokeDasharray="4 3"
+        />
+        <path
+          d="M126 64h34m-8-7 8 7-8 7"
+          fill="none"
+          stroke="#a78bce"
+          strokeWidth="2"
+        />
+      </>
+    )}
+
+    <path
+      d="M130 150v18m-33 0h66"
+      stroke="#ad92d4"
+      strokeWidth="4"
+      strokeLinecap="round"
+    />
+
+    <circle
+      cx="215"
+      cy="38"
+      r="15"
+      fill="#fff0ce"
+    />
   </svg>
 );
 
@@ -90,44 +201,38 @@ const topics = {
     subject: 'educación inteligente',
     next: '3.3',
   },
+
   '3.3': {
-  title: 'Probar antes de cambiar',
-
-  lead:
-    'Compara alternativas antes de modificar un servicio que utilizan distintos barrios.',
-
-  scenario:
-    'Se propone modificar una ruta de transporte para llegar a más barrios. El cambio podría beneficiar a nuevos pasajeros, pero también aumentar el tiempo de viaje de quienes ya utilizan el servicio.',
-
-  question:
-    '¿Qué escenarios compararías en un gemelo digital antes de cambiar la ruta?',
-
-  instruction:
-    'Explica qué datos necesitarías y qué resultados revisarías para elegir una alternativa.',
-
-  guide: [
-    [
-      '01',
-      'Compara escenarios',
-      'Considera la ruta actual y alternativas que permitan atender nuevos barrios.',
+    title: 'Probar antes de cambiar',
+    lead:
+      'Compara alternativas antes de modificar un servicio que utilizan distintos barrios.',
+    scenario:
+      'Se propone modificar una ruta de transporte para llegar a más barrios. El cambio podría beneficiar a nuevos pasajeros, pero también aumentar el tiempo de viaje de quienes ya utilizan el servicio.',
+    question:
+      '¿Qué escenarios compararías en un gemelo digital antes de cambiar la ruta?',
+    instruction:
+      'Explica qué datos necesitarías y qué resultados revisarías para elegir una alternativa.',
+    guide: [
+      [
+        '01',
+        'Compara escenarios',
+        'Considera la ruta actual y alternativas que permitan atender nuevos barrios.',
+      ],
+      [
+        '02',
+        'Identifica los datos',
+        'Piensa en los recorridos, la demanda de pasajeros, los horarios, el tráfico y los tiempos de viaje.',
+      ],
+      [
+        '03',
+        'Revisa los resultados',
+        'Explica cómo compararías la cobertura y los tiempos de viaje para elegir una alternativa.',
+      ],
     ],
-    [
-      '02',
-      'Identifica los datos',
-      'Piensa en los recorridos, la demanda de pasajeros, los horarios, el tráfico y los tiempos de viaje.',
-    ],
-    [
-      '03',
-      'Revisa los resultados',
-      'Explica cómo compararías la cobertura y los tiempos de viaje para elegir una alternativa.',
-    ],
-  ],
-
-  subject:
-    'gemelos digitales y simulación urbana',
-
-  next: null,
-},
+    subject:
+      'gemelos digitales y simulación urbana',
+    next: null,
+  },
 };
 
 const Topic31Activities = ({
@@ -152,13 +257,10 @@ const Topic31Activities = ({
   const [retry, setRetry] = useState(0);
 
   const [drafts, setDrafts] = useState({});
-  const [commentError, setCommentError] =
-    useState('');
-  const [commenting, setCommenting] =
-    useState(null);
+  const [commentError, setCommentError] = useState('');
+  const [commenting, setCommenting] = useState(null);
 
-  const [evaluationId, setEvaluationId] =
-    useState(null);
+  const [evaluationId, setEvaluationId] = useState(null);
   const [evaluationLoading, setEvaluationLoading] =
     useState(true);
   const [evaluationError, setEvaluationError] =
@@ -380,12 +482,12 @@ const Topic31Activities = ({
 
           <button
             type="button"
-            className={styles.nextButton}
+            className={`${styles.nextButton} ${buttonStyles.primary}`}
             onClick={() =>
               onSectionChange('forum')
             }
           >
-            Ir al foro →
+            Siguiente
           </button>
         </>
       );
@@ -397,31 +499,35 @@ const Topic31Activities = ({
           EVALUACIÓN · TEMA {topicNumber}
         </span>
 
-        <h2 className={styles.moduleHeading}><span>Comprueba</span> lo que aprendiste</h2>
-<div className={styles.greenEvaluationInfo}>
+        <h2 className={styles.moduleHeading}>
+          <span>Comprueba</span> lo que aprendiste
+        </h2>
 
-        <p>
-          Responde las cinco preguntas sobre{' '}
-          {topic.subject}.
-        </p>
+        <div className={styles.greenEvaluationInfo}>
+          <p>
+            Responde las cinco preguntas sobre{' '}
+            {topic.subject}.
+          </p>
 
-        <div className={styles.greenEvaluationBadges}>
-          <span>5 preguntas</span>
-          <span>
-            2 puntos por respuesta correcta · 20 %
-          </span>
-          <span>Nota máxima: 10 puntos</span>
-          <span>Mínimo para aprobar: 70 %</span>
+          <div
+            className={styles.greenEvaluationBadges}
+          >
+            <span>5 preguntas</span>
+            <span>
+              2 puntos por respuesta correcta · 20 %
+            </span>
+            <span>Nota máxima: 10 puntos</span>
+            <span>Mínimo para aprobar: 70 %</span>
+          </div>
+
+          <p className={styles.pendingNote}>
+            Con cuatro respuestas correctas obtienes
+            8/10 puntos (80 %) y apruebas. Si no
+            alcanzas el mínimo, revisa tus respuestas
+            y vuelve a intentarlo.
+          </p>
         </div>
 
-        <p className={styles.pendingNote}>
-          Con cuatro respuestas correctas obtienes
-          8/10 puntos (80 %) y apruebas. Si no
-          alcanzas el mínimo, revisa tus respuestas
-          y vuelve a intentarlo.
-        </p>
-
-</div>
         {evaluationLoading ? (
           <p>Consultando tu resultado...</p>
         ) : evaluationError ? (
@@ -435,12 +541,12 @@ const Topic31Activities = ({
 
             <button
               type="button"
-              className={styles.nextButton}
+              className={`${styles.nextButton} ${buttonStyles.primary}`}
               onClick={() =>
                 setRetry((value) => value + 1)
               }
             >
-              Volver a intentar →
+              Volver a intentar 
             </button>
           </>
         ) : passed ? (
@@ -449,8 +555,17 @@ const Topic31Activities = ({
             role="status"
           >
             <div>
-              <h3 className={styles.greenCongratulations}>¡Felicidades!</h3>
-              <p>Aprobaste el tema {topicNumber}.</p>
+              <h3
+                className={
+                  styles.greenCongratulations
+                }
+              >
+                ¡Felicidades!
+              </h3>
+
+              <p>
+                Aprobaste el tema {topicNumber}.
+              </p>
 
               <p>
                 Calificación:{' '}
@@ -459,23 +574,35 @@ const Topic31Activities = ({
               </p>
             </div>
 
-<div className={styles.lessonActionGroup}>
-          {topic.next ? (
-  <Link
-    className={styles.nextButton}
-    to={`/module/${moduleId}/topic/${topic.next}`}
-  >
-    Tema {topic.next} →
-  </Link>
-) : (
-  <Link
-    className={styles.nextButton}
-    to="/module/3/integrative-evaluation"
-  >
-    Evaluación integradora 
-  </Link>
-)}
-<button type="button" className={styles.previousLessonButton} onClick={() => onSectionChange('forum')}>← Anterior</button></div>
+            <div
+              className={styles.lessonActionGroup}
+            >
+              {topic.next ? (
+                <Link
+                  className={`${styles.nextButton} ${buttonStyles.primary}`}
+                  to={`/module/${moduleId}/topic/${topic.next}`}
+                >
+                  Tema {topic.next} →
+                </Link>
+              ) : (
+                <Link
+                  className={`${styles.nextButton} ${buttonStyles.primary}`}
+                  to="/module/3/integrative-evaluation"
+                >
+                  Evaluación integradora
+                </Link>
+              )}
+
+              <button
+                type="button"
+                className={`${styles.previousLessonButton} ${buttonStyles.previous}`}
+                onClick={() =>
+                  onSectionChange('forum')
+                }
+              >
+                ← Anterior
+              </button>
+            </div>
           </div>
         ) : (
           <EvaluationForm
@@ -488,7 +615,20 @@ const Topic31Activities = ({
             }}
           />
         )}
-        {!passed && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => onSectionChange('forum')}>← Anterior</button></div>}
+
+        {!passed && (
+          <div className={styles.lessonActionGroup}>
+            <button
+              type="button"
+              className={`${styles.previousLessonButton} ${buttonStyles.previous}`}
+              onClick={() =>
+                onSectionChange('forum')
+              }
+            >
+              ← Anterior
+            </button>
+          </div>
+        )}
       </>
     );
   }
@@ -496,15 +636,25 @@ const Topic31Activities = ({
   const others = posts.filter(
     (post) =>
       myPost &&
-      Number(post.userId) !==
-        Number(myPost.userId)
+      Number(post.userId) !== Number(myPost.userId)
   );
 
   return (
     <>
       <div className={styles.greenWelcome}>
-        <div><span className={styles.forumEyebrow}>ACTIVIDAD PARTICIPATIVA · TEMA {topicNumber}</span><ForumTitle title={topic.title} /><p>{topic.lead}</p></div>
-        <div className={styles.greenArt}><ForumArt topicNumber={topicNumber} /></div>
+        <div>
+          <span className={styles.forumEyebrow}>
+            ACTIVIDAD PARTICIPATIVA · TEMA{' '}
+            {topicNumber}
+          </span>
+
+          <ForumTitle title={topic.title} />
+          <p>{topic.lead}</p>
+        </div>
+
+        <div className={styles.greenArt}>
+          <ForumArt topicNumber={topicNumber} />
+        </div>
       </div>
 
       <div className={styles.forumPrompt}>
@@ -514,30 +664,24 @@ const Topic31Activities = ({
       </div>
 
       <div className={styles.forumGuide}>
-        {topic.guide.map(
-          ([number, title, text]) => (
-            <div
-              key={number}
-              className={styles.forumGuideCard}
+        {topic.guide.map(([number, title, text]) => (
+          <div
+            key={number}
+            className={styles.forumGuideCard}
+          >
+            <span
+              className={styles.forumGuideNumber}
             >
-              <span
-                className={
-                  styles.forumGuideNumber
-                }
-              >
-                {number}
-              </span>
+              {number}
+            </span>
 
-              <div>
-                <strong>{title}</strong>
-                <p>{text}</p>
-              </div>
+            <div>
+              <strong>{title}</strong>
+              <p>{text}</p>
             </div>
-          )
-        )}
+          </div>
+        ))}
       </div>
-
-
 
       {error && (
         <p
@@ -557,46 +701,60 @@ const Topic31Activities = ({
               ✓ Tu respuesta está publicada
             </strong>
 
-            <p
-              style={{
-                whiteSpace: 'pre-wrap',
-              }}
-            >
+            <p style={{ whiteSpace: 'pre-wrap' }}>
               {myPost.content}
             </p>
           </div>
 
-          <div className={styles.forumEvaluationStep}>
+          <div
+            className={styles.forumEvaluationStep}
+          >
             <div>
               <strong>¿Estás preparado?</strong>
-
               <p>
                 Es momento de realizar la evaluación.
               </p>
             </div>
 
-<div className={styles.lessonActionGroup}>            <button
-              type="button"
-              className={styles.nextButton}
-              onClick={() =>
-                onSectionChange('evaluation')
-              }
+            <div
+              className={styles.lessonActionGroup}
             >
-              Evaluación
-            </button><button type="button" className={styles.previousLessonButton} onClick={() => onSectionChange('article')}>← Anterior</button></div>
+              <button
+                type="button"
+                className={`${styles.nextButton} ${buttonStyles.primary}`}
+                onClick={() =>
+                  onSectionChange('evaluation')
+                }
+              >
+                Evaluación
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.previousLessonButton} ${buttonStyles.previous}`}
+                onClick={() =>
+                  onSectionChange('article')
+                }
+              >
+                ← Anterior
+              </button>
+            </div>
           </div>
 
           <div className={styles.otherPosts}>
-            <div className={styles.otherPostsHeading}><h3>Respuestas del foro</h3><button type="button" className={styles.refreshForumButton} disabled={loading || busy} onClick={() => setRetry(value => value + 1)}>Actualizar foro</button></div>
+            <div
+              className={styles.otherPostsHeading}
+            >
+              <h3>Respuestas del foro</h3>
+            </div>
 
-            {!loading &&
-              others.length === 0 && (
-                <p>
-                  Todavía no hay respuestas de
-                  compañeros. Puedes continuar
-                  a la evaluación.
-                </p>
-              )}
+            {!loading && others.length === 0 && (
+              <p>
+                Todavía no hay respuestas de
+                compañeros. Puedes continuar
+                a la evaluación.
+              </p>
+            )}
 
             {commentError && (
               <p
@@ -610,11 +768,75 @@ const Topic31Activities = ({
             <div
               className={styles.forumPostsGrid}
             >
-              <article className={styles.forumPost}>
-                <div className={styles.forumPostAuthor}><span aria-hidden="true">{(myPost.User?.name || posts.find(post => Number(post.id) === Number(myPost.id))?.User?.name || 'T').charAt(0).toUpperCase()}</span><strong>{myPost.User?.name || posts.find(post => Number(post.id) === Number(myPost.id))?.User?.name || 'Tu publicación'}</strong></div>
-                <p style={{ whiteSpace: 'pre-wrap' }}>{myPost.content}</p>
-                {(posts.find(post => Number(post.id) === Number(myPost.id))?.ForoComments || myPost.ForoComments || []).map(item => <div key={item.id} className={styles.myForumPost}><strong>{item.User?.name || 'Participante'}:</strong><p style={{ whiteSpace: 'pre-wrap' }}>{item.content}</p></div>)}
+              <article
+                className={styles.forumPost}
+              >
+                <div
+                  className={styles.forumPostAuthor}
+                >
+                  <span aria-hidden="true">
+                    {(
+                      myPost.User?.name ||
+                      posts.find(
+                        (post) =>
+                          Number(post.id) ===
+                          Number(myPost.id)
+                      )?.User?.name ||
+                      'T'
+                    )
+                      .charAt(0)
+                      .toUpperCase()}
+                  </span>
+
+                  <strong>
+                    {myPost.User?.name ||
+                      posts.find(
+                        (post) =>
+                          Number(post.id) ===
+                          Number(myPost.id)
+                      )?.User?.name ||
+                      'Tu publicación'}
+                  </strong>
+                </div>
+
+                <p
+                  style={{
+                    whiteSpace: 'pre-wrap',
+                  }}
+                >
+                  {myPost.content}
+                </p>
+
+                {(
+                  posts.find(
+                    (post) =>
+                      Number(post.id) ===
+                      Number(myPost.id)
+                  )?.ForoComments ||
+                  myPost.ForoComments ||
+                  []
+                ).map((item) => (
+                  <div
+                    key={item.id}
+                    className={styles.myForumPost}
+                  >
+                    <strong>
+                      {item.User?.name ||
+                        'Participante'}
+                      :
+                    </strong>
+
+                    <p
+                      style={{
+                        whiteSpace: 'pre-wrap',
+                      }}
+                    >
+                      {item.content}
+                    </p>
+                  </div>
+                ))}
               </article>
+
               {others.map((post) => (
                 <article
                   key={post.id}
@@ -626,9 +848,7 @@ const Topic31Activities = ({
                     }
                   >
                     <span aria-hidden="true">
-                      {(
-                        post.User?.name || 'P'
-                      )
+                      {(post.User?.name || 'P')
                         .charAt(0)
                         .toUpperCase()}
                     </span>
@@ -647,37 +867,35 @@ const Topic31Activities = ({
                     {post.content}
                   </p>
 
-                  {(
-                    post.ForoComments || []
-                  ).map((item) => (
-                    <div
-                      key={item.id}
-                      className={
-                        styles.myForumPost
-                      }
-                    >
-                      <strong>
-                        {item.User?.name ||
-                          (Number(item.userId) ===
-                          Number(myPost.userId)
-                            ? 'Tú'
-                            : 'Participante')}
-                        :
-                      </strong>
-
-                      <p
-                        style={{
-                          whiteSpace: 'pre-wrap',
-                        }}
+                  {(post.ForoComments || []).map(
+                    (item) => (
+                      <div
+                        key={item.id}
+                        className={
+                          styles.myForumPost
+                        }
                       >
-                        {item.content}
-                      </p>
-                    </div>
-                  ))}
+                        <strong>
+                          {item.User?.name ||
+                            (Number(item.userId) ===
+                            Number(myPost.userId)
+                              ? 'Tú'
+                              : 'Participante')}
+                          :
+                        </strong>
 
-                  {(
-                    post.ForoComments || []
-                  ).some(
+                        <p
+                          style={{
+                            whiteSpace: 'pre-wrap',
+                          }}
+                        >
+                          {item.content}
+                        </p>
+                      </div>
+                    )
+                  )}
+
+                  {(post.ForoComments || []).some(
                     (item) =>
                       Number(item.userId) ===
                       Number(myPost.userId)
@@ -693,28 +911,20 @@ const Topic31Activities = ({
                       }
                     >
                       <label
-                        htmlFor={
-                          `comment-${topicNumber}-${post.id}`
-                        }
+                        htmlFor={`comment-${topicNumber}-${post.id}`}
                       >
                         Tu comentario — opcional
                       </label>
 
                       <textarea
-                        id={
-                          `comment-${topicNumber}-${post.id}`
-                        }
-                        value={
-                          drafts[post.id] || ''
-                        }
+                        id={`comment-${topicNumber}-${post.id}`}
+                        value={drafts[post.id] || ''}
                         onChange={(event) =>
-                          setDrafts(
-                            (previous) => ({
-                              ...previous,
-                              [post.id]:
-                                event.target.value,
-                            })
-                          )
+                          setDrafts((previous) => ({
+                            ...previous,
+                            [post.id]:
+                              event.target.value,
+                          }))
                         }
                         rows={3}
                         minLength={10}
@@ -724,16 +934,14 @@ const Topic31Activities = ({
 
                       <button
                         type="submit"
-                        className={
-                          styles.nextButton
-                        }
+                        className={`${styles.nextButton} ${buttonStyles.primary}`}
                         disabled={
                           commenting !== null
                         }
                       >
                         {commenting === post.id
                           ? 'Publicando...'
-                          : 'Comentar →'}
+                          : 'Comentar '}
                       </button>
                     </form>
                   )}
@@ -750,17 +958,13 @@ const Topic31Activities = ({
           <h3>Comparte tu respuesta</h3>
 
           <label
-            htmlFor={
-              `forumAnswer-${topicNumber}`
-            }
+            htmlFor={`forumAnswer-${topicNumber}`}
           >
             Tu respuesta
           </label>
 
           <textarea
-            id={
-              `forumAnswer-${topicNumber}`
-            }
+            id={`forumAnswer-${topicNumber}`}
             value={answer}
             onChange={(event) =>
               setAnswer(event.target.value)
@@ -780,16 +984,29 @@ const Topic31Activities = ({
 
           <button
             type="submit"
-            className={styles.nextButton}
+            className={`${styles.nextButton} ${buttonStyles.primary}`}
             disabled={busy}
           >
             {busy
               ? 'Publicando...'
-              : 'Publicar respuesta →'}
+              : 'Publicar respuesta '}
           </button>
         </form>
       ) : null}
-      {!myPost && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => onSectionChange('article')}>← Anterior</button></div>}
+
+      {!myPost && (
+        <div className={styles.lessonActionGroup}>
+          <button
+            type="button"
+            className={`${styles.previousLessonButton} ${buttonStyles.previous}`}
+            onClick={() =>
+              onSectionChange('article')
+            }
+          >
+            ← Anterior
+          </button>
+        </div>
+      )}
     </>
   );
 };

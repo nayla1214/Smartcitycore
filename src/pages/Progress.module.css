@@ -563,3 +563,54 @@
     grid-column: 2;
   }
 }
+/* Aprovechar todo el ancho disponible */
+
+.contentGrid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.mainColumn,
+.sideColumn {
+  min-width: 0;
+}
+
+/* Contador de módulos en una franja compacta */
+
+.sideColumn {
+  grid-row: 1;
+}
+
+.sideColumn .panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.sideColumn .panelHeader {
+  flex: 1;
+  border-bottom: none;
+}
+
+.sideColumn .moduleProgress {
+  min-width: 320px;
+  padding: 18px 24px;
+}
+
+@media (max-width: 700px) {
+  .sideColumn .panel {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .sideColumn .panelHeader {
+    border-bottom: 1px solid #e8edf4;
+  }
+
+  .sideColumn .moduleProgress {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

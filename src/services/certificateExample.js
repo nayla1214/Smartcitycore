@@ -11,505 +11,499 @@ const escapeHtml = (value) =>
       })[character]
   );
 
+const PROJECT_NAME =
+  'Plataforma web de urbanismo inteligente para el fortalecimiento de servicios tecnológicos aplicado a municipios del sur de Manabí, fase III';
+
 export const buildCertificateExample = (
-  name = 'Nombre del participante'
+  name = 'Nombre del participante',
+  {
+    courseName = 'Ciudades Inteligentes y Gobierno Digital',
+    finalScore = null,
+  } = {}
 ) => {
   const participant = escapeHtml(
-    name.trim() || 'Nombre del participante'
+    String(name || '').trim() || 'Nombre del participante'
   );
 
-  const date = new Date().toLocaleDateString(
-    'es-EC',
-    {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      timeZone: 'America/Guayaquil',
-    }
-  );
+  // finalScore debe recibirse expresamente en escala de 0 a 10.
+  const numericScore =
+    finalScore === null ||
+    finalScore === undefined ||
+    String(finalScore).trim() === ''
+      ? null
+      : Number(finalScore);
 
-  return `
-<!DOCTYPE html>
+  const validScore =
+    numericScore !== null &&
+    Number.isFinite(numericScore) &&
+    numericScore >= 0 &&
+    numericScore <= 10;
+
+  const score = validScore
+    ? `${numericScore.toLocaleString('es-EC', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}/10`
+    : 'Pendiente de registro';
+
+  return `<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8">
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+  <title>Vista previa del certificado</title>
 
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1"
-    >
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-    <title>Ejemplo de certificado SMARTCITYCORE</title>
+    body {
+      margin: 0;
+      background: #e9eef5;
+      color: #18304f;
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-    <style>
-      * {
-        box-sizing: border-box;
-      }
+    .toolbar {
+      max-width: 1123px;
+      margin: 20px auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
 
+    .toolbar p {
+      margin: 0;
+    }
+
+    .toolbar button {
+      min-height: 44px;
+      padding: 12px 20px;
+      flex-shrink: 0;
+      border: none;
+      border-radius: 10px;
+      background: #17345c;
+      color: white;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .toolbar button:focus-visible {
+      outline: 3px solid #2563eb;
+      outline-offset: 4px;
+    }
+
+    .preview {
+      padding: 0 20px 30px;
+      overflow: auto;
+    }
+
+    .certificate {
+      position: relative;
+      width: 297mm;
+      height: 210mm;
+      margin: 0 auto;
+      padding: 17mm 25mm 13mm;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 15px 45px #17345c20;
+    }
+
+    .frame {
+      position: absolute;
+      inset: 8mm;
+      border: 1px solid #d9bd77;
+      pointer-events: none;
+    }
+
+    .decoration {
+      position: absolute;
+      width: 100mm;
+      height: 65mm;
+      pointer-events: none;
+    }
+
+    .top-decoration {
+      top: 0;
+      right: 0;
+    }
+
+    .bottom-decoration {
+      bottom: 0;
+      left: 0;
+      transform: rotate(180deg);
+    }
+
+    .heading,
+    .content,
+    .footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    .heading {
+      min-height: 17mm;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20mm;
+    }
+
+    .brand {
+      color: #17345c;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .brand small {
+      display: block;
+      margin-top: 6px;
+      color: #77633c;
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 2px;
+    }
+
+    .institution {
+      max-width: 65mm;
+      margin-right: 18mm;
+      color: #40516a;
+      font-size: 9px;
+      line-height: 1.6;
+      text-align: right;
+    }
+
+    .content {
+      flex: 1;
+      padding-top: 7mm;
+      text-align: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 3mm;
+      color: #8c6a28;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 4px;
+    }
+
+    h1 {
+      margin: 0;
+      color: #17345c;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 49px;
+      font-weight: 400;
+      letter-spacing: 5px;
+    }
+
+    .subtitle {
+      margin: 2mm 0 0;
+      color: #8c6a28;
+      font-size: 12px;
+      letter-spacing: 6px;
+    }
+
+    .ornament {
+      width: 52mm;
+      height: 1px;
+      margin: 5mm auto;
+      background: #c49a46;
+    }
+
+    .grant {
+      margin: 0;
+      color: #667287;
+      font-size: 13px;
+    }
+
+    .name {
+      max-width: 235mm;
+      margin: 4mm auto;
+      color: #17345c;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 34px;
+      font-style: italic;
+      font-weight: 400;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .description {
+      margin: 0 auto;
+      color: #526178;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .course {
+      max-width: 220mm;
+      margin: 3mm auto 4mm;
+      color: #17345c;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .project {
+      max-width: 205mm;
+      margin: 0 auto;
+      color: #526178;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    .project strong {
+      color: #34465f;
+      font-weight: 600;
+    }
+
+    .grade {
+      margin: 5mm auto 0;
+      display: inline-block;
+      padding: 9px 22px;
+      border: 1px solid #e6d7b3;
+      border-radius: 5px;
+      background: #fcf9f1;
+      color: #5a5140;
+      font-size: 12px;
+    }
+
+    .grade strong {
+      margin-left: 6px;
+      color: #17345c;
+      font-size: 16px;
+    }
+
+    .footer {
+      padding-top: 5mm;
+      text-align: center;
+    }
+
+    .signature {
+      width: 90mm;
+      margin: 0 auto;
+    }
+
+    .signature-space {
+      height: 13mm;
+    }
+
+    .signature-line {
+      width: 75mm;
+      height: 1px;
+      margin: 0 auto 3mm;
+      background: #8b98a8;
+    }
+
+    .signature strong {
+      display: block;
+      color: #17345c;
+      font-size: 14px;
+    }
+
+    .signature span {
+      display: block;
+      margin-top: 5px;
+      color: #647187;
+      font-size: 11px;
+    }
+
+    .sample-note {
+      margin: 6mm 0 0;
+      color: #6b7280;
+      font-size: 8px;
+      letter-spacing: .5px;
+      line-height: 1.5;
+    }
+
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+
+    @media print {
       body {
-        margin: 0;
-        background: #eaf0f7;
-        color: #15233b;
-        font-family: Arial, Helvetica, sans-serif;
+        background: #fff;
       }
 
       .toolbar {
-        max-width: 1123px;
-        margin: 20px auto;
-        padding: 0 18px;
-
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-
-        font-size: 13px;
-        line-height: 1.5;
-      }
-
-      .toolbar button {
-        padding: 13px 18px;
-
-        border: none;
-        border-radius: 9px;
-        background: #2563eb;
-        color: #ffffff;
-
-        font: inherit;
-        font-weight: 700;
-
-        cursor: pointer;
+        display: none;
       }
 
       .preview {
-        overflow: auto;
-        padding: 0 20px 24px;
+        padding: 0;
+        overflow: visible;
       }
 
       .certificate {
-        position: relative;
-        isolation: isolate;
-
-        width: 297mm;
-        height: 210mm;
-        margin: 0 auto;
-        padding: 18mm 21mm;
-
-        display: flex;
-        flex-direction: column;
-
-        overflow: hidden;
-        background: #ffffff;
-        box-shadow: 0 10px 35px #15233b16;
+        margin: 0;
+        box-shadow: none;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
+    }
 
-      .certificate::before {
-        position: absolute;
-        inset: 8mm;
-        z-index: -1;
-
-        border: 1px solid #cbd8eb;
-
-        content: '';
-        pointer-events: none;
-      }
-
-      .stripe {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-
-        width: 7mm;
-        background: #163d7c;
-      }
-
-      .corner {
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: -1;
-
-        width: 65mm;
-        height: 26mm;
-
-        background: #edf5f3;
-        clip-path: polygon(
-          30% 0,
-          100% 0,
-          100% 100%
-        );
-      }
-
-      .watermark {
-        position: absolute;
-        top: 99mm;
-        right: 0;
-        left: 0;
-        z-index: -1;
-
-        transform: rotate(-22deg);
-
-        color: rgba(37, 99, 235, 0.055);
-        font-size: 100px;
-        font-weight: 800;
-        letter-spacing: 12px;
-        text-align: center;
-      }
-
-      .heading {
-        display: flex;
+    @media screen and (max-width: 700px) {
+      .toolbar {
         align-items: flex-start;
-        justify-content: space-between;
-        gap: 20px;
+        flex-direction: column;
       }
+    }
+  </style>
+</head>
 
-      .brand {
-        color: #163d7c;
-        font-size: 22px;
-        font-weight: 800;
-        letter-spacing: 2px;
-      }
+<body>
+  <div class="toolbar">
+    <p>
+      <strong>Vista previa del diseño.</strong><br>
+      Para descargarlo, selecciona «Guardar como PDF»
+      en la ventana de impresión.
+    </p>
 
-      .brand small {
-        display: block;
-        margin-top: 7px;
+    <button type="button" onclick="window.print()">
+      Imprimir / Guardar PDF
+    </button>
+  </div>
 
-        color: #667b94;
-        font-size: 10px;
-        font-weight: 600;
-        letter-spacing: 1.2px;
-      }
+  <div class="preview">
+    <main
+      class="certificate"
+      aria-label="Modelo de certificado de aprobación"
+    >
+      <div class="frame" aria-hidden="true"></div>
 
-      .institution {
-        color: #415773;
-        font-size: 11px;
-        font-weight: 700;
-        line-height: 1.6;
-        text-align: right;
-      }
-
-      .sample {
-        display: inline-block;
-        margin-top: 10px;
-        padding: 5px 10px;
-
-        border: 1px solid #cfdbed;
-        border-radius: 20px;
-
-        color: #526b8d;
-        font-size: 9px;
-        letter-spacing: 1px;
-      }
-
-      .content {
-        flex: 1;
-        padding-top: 12mm;
-        text-align: center;
-      }
-
-      .eyebrow {
-        color: #168467;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 4px;
-      }
-
-      h1 {
-        margin: 4mm 0 0;
-
-        color: #163d7c;
-        font-family: Georgia, 'Times New Roman', serif;
-        font-size: 43px;
-        letter-spacing: 4px;
-      }
-
-      .subtitle {
-        margin-top: 2mm;
-
-        color: #6e829d;
-        font-size: 11px;
-        letter-spacing: 5px;
-      }
-
-      .rule {
-        width: 52mm;
-        height: 2px;
-        margin: 6mm auto;
-
-        background: #168467;
-      }
-
-      .grant {
-        margin: 0;
-
-        color: #667b94;
-        font-size: 13px;
-      }
-
-      .name {
-        max-width: 242mm;
-        margin: 4mm auto 3mm;
-
-        color: #15233b;
-        font-family: Georgia, 'Times New Roman', serif;
-        font-size: 29px;
-        font-weight: 700;
-        line-height: 1.3;
-        overflow-wrap: anywhere;
-      }
-
-      .description {
-        max-width: 210mm;
-        margin: 0 auto;
-
-        color: #52657d;
-        font-size: 13px;
-        line-height: 1.8;
-      }
-
-      .course {
-        margin: 3mm 0 4mm;
-
-        color: #163d7c;
-        font-size: 20px;
-        font-weight: 700;
-      }
-
-      .details {
-        margin-top: 5mm;
-
-        display: flex;
-        justify-content: center;
-        gap: 8mm;
-
-        color: #52657d;
-        font-size: 10px;
-      }
-
-      .details strong {
-        color: #163d7c;
-      }
-
-      .signatures {
-        margin-top: 7mm;
-
-        display: flex;
-        justify-content: space-around;
-        gap: 20mm;
-
-        text-align: center;
-      }
-
-      .signature {
-        width: 67mm;
-        padding-top: 3mm;
-
-        border-top: 1px solid #8296b0;
-
-        color: #415773;
-        font-size: 10px;
-      }
-
-      .signature span {
-        display: block;
-        margin-top: 5px;
-
-        color: #8290a3;
-        font-size: 9px;
-      }
-
-      .footnote {
-        margin: 6mm 0 0;
-
-        color: #8290a3;
-        font-size: 9px;
-        line-height: 1.5;
-        text-align: center;
-      }
-
-      @page {
-        size: A4 landscape;
-        margin: 0;
-      }
-
-      @media print {
-        body {
-          background: #ffffff;
-        }
-
-        .toolbar {
-          display: none;
-        }
-
-        .preview {
-          padding: 0;
-          overflow: visible;
-        }
-
-        .certificate {
-          margin: 0;
-          box-shadow: none;
-
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
-        }
-      }
-
-      @media screen and (max-width: 700px) {
-        .toolbar {
-          align-items: flex-start;
-          flex-direction: column;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="toolbar">
-      <span>
-        <strong>Certificado de ejemplo.</strong>
-        Para obtener el PDF, selecciona
-        «Guardar como PDF» en la ventana de impresión.
-      </span>
-
-      <button
-        type="button"
-        onclick="window.print()"
+      <svg
+        class="decoration top-decoration"
+        viewBox="0 0 400 250"
+        preserveAspectRatio="none"
+        aria-hidden="true"
       >
-        Imprimir / Guardar PDF
-      </button>
-    </div>
+        <path
+          d="M0 0H400V250C310 220 250 115 170 65S60 15 0 0Z"
+          fill="#17345c"
+        />
+        <path
+          d="M65 0H400V180C295 146 230 60 65 0Z"
+          fill="#294878"
+        />
+        <path
+          d="M0 0H35C190 45 250 170 400 220V234C245 185 185 58 0 0Z"
+          fill="#c49a46"
+        />
+        <path
+          d="M155 0H177L400 116V128Z"
+          fill="#e6c879"
+        />
+      </svg>
 
-    <div class="preview">
-      <main
-        class="certificate"
-        aria-label="Ejemplo de certificado"
+      <svg
+        class="decoration bottom-decoration"
+        viewBox="0 0 400 250"
+        preserveAspectRatio="none"
+        aria-hidden="true"
       >
-        <div class="stripe"></div>
-        <div class="corner"></div>
+        <path
+          d="M0 0H400V250C310 220 250 115 170 65S60 15 0 0Z"
+          fill="#17345c"
+        />
+        <path
+          d="M65 0H400V180C295 146 230 60 65 0Z"
+          fill="#294878"
+        />
+        <path
+          d="M0 0H35C190 45 250 170 400 220V234C245 185 185 58 0 0Z"
+          fill="#c49a46"
+        />
+      </svg>
 
-        <div
-          class="watermark"
-          aria-hidden="true"
-        >
-          EJEMPLO
+      <header class="heading">
+        <div class="brand">
+          SMARTCITYCORE
+          <small>FORMACIÓN · INNOVACIÓN · TERRITORIO</small>
         </div>
 
-        <header class="heading">
-          <div class="brand">
-            SMARTCITYCORE
+        <div class="institution">
+          UNIVERSIDAD ESTATAL DEL SUR DE MANABÍ<br>
+          <strong>UNESUM</strong>
+        </div>
+      </header>
 
-            <small>
-              RECURSOS EDUCATIVOS · CIUDADES INTELIGENTES
-            </small>
-          </div>
+      <section class="content">
+        <p class="eyebrow">VINCULACIÓN CON LA SOCIEDAD</p>
 
-          <div class="institution">
-            UNIVERSIDAD ESTATAL DEL SUR DE MANABÍ
-            <br>
-            UNESUM
-            <br>
+        <h1>CERTIFICADO</h1>
+        <p class="subtitle">DE APROBACIÓN</p>
 
-            <span class="sample">
-              MODELO DE DISEÑO · SIN VALIDEZ
-            </span>
-          </div>
-        </header>
+        <div class="ornament" aria-hidden="true"></div>
 
-        <section class="content">
-          <div class="eyebrow">
-            FORMACIÓN Y APRENDIZAJE
-          </div>
+        <p class="grant">Se otorga el presente certificado a</p>
 
-          <h1>CERTIFICADO</h1>
+        <h2 class="name">${participant}</h2>
 
-          <div class="subtitle">
-            DE APROBACIÓN
-          </div>
+        <p class="description">
+          Por haber completado y aprobado satisfactoriamente el curso
+        </p>
 
-          <div class="rule"></div>
+        <h3 class="course">${escapeHtml(courseName)}</h3>
 
-          <p class="grant">
-            Se otorga el presente certificado a
-          </p>
+        <p class="project">
+          desarrollado en el marco del proyecto
+          <strong>«${escapeHtml(PROJECT_NAME)}»</strong>.
+        </p>
 
-          <div class="name">
-            ${participant}
-          </div>
+        <div class="grade">
+          Calificación final:
+          <strong>${escapeHtml(score)}</strong>
+        </div>
+      </section>
 
-          <p class="description">
-            Por haber aprobado el curso
-          </p>
+      <footer class="footer">
+        <div class="signature">
+          <div class="signature-space" aria-hidden="true"></div>
+          <div class="signature-line" aria-hidden="true"></div>
 
-          <h2 class="course">
-            Introducción a Ciudades Inteligentes
-          </h2>
+          <strong>Dr. Christhian Caicedo</strong>
+          <span>Director del proyecto de vinculación</span>
+        </div>
 
-          <p class="description">
-            Desarrollado en el marco del proyecto
-            SMARTCITYCORE – UNESUM,
-            <br>
-            con contenidos de infraestructura sostenible,
-            movilidad, inteligencia artificial y servicios urbanos.
-          </p>
-
-          <div class="details">
-            <span>
-              Nota final:
-              <strong>por definir</strong>
-            </span>
-
-            <span>
-              Fecha del ejemplo:
-              <strong>${escapeHtml(date)}</strong>
-            </span>
-          </div>
-        </section>
-
-        <footer>
-          <div class="signatures">
-            <div class="signature">
-              Coordinación del proyecto
-
-              <span>
-                Espacio para firma autorizada
-              </span>
-            </div>
-
-            <div class="signature">
-              Responsable de capacitación
-
-              <span>
-                Espacio para firma autorizada
-              </span>
-            </div>
-          </div>
-
-          <p class="footnote">
-            EJEMPLO DE DISEÑO.
-            No acredita aprobación ni constituye un certificado emitido.
-            <br>
-            Las firmas, la nota final y los datos de emisión
-            se incorporarán en la versión definitiva.
-          </p>
-        </footer>
-      </main>
-    </div>
-  </body>
-</html>
-`;
+        <p class="sample-note">
+          VISTA PREVIA DEL DISEÑO · SIN VALIDEZ DE EMISIÓN<br>
+          La firma autorizada, la fecha y el código de emisión
+          se incorporarán al conectar el certificado definitivo.
+        </p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>`;
 };
 
 export const openCertificateExample = (
   name,
-  { print = false } = {}
+  {
+    print = false,
+    courseName,
+    finalScore = null,
+  } = {}
 ) => {
   const preview = window.open('', '_blank');
 
   if (!preview) {
     throw new Error(
-      'Permite las ventanas emergentes para abrir el certificado de ejemplo.'
+      'Permite las ventanas emergentes para abrir el certificado.'
     );
   }
 
@@ -522,16 +516,17 @@ export const openCertificateExample = (
         preview.focus();
         preview.print();
       },
-      {
-        once: true,
-      }
+      { once: true }
     );
   }
 
   preview.document.open();
 
   preview.document.write(
-    buildCertificateExample(name)
+    buildCertificateExample(name, {
+      courseName,
+      finalScore,
+    })
   );
 
   preview.document.close();

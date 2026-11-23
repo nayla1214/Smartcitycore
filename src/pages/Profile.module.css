@@ -75,3 +75,239 @@
 .editButton:focus-visible,.saveButton:focus-visible,.cancelButton:focus-visible { outline:3px solid #95b8f2; outline-offset:3px; }
 @media(max-width:1000px) { .contentGrid { grid-template-columns:1fr; } }
 @media(max-width:700px) { .profilePage { padding:80px 18px 35px; } .profileHeader { padding:22px; align-items:flex-start; flex-direction:column; } .identity { align-items:flex-start; } .avatar { width:48px; height:48px; border-radius:50%; font-size:17px; } .identity h1 { font-size:22px; } .editButton { width:100%; } .accountDetails { grid-template-columns:1fr; } .statisticsGrid { grid-template-columns:1fr; } .statistic { min-height:110px; } .formButtons { flex-direction:column; } .certificateActions { flex-direction:column; } .certificateActions button { width:100%; } }
+/* Medallas de reconocimiento */
+
+.achievements {
+  padding: 24px 18px;
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 12px;
+}
+
+.achievement {
+  min-width: 0;
+  padding: 20px 8px 16px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0;
+
+  border: 1px solid #e7ebf2;
+  border-radius: 14px;
+  background: #f8f9fc;
+  color: #8590a2;
+
+  text-align: center;
+  opacity: 1;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.achievement .medal {
+  position: relative;
+
+  width: 70px;
+  height: 70px;
+  margin-bottom: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+
+  box-sizing: border-box;
+  border: 5px solid #edf0f5;
+  border-radius: 50%;
+  background: #e3e7ee;
+  color: #8994a5;
+
+  box-shadow: 0 0 0 1px #dce2eb;
+}
+
+.medal > svg {
+  width: 29px;
+  height: 29px;
+  flex-shrink: 0;
+}
+
+.achievement .medalStatus {
+  position: absolute;
+  right: -7px;
+  bottom: -5px;
+
+  width: 24px;
+  height: 24px;
+  margin: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: #dce2eb;
+  color: #69768a;
+}
+
+.medalStatus svg {
+  width: 13px;
+  height: 13px;
+}
+
+.achievement > strong {
+  color: #687386;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.achievement > span {
+  margin-top: 6px;
+  color: #7c889a;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.achievementState {
+  margin-top: auto;
+  padding-top: 13px;
+
+  color: #7c889a;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.achievement.unlocked {
+  border-color: var(--medal-border);
+  background: var(--medal-background);
+  color: var(--medal-color);
+}
+
+.unlocked .medal {
+  border-color: #ffffff;
+  background: var(--medal-background);
+  color: var(--medal-color);
+
+  box-shadow:
+    0 0 0 2px var(--medal-border),
+    0 7px 16px rgba(25, 55, 104, 0.1);
+}
+
+.unlocked .medalStatus {
+  background: var(--medal-color);
+  color: #ffffff;
+}
+
+.achievement.unlocked > strong,
+.unlocked .achievementState {
+  color: var(--medal-color);
+}
+
+.achievementMessage {
+  grid-column: 1 / -1;
+  margin: 0;
+
+  color: #657187;
+  font-size: 12px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .achievements {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 14px;
+  }
+
+  .achievement {
+    padding: 22px 16px;
+  }
+
+  .achievement .medal {
+    width: 76px;
+    height: 76px;
+  }
+}
+.generalGrade {
+  padding: 22px;
+  color: #526178;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.gradeResult {
+  padding: 24px 15px;
+  border: 1px solid #dce7fa;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #edf4ff, #f8faff);
+  text-align: center;
+}
+
+.gradeResult > span {
+  display: block;
+  color: #526178;
+  font-size: 12px;
+}
+
+.gradeResult > strong {
+  display: block;
+  margin: 6px 0;
+  color: #17345c;
+  font-size: 42px;
+  line-height: 1.3;
+}
+
+.gradeResult small {
+  color: #657187;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.gradeResult p {
+  margin: 0;
+  color: #526178;
+  font-size: 12px;
+}
+
+.gradeBreakdown {
+  margin: 17px 0 0;
+}
+
+.gradeBreakdown > div {
+  padding: 13px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #e8edf4;
+}
+
+.gradeBreakdown dt {
+  color: #526178;
+}
+
+.gradeBreakdown dd {
+  margin: 0;
+  color: #17345c;
+  font-weight: 700;
+}
+
+.gradeBreakdown dd span {
+  color: #657187;
+  font-weight: 400;
+}
+
+.gradeExplanation {
+  margin: 15px 0 0;
+  color: #526178;
+  font-size: 12px;
+  line-height: 1.8;
+}

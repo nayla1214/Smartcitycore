@@ -1,3 +1,4 @@
+import buttonStyles from '../components/LessonButtons.module.css';
 import RequiredReadings, { useRequiredReadings } from '../components/RequiredReadings';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -519,7 +520,7 @@ const Topic12Intro = ({ moduleData }) => {
                   to={`/course/${moduleData.courseId}`}
                   className={styles.backLink}
                 >
-                  Volver al curso ↗
+                  Volver al curso 
                 </Link>
               </div>
 
@@ -749,7 +750,7 @@ const Topic12Intro = ({ moduleData }) => {
          <div className={styles.lessonActionGroup}>
   <button
     type="button"
-    className={styles.nextButton}
+    className={`${styles.nextButton} ${buttonStyles.primary}`}
     onClick={() => setSection('video')}
   >
     Empezar
@@ -757,7 +758,7 @@ const Topic12Intro = ({ moduleData }) => {
 
   <button
     type="button"
-    className={styles.previousLessonButton}
+    className={`${styles.previousLessonButton} ${buttonStyles.previous}`}
     onClick={() => setSection('index')}
   >
     <span aria-hidden="true">←</span>
@@ -770,19 +771,13 @@ const Topic12Intro = ({ moduleData }) => {
           <div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
               <div className={styles.videoTopBar}>
-                <button
-                  type="button"
-                  className={styles.returnButton}
-                  onClick={() => setSection('index')}
-                >
-                  ← Contenido del tema
-                </button>
+                <></>
 
                 <Link
                   to={`/course/${moduleData.courseId}`}
                   className={styles.backLink}
                 >
-                  Volver al curso ↗
+                  Volver al curso 
                 </Link>
               </div>
 
@@ -847,18 +842,18 @@ const Topic12Intro = ({ moduleData }) => {
               {videoCompleted ? (
                 <div className={styles.lessonActionGroup}><button
                   type="button"
-                  className={styles.nextButton}
+                  className={`${styles.nextButton} ${buttonStyles.primary}`}
                   onClick={() => setSection('article')}
                 >
                   Siguiente
-                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+                </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
               ) : topicVideo ? (
                 <p className={styles.pendingNote}>
                   Mira el video completo. Adelantarlo no registrará
                   esa parte como vista.
                 </p>
               ) : null}
-            {!videoCompleted && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+            {!videoCompleted && (<div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
 </section>
           </div>
         ) : section === 'article' ? (
@@ -866,13 +861,7 @@ const Topic12Intro = ({ moduleData }) => {
             <section className={styles.lessonCard}>
 
 
-              <button
-                type="button"
-                className={styles.returnButton}
-                onClick={() => setSection('index')}
-              >
-                ← Contenido del tema
-              </button>
+              <></>
 
               <div className={styles.articleHeader}>
 
@@ -943,11 +932,11 @@ const Topic12Intro = ({ moduleData }) => {
 
                 <div className={styles.lessonActionGroup}><button
                   type="button"
-                  className={styles.nextButton}
+                  className={`${styles.nextButton} ${buttonStyles.primary}`}
                   onClick={() => setSection('forum')}
                 >
                   Siguiente
-                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+                </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
               </div>
             </section>
           </div></RequiredReadings>
@@ -955,13 +944,7 @@ const Topic12Intro = ({ moduleData }) => {
           <div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
               <div className={styles.forumTopBar}>
-                <button
-                  type="button"
-                  className={styles.returnButton}
-                  onClick={() => setSection('index')}
-                >
-                  ← Contenido del tema
-                </button>
+                <></>
 
                 <Link
                   to={`/course/${moduleData.courseId}`}
@@ -1261,12 +1244,12 @@ const Topic12Intro = ({ moduleData }) => {
 
                   <button
                     type="submit"
-                    className={styles.nextButton}
+                    className={`${styles.nextButton} ${buttonStyles.primary}`}
                     disabled={publishing}
                   >
                     {publishing
                       ? 'Publicando...'
-                      : 'Publicar respuesta →'}
+                      : 'Publicar respuesta '}
                   </button>
                 </form>
               )}
@@ -1284,10 +1267,10 @@ const Topic12Intro = ({ moduleData }) => {
     <h3>¿Estás preparado?</h3>
     <p>Es momento de realizar la evaluación.</p>
   </div>
-  <div className={styles.lessonActionGroup}><button type="button" className={styles.nextButton}
+  <div className={styles.lessonActionGroup}><button type="button" className={`${styles.nextButton} ${buttonStyles.primary}`}
     onClick={() => setSection('evaluation')}>
     Evaluación 
-  </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+  </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
 </div>
 <div className={styles.otherPosts}>
                     <div className={styles.otherPostsHeading}>
@@ -1386,12 +1369,12 @@ const Topic12Intro = ({ moduleData }) => {
 
                                   <button
                                     type="submit"
-                                    className={styles.nextButton}
+                                    className={`${styles.nextButton} ${buttonStyles.primary}`}
                                     disabled={commentingPostId === post.id}
                                   >
                                     {commentingPostId === post.id
                                       ? 'Publicando...'
-                                      : 'Comentar →'}
+                                      : 'Comentar '}
                                   </button>
                                 </form>
                               )}
@@ -1412,26 +1395,20 @@ const Topic12Intro = ({ moduleData }) => {
                 
                 </>
               )}
-            {!myPost && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+            {!myPost && (<div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
 </section>
           </div>
         ) : section === 'evaluation' && myPost ? (
           <div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
               <div className={styles.introNavigation}>
-                <button
-                  type="button"
-                  className={styles.returnButton}
-                  onClick={() => setSection('index')}
-                >
-                  ← Contenido del tema
-                </button>
+                <></>
 
                 <Link
                   to={`/course/${moduleData.courseId}`}
                   className={styles.backLink}
                 >
-                  Volver al curso ↗
+                  Volver al curso 
                 </Link>
               </div>
 
@@ -1470,10 +1447,10 @@ const Topic12Intro = ({ moduleData }) => {
 
                   <div className={styles.lessonActionGroup}><Link
                     to={`/module/${moduleData.id}/topic/1.3`}
-                    className={styles.nextButton}
+                    className={`${styles.nextButton} ${buttonStyles.primary}`}
                   >
                     Tema 1.3 
-                  </Link><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+                  </Link><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                 </div>
               ) : (
                 <EvaluationForm
@@ -1484,7 +1461,7 @@ const Topic12Intro = ({ moduleData }) => {
                   }}
                 />
               )}
-            {!evaluationPassed && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+            {!evaluationPassed && (<div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
 </section>
           </div>
         ) : null}
@@ -1989,19 +1966,13 @@ const Topic13Intro = ({ moduleData }) => {
 
   const navigation = (
     <>
-      <button
-        type="button"
-        className={styles.returnButton}
-        onClick={() => setSection('index')}
-      >
-        ← Contenido del tema
-      </button>
+      <></>
 
       <Link
         to={`/course/${moduleData.courseId}`}
         className={styles.backLink}
       >
-        Volver al curso ↗
+        Volver al curso 
       </Link>
     </>
   );
@@ -2182,7 +2153,7 @@ const Topic13Intro = ({ moduleData }) => {
             <div className={styles.lessonActionGroup}>
   <button
     type="button"
-    className={styles.nextButton}
+    className={`${styles.nextButton} ${buttonStyles.primary}`}
     onClick={() => setSection('video')}
   >
     Empezar
@@ -2190,7 +2161,7 @@ const Topic13Intro = ({ moduleData }) => {
 
   <button
     type="button"
-    className={styles.previousLessonButton}
+    className={`${styles.previousLessonButton} ${buttonStyles.previous}`}
     onClick={() => setSection('index')}
   >
     <span aria-hidden="true">←</span>
@@ -2263,11 +2234,11 @@ const Topic13Intro = ({ moduleData }) => {
                     (videoCompleted ? (
                       <div className={styles.lessonActionGroup}><button
                         type="button"
-                        className={styles.nextButton}
+                        className={`${styles.nextButton} ${buttonStyles.primary}`}
                         onClick={() => setSection('article')}
                       >
                         Siguiente
-                      </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+                      </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                     ) : (
                       <p className={styles.pendingNote}>
                         Mira el video completo. Adelantarlo no
@@ -2276,7 +2247,7 @@ const Topic13Intro = ({ moduleData }) => {
                     ))}
                 </>
               )}
-            {!videoCompleted && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+            {!videoCompleted && (<div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
 </section>
           </div>
         ) : section === 'article' && videoCompleted ? (
@@ -2346,7 +2317,7 @@ const Topic13Intro = ({ moduleData }) => {
                 </div>
 
                 <a
-                  href="https://unhabitat.org/programme/people-centered-smart-cities/people-centered-smart-cities-playbooks"
+                  href="https://onu-habitat.org"
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.cepalLink}
@@ -2363,11 +2334,11 @@ const Topic13Intro = ({ moduleData }) => {
 
                 <div className={styles.lessonActionGroup}><button
                   type="button"
-                  className={styles.nextButton}
+                  className={`${styles.nextButton} ${buttonStyles.primary}`}
                   onClick={() => setSection('forum')}
                 >
                   Siguiente
-                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+                </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
               </div>
             </section>
           </div></RequiredReadings>
@@ -2382,7 +2353,10 @@ const Topic13Intro = ({ moduleData }) => {
 
               <header
   className={`${styles.forumWelcome} ${styles.forumWelcome13}`}
-><div className={styles.forumWelcomeText}><h2><span>¿Digitalizar</span>es suficiente?</h2><p>
+><div className={styles.forumWelcomeText}><h2>
+  ¿<span style={{ color: '#2563eb' }}>Digitalizar</span>
+  {' '}es suficiente?
+</h2><p>
                     Analiza una situación y propón
                     una acción para mejorar el servicio.
                   </p></div><div className={styles.forumWelcomeArt} aria-hidden="true"><EvolutionForumArt /></div></header>
@@ -2489,12 +2463,12 @@ const Topic13Intro = ({ moduleData }) => {
 
                         <button
                           type="submit"
-                          className={styles.nextButton}
+                          className={`${styles.nextButton} ${buttonStyles.primary}`}
                           disabled={publishing}
                         >
                           {publishing
                             ? 'Publicando...'
-                            : 'Publicar respuesta →'}
+                            : 'Publicar respuesta '}
                         </button>
                       </form>
                     ))}
@@ -2506,10 +2480,10 @@ const Topic13Intro = ({ moduleData }) => {
     <h3>¿Estás preparado?</h3>
     <p>Es momento de realizar la evaluación.</p>
   </div>
-  <div className={styles.lessonActionGroup}><button type="button" className={styles.nextButton}
+  <div className={styles.lessonActionGroup}><button type="button" className={`${styles.nextButton} ${buttonStyles.primary}`}
     onClick={() => setSection('evaluation')}>
     Evaluación 
-  </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+  </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
 </div>
 <div className={styles.otherPosts}>
                         <div className={styles.otherPostsHeading}>
@@ -2615,12 +2589,12 @@ const Topic13Intro = ({ moduleData }) => {
 
                                     <button
                                       type="submit"
-                                      className={styles.nextButton}
+                                      className={`${styles.nextButton} ${buttonStyles.primary}`}
                                       disabled={commentingPostId !== null}
                                     >
                                       {commentingPostId === post.id
                                         ? 'Publicando...'
-                                        : 'Comentar →'}
+                                        : 'Comentar '}
                                     </button>
                                   </form>
                                 )}
@@ -2646,7 +2620,7 @@ const Topic13Intro = ({ moduleData }) => {
                   )}
                 </>
               )}
-            {!myPost && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+            {!myPost && (<div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
 </section>
           </div>
         ) : section === 'evaluation' &&
@@ -2684,14 +2658,14 @@ const Topic13Intro = ({ moduleData }) => {
 
                   <button
                     type="button"
-                    className={styles.nextButton}
+                    className={`${styles.nextButton} ${buttonStyles.primary}`}
                     onClick={() => {
                       setLoadingEvaluation(true);
                       setEvaluationError('');
                       setEvaluationRetry((previous) => previous + 1);
                     }}
                   >
-                    Volver a intentar →
+                    Volver a intentar 
                   </button>
                 </div>
               ) : evaluationPassed ? (
@@ -2710,10 +2684,10 @@ const Topic13Intro = ({ moduleData }) => {
 
                   <div className={styles.lessonActionGroup}><Link
                     to={`/module/${moduleData.id}/topic/1.4`}
-                    className={styles.nextButton}
+                    className={`${styles.nextButton} ${buttonStyles.primary}`}
                   >
                     Tema 1.4 
-                  </Link><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+                  </Link><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                 </div>
               ) : (
                 <EvaluationForm
@@ -2721,7 +2695,7 @@ const Topic13Intro = ({ moduleData }) => {
                   onSuccess={handleEvaluationSuccess13}
                 />
               )}
-            {!evaluationPassed && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+            {!evaluationPassed && (<div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
 </section>
           </div>
         ) : null}
@@ -3250,19 +3224,13 @@ const Topic14Intro = ({ moduleData }) => {
 
   const navigation = (
     <>
-      <button
-        type="button"
-        className={styles.returnButton}
-        onClick={() => setSection('index')}
-      >
-        ← Contenido del tema
-      </button>
+      <></>
 
       <Link
         to={`/course/${moduleData.courseId}`}
         className={styles.backLink}
       >
-        Volver al curso ↗
+        Volver al curso 
       </Link>
     </>
   );
@@ -3444,7 +3412,7 @@ const Topic14Intro = ({ moduleData }) => {
         <div className={styles.lessonActionGroup}>
   <button
     type="button"
-    className={styles.nextButton}
+    className={`${styles.nextButton} ${buttonStyles.primary}`}
     onClick={() => setSection('video')}
   >
     Empezar
@@ -3452,7 +3420,7 @@ const Topic14Intro = ({ moduleData }) => {
 
   <button
     type="button"
-    className={styles.previousLessonButton}
+    className={`${styles.previousLessonButton} ${buttonStyles.previous}`}
     onClick={() => setSection('index')}
   >
     <span aria-hidden="true">←</span>
@@ -3520,11 +3488,11 @@ const Topic14Intro = ({ moduleData }) => {
                     (videoCompleted ? (
                       <div className={styles.lessonActionGroup}><button
                         type="button"
-                        className={styles.nextButton}
+                        className={`${styles.nextButton} ${buttonStyles.primary}`}
                         onClick={() => setSection('article')}
                       >
                         Siguiente
-                      </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+                      </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                     ) : (
                       <p className={styles.pendingNote}>
                         Mira el video completo. Adelantarlo no
@@ -3533,7 +3501,7 @@ const Topic14Intro = ({ moduleData }) => {
                     ))}
                 </>
               )}
-            {!videoCompleted && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+            {!videoCompleted && (<div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
 </section>
           </div>
         ) : section === 'article' && videoCompleted ? (
@@ -3603,7 +3571,7 @@ const Topic14Intro = ({ moduleData }) => {
                 </div>
 
                 <a
-                  href="https://unhabitat.org/programme/people-centered-smart-cities/people-centered-smart-cities-playbooks"
+                  href="https://onu-habitat.org"
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.cepalLink}
@@ -3619,11 +3587,11 @@ const Topic14Intro = ({ moduleData }) => {
 
                 <div className={styles.lessonActionGroup}><button
                   type="button"
-                  className={styles.nextButton}
+                  className={`${styles.nextButton} ${buttonStyles.primary}`}
                   onClick={() => setSection('forum')}
                 >
                   Siguiente
-                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+                </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
               </div>
             </section>
           </div></RequiredReadings>
@@ -3741,12 +3709,12 @@ const Topic14Intro = ({ moduleData }) => {
 
                         <button
                           type="submit"
-                          className={styles.nextButton}
+                          className={`${styles.nextButton} ${buttonStyles.primary}`}
                           disabled={publishing}
                         >
                           {publishing
                             ? 'Publicando...'
-                            : 'Publicar respuesta →'}
+                            : 'Publicar respuesta '}
                         </button>
                       </form>
                     ))}
@@ -3758,10 +3726,10 @@ const Topic14Intro = ({ moduleData }) => {
     <h3>¿Estás preparado?</h3>
     <p>Es momento de realizar la evaluación.</p>
   </div>
-  <div className={styles.lessonActionGroup}><button type="button" className={styles.nextButton}
+  <div className={styles.lessonActionGroup}><button type="button" className={`${styles.nextButton} ${buttonStyles.primary}`}
     onClick={() => setSection('evaluation')}>
     Evaluación 
-  </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+  </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
 </div>
 <div className={styles.otherPosts}>
                         <div className={styles.otherPostsHeading}>
@@ -3870,12 +3838,12 @@ const Topic14Intro = ({ moduleData }) => {
 
                                     <button
                                       type="submit"
-                                      className={styles.nextButton}
+                                      className={`${styles.nextButton} ${buttonStyles.primary}`}
                                       disabled={commentingPostId !== null}
                                     >
                                       {commentingPostId === post.id
                                         ? 'Publicando...'
-                                        : 'Comentar →'}
+                                        : 'Comentar '}
                                     </button>
                                   </form>
                                 )}
@@ -3898,7 +3866,7 @@ const Topic14Intro = ({ moduleData }) => {
                   )}
                 </>
               )}
-            {!myPost && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+            {!myPost && (<div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
 </section>
           </div>
         ) : section === 'evaluation' &&
@@ -3934,14 +3902,14 @@ const Topic14Intro = ({ moduleData }) => {
 
                   <button
                     type="button"
-                    className={styles.nextButton}
+                    className={`${styles.nextButton} ${buttonStyles.primary}`}
                     onClick={() => {
                       setLoadingEvaluation(true);
                       setEvaluationError('');
                       setEvaluationRetry((previous) => previous + 1);
                     }}
                   >
-                    Volver a intentar →
+                    Volver a intentar 
                   </button>
                 </div>
               ) : evaluationPassed ? (
@@ -3960,10 +3928,10 @@ const Topic14Intro = ({ moduleData }) => {
 
                   <div className={styles.lessonActionGroup}><Link
   to="/module/1/integrative-evaluation"
-  className={styles.nextButton}
+  className={`${styles.nextButton} ${buttonStyles.primary}`}
 >
   Evaluación integradora 
-</Link><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+</Link><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                 </div>
               ) : (
                 <EvaluationForm
@@ -3971,7 +3939,7 @@ const Topic14Intro = ({ moduleData }) => {
                   onSuccess={handleEvaluationSuccess14}
                 />
               )}
-            {!evaluationPassed && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+            {!evaluationPassed && (<div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
 </section>
           </div>
         ) : null}
@@ -4379,13 +4347,7 @@ const TopicDetail = () => {
         ) : (
           <div className={styles.lessonContent}>
             {section === 'article' && (
-              <button
-                type="button"
-                className={styles.returnButton}
-                onClick={() => setSection('index')}
-              >
-                ← Contenido del tema
-              </button>
+              <></>
             )}
 
             {section === 'about' && (
@@ -4397,7 +4359,7 @@ const TopicDetail = () => {
                     to={`/course/${moduleData.courseId}`}
                     className={styles.backLink}
                   >
-                    Volver al curso ↗
+                    Volver al curso 
                   </Link>
                 </div>
 
@@ -4484,7 +4446,7 @@ const TopicDetail = () => {
                 <div className={styles.lessonActionGroup}>
   <button
     type="button"
-    className={styles.nextButton}
+    className={`${styles.nextButton} ${buttonStyles.primary}`}
     onClick={() => setSection('video')}
   >
     Empezar
@@ -4492,7 +4454,7 @@ const TopicDetail = () => {
 
   <button
     type="button"
-    className={styles.previousLessonButton}
+    className={`${styles.previousLessonButton} ${buttonStyles.previous}`}
     onClick={() => setSection('index')}
   >
     <span aria-hidden="true">←</span>
@@ -4505,19 +4467,13 @@ const TopicDetail = () => {
             {section === 'video' && (
               <section className={styles.lessonCard}>
                 <div className={styles.videoTopBar}>
-                  <button
-                    type="button"
-                    className={styles.returnButton}
-                    onClick={() => setSection('index')}
-                  >
-                    ← Contenido del tema
-                  </button>
+                  <></>
 
                   <Link
                     to={`/course/${moduleData.courseId}`}
                     className={styles.backLink}
                   >
-                    Volver al curso ↗
+                    Volver al curso 
                   </Link>
                 </div>
 
@@ -4568,36 +4524,30 @@ const TopicDetail = () => {
                 {videoCompleted ? (
                   <div className={styles.lessonActionGroup}><button
                     type="button"
-                    className={styles.nextButton}
+                    className={`${styles.nextButton} ${buttonStyles.primary}`}
                     onClick={() => setSection('article')}
                   >
                     Siguiente
-                  </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+                  </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                 ) : (
                   <p className={styles.pendingNote}>
                     Termina el video para acceder a Información y al foro.
                   </p>
                 )}
-              {!videoCompleted && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+              {!videoCompleted && (<div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
 </section>
             )}
 
             {section === 'forum' && videoCompleted && (
               <section className={styles.lessonCard}>
                 <div className={styles.forumTopBar}>
-                  <button
-                    type="button"
-                    className={styles.returnButton}
-                    onClick={() => setSection('index')}
-                  >
-                    ← Contenido del tema
-                  </button>
+                  <></>
 
                   <Link
                     to={`/course/${moduleData.courseId}`}
                     className={styles.backLink}
                   >
-                    Volver al curso ↗
+                    Volver al curso 
                   </Link>
                 </div>
 
@@ -4835,12 +4785,12 @@ const TopicDetail = () => {
 
                     <button
                       type="submit"
-                      className={styles.nextButton}
+                      className={`${styles.nextButton} ${buttonStyles.primary}`}
                       disabled={publishing}
                     >
                       {publishing
                         ? 'Publicando...'
-                        : 'Publicar respuesta →'}
+                        : 'Publicar respuesta '}
                     </button>
                   </form>
                 )}
@@ -4864,11 +4814,11 @@ const TopicDetail = () => {
 
   <div className={styles.lessonActionGroup}><button
     type="button"
-    className={styles.nextButton}
+    className={`${styles.nextButton} ${buttonStyles.primary}`}
     onClick={() => setSection('evaluation')}
   >
     Evaluación 
-  </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+  </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
 </div>
 
                     <div className={styles.otherPosts}>
@@ -4977,32 +4927,26 @@ const TopicDetail = () => {
 
                   <div className={styles.lessonActionGroup}><button
                     type="button"
-                    className={styles.nextButton}
+                    className={`${styles.nextButton} ${buttonStyles.primary}`}
                     onClick={() => setSection('forum')}
                   >
                     Siguiente
-                  </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+                  </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                 </div>
-              {!myPost && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+              {!myPost && (<div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
 </section></RequiredReadings>
             )}
 
             {section === 'evaluation' && myPost && evaluationId && (
               <section className={styles.lessonCard}>
                 <div className={styles.introNavigation}>
-                  <button
-                    type="button"
-                    className={styles.returnButton}
-                    onClick={() => setSection('index')}
-                  >
-                    ← Contenido del tema
-                  </button>
+                  <></>
 
                   <Link
                     to={`/course/${moduleData.courseId}`}
                     className={styles.backLink}
                   >
-                    Volver al curso ↗
+                    Volver al curso 
                   </Link>
                 </div>
 
@@ -5049,10 +4993,10 @@ const TopicDetail = () => {
 
                 <div className={styles.lessonActionGroup}><Link
   to="/module/1/topic/1.2"
-  className={styles.nextButton}
+  className={`${styles.nextButton} ${buttonStyles.primary}`}
 >
   Tema 1.2 
-</Link><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
+</Link><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>
                   </div>
                 ) : (
                   <EvaluationForm
@@ -5060,7 +5004,7 @@ const TopicDetail = () => {
                     onSuccess={handleEvaluationSuccess}
                   />
                 )}
-              {!evaluationPassed && (<div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
+              {!evaluationPassed && (<div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection(({video:'about',article:'video',forum:'article',evaluation:'forum'})[section])}><span aria-hidden="true">←</span> Anterior</button></div>)}
 </section>
             )}
           </div>

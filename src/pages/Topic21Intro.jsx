@@ -1,3 +1,4 @@
+import buttonStyles from '../components/LessonButtons.module.css';
 import RequiredReadings, { useRequiredReadings } from '../components/RequiredReadings';
 import PracticalEvaluationForm from '../components/PracticalEvaluationForm';
 import { useEffect, useState } from 'react';
@@ -493,19 +494,13 @@ const Topic21Content = ({ moduleData }) => {
 
   const navigation = (
     <>
-      <button
-        type="button"
-        className={styles.returnButton}
-        onClick={() => setSection('index')}
-      >
-        ← Contenido del tema
-      </button>
+      <></>
 
       <Link
         to={`/course/${moduleData.courseId}`}
         className={styles.backLink}
       >
-        Volver al curso ↗
+        Volver al curso 
       </Link>
     </>
   );
@@ -536,13 +531,7 @@ const Topic21Content = ({ moduleData }) => {
               {error || 'No se pudo cargar el tema.'}
             </p>
 
-            <button
-              type="button"
-              className={styles.nextButton}
-              onClick={() => setRetry((value) => value + 1)}
-            >
-              Volver a comprobar →
-            </button>
+            <></>
           </section>
         </div>
       </main>
@@ -673,7 +662,7 @@ const Topic21Content = ({ moduleData }) => {
           <div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
               <div className={styles.introNavigation}>
-                <Link to={`/course/${moduleData.courseId}`} className={styles.backLink}>Volver al curso ↗</Link>
+                <Link to={`/course/${moduleData.courseId}`} className={styles.backLink}>Volver al curso </Link>
               </div>
 
 <div className={styles.greenWelcome}><div>              <h2 className={styles.plainHeading}>Introducción</h2>
@@ -769,11 +758,11 @@ const Topic21Content = ({ moduleData }) => {
 
               <div className={styles.lessonActionGroup}><button
                 type="button"
-                className={styles.nextButton}
+                className={`${styles.nextButton} ${buttonStyles.primary}`}
                 onClick={() => setSection('video')}
               >
                 Empezar 
-              </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('index')}>← Anterior</button></div>
+              </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('index')}>← Anterior</button></div>
             </section>
           </div>
         ) : section === 'video' ? (
@@ -833,11 +822,11 @@ const Topic21Content = ({ moduleData }) => {
               {videoCompleted ? (
                 <div className={styles.lessonActionGroup}><button
                   type="button"
-                  className={styles.nextButton}
+                  className={`${styles.nextButton} ${buttonStyles.primary}`}
                   onClick={() => setSection('article')}
                 >
                   Siguiente 
-                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>
+                </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('about')}>← Anterior</button></div>
               ) : (
                 <>
                   <p className={styles.pendingNote}>
@@ -847,17 +836,15 @@ const Topic21Content = ({ moduleData }) => {
 
                   <button
                     type="button"
-                    className={styles.returnButton}
+                    className={`${styles.returnButton} ${buttonStyles.primary}`}
                     onClick={verifyVideoCompletion}
                     disabled={checkingProgress}
                   >
-                    {checkingProgress
-                      ? 'Consultando tu avance...'
-                      : 'Comprobar mi avance'}
+                   
                   </button>
                 </>
               )}
-              {!videoCompleted && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>}
+              {!videoCompleted && <div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('about')}>← Anterior</button></div>}
             </section>
           </div>
         ) : section === 'article' && videoCompleted ? (
@@ -965,11 +952,11 @@ const Topic21Content = ({ moduleData }) => {
 
                 <div className={styles.lessonActionGroup}><button
                   type="button"
-                  className={styles.nextButton}
+                  className={`${styles.nextButton} ${buttonStyles.primary}`}
                   onClick={() => setSection('forum')}
                 >
                   Siguiente 
-                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('video')}>← Anterior</button></div>
+                </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('video')}>← Anterior</button></div>
               </div>
             </section>
           </div></RequiredReadings>
@@ -1063,18 +1050,18 @@ const Topic21Content = ({ moduleData }) => {
 
                     <div className={styles.lessonActionGroup}><button
                       type="button"
-                      className={styles.nextButton}
+                      className={`${styles.nextButton} ${buttonStyles.primary}`}
                       disabled={!canOpenEvaluation}
                       onClick={() => setSection('evaluation')}
                     >
                       Evaluación
-                    </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('article')}>← Anterior</button></div>
+                    </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('article')}>← Anterior</button></div>
                   </div>
 
                   <div className={styles.otherPosts}>
                     <div className={styles.otherPostsHeading}>
                       <h3>Respuestas del foro</h3>
-                    <button type="button" className={styles.refreshForumButton} disabled={loadingForum || publishing} onClick={() => setForumRetry(value => value + 1)}>{loadingForum }</button></div>
+                    <button type="button" className={`${styles.refreshForumButton} ${buttonStyles.primary}`} disabled={loadingForum || publishing} onClick={() => setForumRetry(value => value + 1)}>{loadingForum }</button></div>
 
                     <div className={styles.forumPostsGrid}>
                       <article className={styles.forumPost}>
@@ -1175,14 +1162,14 @@ const Topic21Content = ({ moduleData }) => {
 
                                 <button
                                   type="submit"
-                                  className={styles.nextButton}
+                                  className={`${styles.nextButton} ${buttonStyles.primary}`}
                                   disabled={
                                     commentingPostId !== null
                                   }
                                 >
                                   {commentingPostId === post.id
                                     ? 'Publicando...'
-                                    : 'Comentar →'}
+                                    : 'Comentar '}
                                 </button>
                               </form>
                             )}
@@ -1250,16 +1237,16 @@ const Topic21Content = ({ moduleData }) => {
 
                   <button
                     type="submit"
-                    className={styles.nextButton}
+                    className={`${styles.nextButton} ${buttonStyles.primary}`}
                     disabled={publishing}
                   >
                     {publishing
                       ? 'Publicando...'
-                      : 'Publicar respuesta →'}
+                      : 'Publicar respuesta '}
                   </button>
                 </form>
               ) : null}
-              {!myPost && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('article')}>← Anterior</button></div>}
+              {!myPost && <div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('article')}>← Anterior</button></div>}
             </section>
           </div>
         ) : section === 'evaluation' && canOpenEvaluation ? (
@@ -1288,14 +1275,14 @@ const Topic21Content = ({ moduleData }) => {
 
                   <button
                     type="button"
-                    className={styles.nextButton}
+                    className={`${styles.nextButton} ${buttonStyles.primary}`}
                     onClick={() => {
                       setLoadingEvaluation(true);
                       setEvaluationError('');
                       setEvaluationRetry((value) => value + 1);
                     }}
                   >
-                    Volver a intentar →
+                    Volver a intentar 
                   </button>
                 </div>
               ) : evaluationPassed ? (
@@ -1317,10 +1304,10 @@ const Topic21Content = ({ moduleData }) => {
 
                                    <div className={styles.lessonActionGroup}><Link
                     to={`/module/${moduleData.id}/topic/2.2`}
-                    className={styles.nextButton}
+                    className={`${styles.nextButton} ${buttonStyles.primary}`}
                   >
                     Tema 2.2 
-                  </Link><button type="button" className={styles.previousLessonButton} onClick={() => setSection('forum')}>← Anterior</button></div>
+                  </Link><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('forum')}>← Anterior</button></div>
                 </div>
               ) : (
                 <EvaluationForm
@@ -1328,7 +1315,7 @@ const Topic21Content = ({ moduleData }) => {
                   onSuccess={handleEvaluationSuccess21}
                 />
               )}
-              {!evaluationPassed && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('forum')}>← Anterior</button></div>}
+              {!evaluationPassed && <div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('forum')}>← Anterior</button></div>}
             </section>
           </div>
         ) : null}
@@ -1786,19 +1773,13 @@ const Topic22Content = ({ moduleData }) => {
 
   const navigation = (
     <>
-      <button
-        type="button"
-        className={styles.returnButton}
-        onClick={() => setSection('index')}
-      >
-        ← Contenido del tema
-      </button>
+      <></>
 
       <Link
         to={`/course/${moduleData.courseId}`}
         className={styles.backLink}
       >
-        Volver al curso ↗
+        Volver al curso 
       </Link>
     </>
   );
@@ -1829,22 +1810,9 @@ const Topic22Content = ({ moduleData }) => {
               {error || 'No se pudo cargar el tema.'}
             </p>
 
-            {!hasAccess && (
-              <Link
-                to={`/module/${moduleData.id}/topic/2.1`}
-                className={styles.nextButton}
-              >
-                Volver al tema 2.1 →
-              </Link>
-            )}
+        
 
-            <button
-              type="button"
-              className={styles.returnButton}
-              onClick={() => setRetry((value) => value + 1)}
-            >
-              Volver a comprobar
-            </button>
+            <></>
           </section>
         </div>
       </main>
@@ -1976,7 +1944,7 @@ const Topic22Content = ({ moduleData }) => {
           <div className={styles.lessonContent}>
             <section className={styles.lessonCard}>
               <div className={styles.introNavigation}>
-                <Link to={`/course/${moduleData.courseId}`} className={styles.backLink}>Volver al curso ↗</Link>
+                <Link to={`/course/${moduleData.courseId}`} className={styles.backLink}>Volver al curso </Link>
               </div>
 
               <div className={styles.greenWelcome}><div><h2 className={styles.plainHeading}>Introducción</h2>
@@ -2068,11 +2036,11 @@ const Topic22Content = ({ moduleData }) => {
 
               <div className={styles.lessonActionGroup}><button
                 type="button"
-                className={styles.nextButton}
+                className={`${styles.nextButton} ${buttonStyles.primary}`}
                 onClick={() => setSection('video')}
               >
                 Empezar 
-              </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('index')}>← Anterior</button></div>
+              </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('index')}>← Anterior</button></div>
             </section>
           </div>
         ) : section === 'video' ? (
@@ -2129,11 +2097,11 @@ const Topic22Content = ({ moduleData }) => {
               {videoCompleted ? (
                 <div className={styles.lessonActionGroup}><button
                   type="button"
-                  className={styles.nextButton}
+                  className={`${styles.nextButton} ${buttonStyles.primary}`}
                   onClick={() => setSection('article')}
                 >
                   Siguiente 
-                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>
+                </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('about')}>← Anterior</button></div>
               ) : (
                 <>
                   <p className={styles.pendingNote}>
@@ -2143,17 +2111,15 @@ const Topic22Content = ({ moduleData }) => {
 
                   <button
                     type="button"
-                    className={styles.returnButton}
+                    className={`${styles.returnButton} ${buttonStyles.primary}`}
                     onClick={verifyVideoCompletion}
                     disabled={checkingProgress}
                   >
-                    {checkingProgress
-                      ? 'Consultando tu avance...'
-                      : 'Comprobar mi avance'}
+                  
                   </button>
                 </>
               )}
-            {!videoCompleted && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>}</section>
+            {!videoCompleted && <div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('about')}>← Anterior</button></div>}</section>
           </div>
         ) : section === 'article' && videoCompleted ? (
           <RequiredReadings gate={readingGate}><div className={styles.lessonContent}>
@@ -2263,11 +2229,11 @@ const Topic22Content = ({ moduleData }) => {
 
                 <div className={styles.lessonActionGroup}><button
                   type="button"
-                  className={styles.nextButton}
+                  className={`${styles.nextButton} ${buttonStyles.primary}`}
                   onClick={() => setSection('forum')}
                 >
                   Siguiente 
-                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('video')}>← Anterior</button></div>
+                </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('video')}>← Anterior</button></div>
               </div>
             </section>
           </div></RequiredReadings>
@@ -2372,18 +2338,18 @@ const Topic22Content = ({ moduleData }) => {
 
                     <div className={styles.lessonActionGroup}><button
                       type="button"
-                      className={styles.nextButton}
+                      className={`${styles.nextButton} ${buttonStyles.primary}`}
                       disabled={!canOpenEvaluation}
                       onClick={() => setSection('evaluation')}
                     >
                       Evaluación
-                    </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('article')}>← Anterior</button></div>
+                    </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('article')}>← Anterior</button></div>
                   </div>
 
                   <div className={styles.otherPosts}>
                     <div className={styles.otherPostsHeading}>
                       <h3>Respuestas del foro</h3>
-                    <button type="button" className={styles.refreshForumButton} disabled={loadingForum || publishing} onClick={() => setForumRetry(value => value + 1)}>{loadingForum }</button></div>
+                    <button type="button" className={`${styles.refreshForumButton} ${buttonStyles.primary}`} disabled={loadingForum || publishing} onClick={() => setForumRetry(value => value + 1)}>{loadingForum }</button></div>
 
                     
 
@@ -2481,14 +2447,14 @@ const Topic22Content = ({ moduleData }) => {
 
                                 <button
                                   type="submit"
-                                  className={styles.nextButton}
+                                  className={`${styles.nextButton} ${buttonStyles.primary}`}
                                   disabled={
                                     commentingPostId !== null
                                   }
                                 >
                                   {commentingPostId === post.id
                                     ? 'Publicando...'
-                                    : 'Comentar →'}
+                                    : 'Comentar '}
                                 </button>
                               </form>
                             )}
@@ -2550,16 +2516,16 @@ const Topic22Content = ({ moduleData }) => {
 
                   <button
                     type="submit"
-                    className={styles.nextButton}
+                    className={`${styles.nextButton} ${buttonStyles.primary}`}
                     disabled={publishing}
                   >
                     {publishing
                       ? 'Publicando...'
-                      : 'Publicar respuesta →'}
+                      : 'Publicar respuesta '}
                   </button>
                 </form>
               ) : null}
-            {!myPost && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('article')}>← Anterior</button></div>}</section>
+            {!myPost && <div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('article')}>← Anterior</button></div>}</section>
           </div>
         ) : section === 'evaluation' && canOpenEvaluation ? (
           <div className={styles.lessonContent}>
@@ -2582,14 +2548,14 @@ const Topic22Content = ({ moduleData }) => {
 
                   <button
                     type="button"
-                    className={styles.nextButton}
+                    className={`${styles.nextButton} ${buttonStyles.primary}`}
                     onClick={() => {
                       setLoadingEvaluation(true);
                       setEvaluationError('');
                       setEvaluationRetry((value) => value + 1);
                     }}
                   >
-                    Volver a intentar →
+                    Volver a intentar 
                   </button>
                 </div>
               ) : evaluationPassed ? (
@@ -2611,10 +2577,10 @@ const Topic22Content = ({ moduleData }) => {
 
                   <div className={styles.lessonActionGroup}><Link
                     to={`/module/${moduleData.id}/topic/2.3`}
-                    className={styles.nextButton}
+                    className={`${styles.nextButton} ${buttonStyles.primary}`}
                   >
                     Tema 2.3 
-                  </Link><button type="button" className={styles.previousLessonButton} onClick={() => setSection('forum')}>← Anterior</button></div>
+                  </Link><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('forum')}>← Anterior</button></div>
                 </div>
               ) : (
                 <EvaluationForm
@@ -2622,7 +2588,7 @@ const Topic22Content = ({ moduleData }) => {
                   onSuccess={handleEvaluationSuccess22}
                 />
               )}
-            {!evaluationPassed && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('forum')}>← Anterior</button></div>}</section>
+            {!evaluationPassed && <div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('forum')}>← Anterior</button></div>}</section>
           </div>
         ) : null}
       </div>
@@ -3053,19 +3019,13 @@ const Topic23Content = ({ moduleData }) => {
 
   const navigation = (
     <>
-      <button
-        type="button"
-        className={styles.returnButton}
-        onClick={() => setSection('index')}
-      >
-        ← Contenido del tema
-      </button>
+      <></>
 
       <Link
         to={`/course/${moduleData.courseId || 1}`}
         className={styles.backLink}
       >
-        Volver al curso ↗
+        Volver al curso 
       </Link>
     </>
   );
@@ -3099,24 +3059,9 @@ const Topic23Content = ({ moduleData }) => {
               {error || 'No se pudo cargar el tema.'}
             </p>
 
-            {!hasAccess && (
-              <Link
-                to={`/module/${moduleData.id}/topic/2.2`}
-                className={styles.nextButton}
-              >
-                Volver al tema 2.2 →
-              </Link>
-            )}
+          
 
-            <button
-              type="button"
-              className={styles.returnButton}
-              onClick={() =>
-                setRetry((value) => value + 1)
-              }
-            >
-              Volver a comprobar
-            </button>
+            <></>
           </section>
         </div>
       </main>
@@ -3280,7 +3225,7 @@ const Topic23Content = ({ moduleData }) => {
               <div
                 className={styles.introNavigation}
               >
-                <Link to={`/course/${moduleData.courseId}`} className={styles.backLink}>Volver al curso ↗</Link>
+                <Link to={`/course/${moduleData.courseId}`} className={styles.backLink}>Volver al curso </Link>
               </div>
 
               <div className={styles.greenWelcome}><div><h2 className={styles.plainHeading}>Introducción</h2>
@@ -3392,13 +3337,13 @@ const Topic23Content = ({ moduleData }) => {
 
               <div className={styles.lessonActionGroup}><button
                 type="button"
-                className={styles.nextButton}
+                className={`${styles.nextButton} ${buttonStyles.primary}`}
                 onClick={() =>
                   setSection('video')
                 }
               >
                 Empezar 
-              </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('index')}>← Anterior</button></div>
+              </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('index')}>← Anterior</button></div>
             </section>
           </div>
         ) : section === 'video' ? (
@@ -3468,13 +3413,13 @@ const Topic23Content = ({ moduleData }) => {
               {videoCompleted ? (
                 <div className={styles.lessonActionGroup}><button
                   type="button"
-                  className={styles.nextButton}
+                  className={`${styles.nextButton} ${buttonStyles.primary}`}
                   onClick={() =>
                     setSection('article')
                   }
                 >
                   Siguiente 
-                </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>
+                </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('about')}>← Anterior</button></div>
               ) : (
                 <>
                   <p
@@ -3486,19 +3431,17 @@ const Topic23Content = ({ moduleData }) => {
 
                   <button
                     type="button"
-                    className={styles.returnButton}
+                    className={`${styles.returnButton} ${buttonStyles.primary}`}
                     onClick={
                       verifyVideoCompletion
                     }
                     disabled={checkingProgress}
                   >
-                    {checkingProgress
-                      ? 'Consultando tu avance...'
-                      : 'Comprobar mi avance'}
+                  
                   </button>
                 </>
               )}
-            {!videoCompleted && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('about')}>← Anterior</button></div>}</section>
+            {!videoCompleted && <div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('about')}>← Anterior</button></div>}</section>
           </div>
         ) : section === 'article' &&
           videoCompleted ? (
@@ -3683,13 +3626,13 @@ const Topic23Content = ({ moduleData }) => {
 
               <div className={styles.lessonActionGroup}><button
                 type="button"
-                className={styles.nextButton}
+                className={`${styles.nextButton} ${buttonStyles.primary}`}
                 onClick={() =>
                   setSection('forum')
                 }
               >
                 Siguiente 
-              </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('video')}>← Anterior</button></div>
+              </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('video')}>← Anterior</button></div>
             </div>
           </section></RequiredReadings>
         ) : section === 'forum' &&
@@ -3832,7 +3775,7 @@ const Topic23Content = ({ moduleData }) => {
 
                     <div className={styles.lessonActionGroup}><button
                       type="button"
-                      className={styles.nextButton}
+                      className={`${styles.nextButton} ${buttonStyles.primary}`}
                       disabled={
                         !canOpenEvaluation
                       }
@@ -3841,7 +3784,7 @@ const Topic23Content = ({ moduleData }) => {
                       }
                     >
                       Evaluación
-                    </button><button type="button" className={styles.previousLessonButton} onClick={() => setSection('article')}>← Anterior</button></div>
+                    </button><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('article')}>← Anterior</button></div>
                   </div>
 
                   <div
@@ -3855,7 +3798,7 @@ const Topic23Content = ({ moduleData }) => {
                       <h3>
                         Respuestas del foro
                       </h3>
-                    <button type="button" className={styles.refreshForumButton} disabled={loadingForum || publishing} onClick={() => setForumRetry(value => value + 1)}>{loadingForum }</button></div>
+                    <button type="button" className={`${styles.refreshForumButton} ${buttonStyles.primary}`} disabled={loadingForum || publishing} onClick={() => setForumRetry(value => value + 1)}>{loadingForum }</button></div>
 
                     
 
@@ -3994,9 +3937,7 @@ const Topic23Content = ({ moduleData }) => {
 
                                 <button
                                   type="submit"
-                                  className={
-                                    styles.nextButton
-                                  }
+                                  className={`${styles.nextButton} ${buttonStyles.primary}`}
                                   disabled={
                                     commentingPostId !==
                                     null
@@ -4005,7 +3946,7 @@ const Topic23Content = ({ moduleData }) => {
                                   {commentingPostId ===
                                   post.id
                                     ? 'Publicando...'
-                                    : 'Comentar →'}
+                                    : 'Comentar '}
                                 </button>
                               </form>
                             )}
@@ -4089,16 +4030,16 @@ const Topic23Content = ({ moduleData }) => {
 
                   <button
                     type="submit"
-                    className={styles.nextButton}
+                    className={`${styles.nextButton} ${buttonStyles.primary}`}
                     disabled={publishing}
                   >
                     {publishing
                       ? 'Publicando...'
-                      : 'Publicar respuesta →'}
+                      : 'Publicar respuesta '}
                   </button>
                 </form>
               ) : null}
-            {!myPost && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('article')}>← Anterior</button></div>}</section>
+            {!myPost && <div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('article')}>← Anterior</button></div>}</section>
           </div>
         ) : section === 'evaluation' &&
           canOpenEvaluation ? (
@@ -4130,7 +4071,7 @@ const Topic23Content = ({ moduleData }) => {
                 </span>
               </div></div>
 
-              {evaluationPassed && <div className={styles.practicalSuccess} role="status"><div><h3>¡Felicidades!</h3><p>Aprobaste el tema 2.3 — 10/10 puntos (100 %)</p><p>Tu actividad y la imagen quedaron guardadas.</p></div><div className={styles.lessonActionGroup}><Link to="/module/2/integrative-evaluation" className={styles.nextButton}>Evaluación integradora </Link><button type="button" className={styles.previousLessonButton} onClick={() => setSection('forum')}>← Anterior</button></div></div>}
+              {evaluationPassed && <div className={styles.practicalSuccess} role="status"><div><h3>¡Felicidades!</h3><p>Aprobaste el tema 2.3 — 10/10 puntos (100 %)</p><p>Tu actividad y la imagen quedaron guardadas.</p></div><div className={styles.lessonActionGroup}><Link to="/module/2/integrative-evaluation" className={`${styles.nextButton} ${buttonStyles.primary}`}>Evaluación integradora </Link><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('forum')}>← Anterior</button></div></div>}
 <div className={`${styles.practicalPresentation} ${evaluationPassed ? styles.practicalResultSaved : ""}`}><PracticalEvaluationForm
                 courseId={
                   moduleData.courseId || 1
@@ -4139,7 +4080,7 @@ const Topic23Content = ({ moduleData }) => {
                   handleEvaluationSuccess23
                 }
               /></div>
-            {!evaluationPassed && <div className={styles.lessonActionGroup}><button type="button" className={styles.previousLessonButton} onClick={() => setSection('forum')}>← Anterior</button></div>}</section>
+            {!evaluationPassed && <div className={styles.lessonActionGroup}><button type="button" className={`${styles.previousLessonButton} ${buttonStyles.previous}`} onClick={() => setSection('forum')}>← Anterior</button></div>}</section>
           </div>
         ) : null}
       </div>

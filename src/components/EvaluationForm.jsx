@@ -40,7 +40,8 @@ const EvaluationForm = ({ evaluationId, onSuccess }) => {
       } catch (err) {
         if (active) {
           setError(
-            err.message || 'No se pudo cargar la evaluación.'
+            err.message ||
+              'No se pudo cargar la evaluación.'
           );
         }
       } finally {
@@ -60,6 +61,8 @@ const EvaluationForm = ({ evaluationId, onSuccess }) => {
   const questions =
     evaluation?.Questions || evaluation?.questions || [];
 
+  const passed = result?.passed === true;
+
   const handleOptionChange = (questionId, optionId) => {
     setAnswers((previous) => ({
       ...previous,
@@ -69,43 +72,71 @@ const EvaluationForm = ({ evaluationId, onSuccess }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (submitting) return;
+
     setError('');
 
     if (questions.length === 0) {
-      setError('No hay preguntas disponibles para enviar.');
+      setError(
+        'No hay preguntas disponibles para enviar.'
+      );
       return;
     }
 
     if (
       questions.some(
-        (question) => answers[question.id] === undefined
+        (question) =>
+          answers[question.id] === undefined
       )
     ) {
-      setError('Responde todas las preguntas antes de enviar.');
+      setError(
+        'Responde todas las preguntas antes de enviar.'
+      );
       return;
     }
 
     setSubmitting(true);
 
     try {
-      const formattedAnswers = questions.map((question) => ({
-        questionId: question.id,
-        optionId: answers[question.id],
-      }));
+      const formattedAnswers = questions.map(
+        (question) => ({
+          questionId: question.id,
+          optionId: answers[question.id],
+        })
+      );
 
       const response = await api.post(
         `/evaluations/${evaluationId}/submit`,
         { answers: formattedAnswers }
       );
 
-      setResult(response);
+      // Un intento reprobado no conserva la revisión
+      // en el estado del componente.
+      setResult({
+        ...response,
+        review:
+          response.passed === true &&
+          Array.isArray(response.review)
+            ? response.review
+            : [],
+      });
+
+      setAnswers({});
     } catch (err) {
       setError(
-        err.message || 'No se pudieron guardar tus respuestas.'
+        err.message ||
+          'No se pudieron guardar tus respuestas.'
       );
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleRetry = () => {
+    setResult(null);
+    setAnswers({});
+    setError('');
   };
 
   if (loading) {
@@ -125,7 +156,10 @@ const EvaluationForm = ({ evaluationId, onSuccess }) => {
       <h3>{evaluation.title}</h3>
 
       {error && (
-        <p role="alert" style={{ color: '#b91c1c' }}>
+        <p
+          role="alert"
+          style={{ color: '#b91c1c' }}
+        >
           {error}
         </p>
       )}
@@ -138,72 +172,81 @@ const EvaluationForm = ({ evaluationId, onSuccess }) => {
               padding: '1.25rem',
               margin: '1rem 0 1.5rem',
               borderRadius: '0.8rem',
-              background: result.passed
+              background: passed
                 ? '#edf9f1'
                 : '#fff3f0',
-              color: result.passed
+              color: passed
                 ? '#176342'
                 : '#9a392b',
             }}
           >
             <strong>
-              Nota: {Number(result.earnedScore).toFixed(0)}
+              Nota:{' '}
+              {Number(result.earnedScore).toFixed(0)}
               /{Number(result.maximumScore).toFixed(0)}
               {' '}puntos
-              {' '}({Number(result.percentage).toFixed(0)}%).
+              {' '}(
+              {Number(result.percentage).toFixed(0)}
+              %).
             </strong>
 
             <p>
-              {result.passed
+              {passed
                 ? '¡Aprobaste!'
-                : 'Aún no aprobaste. Revisa tus respuestas y vuelve a intentarlo.'}
+                : 'Aún no aprobaste. Repasa el contenido del tema y vuelve a intentarlo. Necesitas al menos un 70 % para aprobar.'}
             </p>
           </div>
 
-          <section aria-label="Revisión de respuestas">
-            <h4>Revisión de tus respuestas</h4>
+          {passed && result.review.length > 0 && (
+            <section
+              aria-label="Revisión de respuestas"
+            >
+              <h4>Revisión de tus respuestas</h4>
 
-            {(result.review || []).map((item, index) => (
-              <div
-                key={item.questionId}
-                style={{
-                  padding: '1rem 1.2rem',
-                  marginBottom: '0.85rem',
-                  borderRadius: '0.8rem',
-                  border: item.correct
-                    ? '1px solid #cce8d6'
-                    : '1px solid #f2d5cd',
-                  background: item.correct
-                    ? '#f5fbf7'
-                    : '#fff8f5',
-                }}
-              >
-                <strong>
-                  {index + 1}. {item.question}
-                </strong>
+              {result.review.map((item, index) => (
+                <div
+                  key={item.questionId}
+                  style={{
+                    padding: '1rem 1.2rem',
+                    marginBottom: '0.85rem',
+                    borderRadius: '0.8rem',
+                    border: item.correct
+                      ? '1px solid #cce8d6'
+                      : '1px solid #f2d5cd',
+                    background: item.correct
+                      ? '#f5fbf7'
+                      : '#fff8f5',
+                  }}
+                >
+                  <strong>
+                    {index + 1}. {item.question}
+                  </strong>
 
-                <p>
-                  {item.correct ? '✓ ' : '✕ '}
-                  Tu respuesta: {item.selectedAnswer}
-                </p>
-
-                {!item.correct && (
                   <p>
-                    <strong>
-                      Respuesta correcta: {item.correctAnswer}
-                    </strong>
+                    {item.correct ? '✓ ' : '✕ '}
+                    Tu respuesta: {item.selectedAnswer}
                   </p>
-                )}
 
-                <small>
-                  {item.pointsEarned}/{item.pointsPossible}
-                  {' '}puntos
-                </small>
-              </div>
-            ))}
-          </section>
+                  {!item.correct && (
+                    <p>
+                      <strong>
+                        Respuesta correcta:{' '}
+                        {item.correctAnswer}
+                      </strong>
+                    </p>
+                  )}
 
-          {result.passed ? (
+                  <small>
+                    {item.pointsEarned}/
+                    {item.pointsPossible}
+                    {' '}puntos
+                  </small>
+                </div>
+              ))}
+            </section>
+          )}
+
+          {passed ? (
             <button
               type="button"
               className="btn btn-primary mt-4"
@@ -215,11 +258,7 @@ const EvaluationForm = ({ evaluationId, onSuccess }) => {
             <button
               type="button"
               className="btn btn-primary mt-4"
-              onClick={() => {
-                setResult(null);
-                setAnswers({});
-                setError('');
-              }}
+              onClick={handleRetry}
             >
               Intentar nuevamente →
             </button>
@@ -230,18 +269,25 @@ const EvaluationForm = ({ evaluationId, onSuccess }) => {
           <form onSubmit={handleSubmit}>
             {questions.map((question, index) => {
               const options =
-                question.Options || question.options || [];
+                question.Options ||
+                question.options ||
+                [];
 
               return (
                 <fieldset
                   key={question.id}
                   className={styles.questionBlock}
+                  disabled={submitting}
                 >
-                  <legend className={styles.questionText}>
+                  <legend
+                    className={styles.questionText}
+                  >
                     {index + 1}. {question.text}
                   </legend>
 
-                  <div className={styles.optionsList}>
+                  <div
+                    className={styles.optionsList}
+                  >
                     {options.map((option) => (
                       <label
                         key={option.id}
@@ -252,8 +298,9 @@ const EvaluationForm = ({ evaluationId, onSuccess }) => {
                           name={`question-${question.id}`}
                           value={option.id}
                           checked={
-                            String(answers[question.id]) ===
-                            String(option.id)
+                            String(
+                              answers[question.id]
+                            ) === String(option.id)
                           }
                           onChange={() =>
                             handleOptionChange(
@@ -262,6 +309,7 @@ const EvaluationForm = ({ evaluationId, onSuccess }) => {
                             )
                           }
                         />
+
                         <span>{option.text}</span>
                       </label>
                     ))}

@@ -1,93 +1,369 @@
-import { useState, useEffect, useContext, useMemo } from 'react';
+import {
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+
+import {
+  Link,
+  useLocation,
+} from 'react-router-dom';
+
+import {
+  FiUsers,
+  FiShield,
+  FiCheckCircle,
+  FiArrowLeft,
+  FiSearch,
+} from 'react-icons/fi';
+
 import { AuthContext } from '../context/AuthContext';
 import { api } from '../services/api';
 import styles from './AdminDashboard.module.css';
 
+const ROLE_NAMES = {
+  USER: 'Participante',
+  ADMIN: 'Director del proyecto',
+  SUPERADMIN: 'Superadministrador',
+};
+
+const getId = (user) => user?.id ?? user?._id;
+
+const formatScore = (value) =>
+  value === null || value === undefined
+    ? '—'
+    : `${(Number(value) / 10).toLocaleString('es-EC', {
+        maximumFractionDigits: 2,
+      })}/10`;
+
+const formatDate = (value) => {
+  if (!value) return '—';
+
+  const date = new Date(value);
+
+  return Number.isNaN(date.getTime())
+    ? '—'
+    : date.toLocaleString('es-EC');
+};
+
 const AdminDashboard = () => {
   const { user } = useContext(AuthContext);
+  const location = useLocation();
+
+  const allowed = ['ADMIN', 'SUPERADMIN'].includes(
+    user?.role
+  );
+
+  const isSuperAdmin = user?.role === 'SUPERADMIN';
+
+  const accountKey = String(getId(user) || '');
+  const usersView = location.pathname === '/admin/users';
 
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [retry, setRetry] = useState(0);
+
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [busyId, setBusyId] = useState(null);
+
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [progress, setProgress] = useState(null);
+  const [progressLoading, setProgressLoading] =
+    useState(false);
+  const [progressError, setProgressError] = useState('');
+
+  const requestRef = useRef(0);
+  const detailHeadingRef = useRef(null);
 
   useEffect(() => {
-    const fetchAdminData = async () => {
+    let active = true;
+
+    requestRef.current += 1;
+
+    setUsers([]);
+    setSelectedUser(null);
+    setProgress(null);
+    setProgressError('');
+    setProgressLoading(false);
+    setError('');
+    setMessage('');
+    setLoading(true);
+
+    const loadUsers = async () => {
+      if (!allowed) {
+        if (active) setLoading(false);
+        return;
+      }
+
       try {
-        setError('');
-        const usersData = await api.get('/users');
-        setUsers(Array.isArray(usersData) ? usersData : []);
-      } catch (error) {
-        console.error('Error al cargar los usuarios:', error);
-        setError('No fue posible cargar la información de los usuarios.');
+        const data = await api.get('/users');
+
+        if (!Array.isArray(data)) {
+          throw new Error(
+            'El servidor devolvió una lista de usuarios inválida.'
+          );
+        }
+
+        if (active) setUsers(data);
+      } catch (requestError) {
+        if (active) {
+          setError(
+            requestError.message ||
+              'No fue posible cargar los usuarios.'
+          );
+        }
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
 
-    if (user?.role === 'ADMIN') {
-      fetchAdminData();
-    } else {
-      setLoading(false);
+    loadUsers();
+
+    return () => {
+      active = false;
+      requestRef.current += 1;
+    };
+  }, [accountKey, user?.role, allowed, retry]);
+
+  useEffect(() => {
+    requestRef.current += 1;
+    setSelectedUser(null);
+    setProgress(null);
+    setProgressLoading(false);
+    setProgressError('');
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (selectedUser) {
+      detailHeadingRef.current?.focus();
     }
-  }, [user]);
+  }, [selectedUser]);
+
+  const visibleUsers = useMemo(
+    () =>
+      isSuperAdmin
+        ? users
+        : users.filter((item) => item.role === 'USER'),
+    [users, isSuperAdmin]
+  );
+
+  const participants = users.filter(
+    (item) => item.role === 'USER'
+  );
+
+  const activeParticipants = participants.filter(
+    (item) => item.status === true
+  ).length;
+
+  const administrators = users.filter(
+    (item) => item.role === 'ADMIN'
+  ).length;
 
   const filteredUsers = useMemo(() => {
-    const searchValue = search.trim().toLowerCase();
+    const query = search.trim().toLowerCase();
 
-    return users.filter((currentUser) => {
+    return visibleUsers.filter((item) => {
       const matchesSearch =
-        currentUser.name?.toLowerCase().includes(searchValue) ||
-        currentUser.email?.toLowerCase().includes(searchValue);
+        (item.name || '').toLowerCase().includes(query) ||
+        (item.email || '').toLowerCase().includes(query);
 
       const matchesRole =
-        roleFilter === 'ALL' || currentUser.role === roleFilter;
+        roleFilter === 'ALL' || item.role === roleFilter;
 
-      return matchesSearch && matchesRole;
+      const matchesStatus =
+        statusFilter === 'ALL' ||
+        (statusFilter === 'ACTIVE' &&
+          item.status === true) ||
+        (statusFilter === 'INACTIVE' &&
+          item.status !== true);
+
+      return (
+        matchesSearch &&
+        matchesRole &&
+        matchesStatus
+      );
     });
-  }, [users, search, roleFilter]);
+  }, [
+    visibleUsers,
+    search,
+    roleFilter,
+    statusFilter,
+  ]);
 
-  const totalUsers = users.length;
-
-  const totalAdministrators = users.filter(
-    (currentUser) => currentUser.role === 'ADMIN'
-  ).length;
-
-  const totalActiveUsers = users.filter(
-    (currentUser) => Boolean(currentUser.status)
-  ).length;
-
-  if (user?.role !== 'ADMIN') {
-    return (
-      <main className={styles.accessPage}>
-        <div className={styles.accessDenied}>
-          <span className={styles.accessIcon}>!</span>
-          <h2>Acceso denegado</h2>
-          <p>Esta sección está disponible únicamente para administradores.</p>
-        </div>
-      </main>
+  const replaceUser = (updatedUser) => {
+    setUsers((current) =>
+      current.map((item) =>
+        String(getId(item)) === String(getId(updatedUser))
+          ? { ...item, ...updatedUser }
+          : item
+      )
     );
-  }
+  };
 
-  if (loading) {
+  const canManage = (target) => {
+    if (
+      String(getId(target)) === accountKey ||
+      !['USER', 'ADMIN'].includes(target.role)
+    ) {
+      return false;
+    }
+
+    return isSuperAdmin || target.role === 'USER';
+  };
+
+  const changeStatus = async (target) => {
+    if (busyId !== null || !canManage(target)) return;
+
+    const nextStatus = !target.status;
+
+    const confirmed = window.confirm(
+      `${nextStatus ? '¿Activar' : '¿Desactivar'} la cuenta de ${
+        target.name
+      }?`
+    );
+
+    if (!confirmed) return;
+
+    setBusyId(getId(target));
+    setError('');
+    setMessage('');
+
+    try {
+      const response = await api.put(
+        `/users/${getId(target)}/status`,
+        { status: nextStatus }
+      );
+
+      replaceUser(response.user);
+      setMessage(response.message);
+    } catch (requestError) {
+      setError(
+        requestError.message ||
+          'No se pudo cambiar el estado.'
+      );
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const changeRole = async (target) => {
+    if (
+      !isSuperAdmin ||
+      busyId !== null ||
+      !canManage(target)
+    ) {
+      return;
+    }
+
+    const role =
+      target.role === 'USER' ? 'ADMIN' : 'USER';
+
+    const confirmed = window.confirm(
+      role === 'ADMIN'
+        ? `¿Asignar permisos de administrador a ${target.name}?`
+        : `¿Retirar los permisos de administrador a ${target.name}?`
+    );
+
+    if (!confirmed) return;
+
+    setBusyId(getId(target));
+    setError('');
+    setMessage('');
+
+    try {
+      const response = await api.put(
+        `/users/${getId(target)}/role`,
+        { role }
+      );
+
+      replaceUser(response.user);
+      setMessage(response.message);
+    } catch (requestError) {
+      setError(
+        requestError.message ||
+          'No se pudo cambiar el rol.'
+      );
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const loadProgress = async (target) => {
+    const request = ++requestRef.current;
+
+    setSelectedUser(target);
+    setProgress(null);
+    setProgressError('');
+    setProgressLoading(true);
+
+    try {
+      const data = await api.get(
+        `/users/${getId(target)}/progress`
+      );
+
+      if (request !== requestRef.current) return;
+
+      setProgress(data);
+    } catch (requestError) {
+      if (request !== requestRef.current) return;
+
+      setProgressError(
+        requestError.message ||
+          'No se pudo consultar el avance.'
+      );
+    } finally {
+      if (request === requestRef.current) {
+        setProgressLoading(false);
+      }
+    }
+  };
+
+  const closeProgress = () => {
+    requestRef.current += 1;
+    setSelectedUser(null);
+    setProgress(null);
+    setProgressLoading(false);
+    setProgressError('');
+  };
+
+  if (!allowed) {
     return (
-      <main className={styles.loadingPage}>
-        <div className={styles.spinner}></div>
-        <p>Cargando panel administrativo...</p>
-      </main>
+      <div className={styles.accessPage}>
+        <div className={styles.accessDenied}>
+          <h1>Acceso denegado</h1>
+          <p>
+            Esta sección requiere permisos administrativos.
+          </p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <main className={styles.adminPage}>
-      <section className={styles.adminContainer}>
+    <div className={styles.adminPage}>
+      <div className={styles.adminContainer}>
         <header className={styles.pageHeader}>
           <div>
-            <span className={styles.pageSubtitle}>ADMINISTRACIÓN</span>
-            <h1>Panel administrativo</h1>
+            <span className={styles.pageSubtitle}>
+              GESTIÓN DEL PROYECTO
+            </span>
+
+            <h1>
+              {usersView
+                ? 'Gestión de usuarios'
+                : 'Panel administrativo'}
+            </h1>
+
             <p>
-              Gestiona y consulta los usuarios registrados en la plataforma.
+              Consulta participantes, administra sus
+              cuentas y revisa su seguimiento académico.
             </p>
           </div>
 
@@ -97,162 +373,637 @@ const AdminDashboard = () => {
             </div>
 
             <div>
-              <span>Administrador</span>
-              <strong>{user?.name || 'Administrador general'}</strong>
+              <span>{ROLE_NAMES[user.role]}</span>
+              <strong>{user.name}</strong>
             </div>
           </div>
         </header>
 
-        <section className={styles.statistics}>
-          <article className={styles.statCard}>
-            <div className={`${styles.statIcon} ${styles.blueIcon}`}>
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M16 11c1.7 0 3-1.3 3-3s-1.3-3-3-3c-.4 0-.8.1-1.2.2a5 5 0 0 1 0 5.6c.4.1.8.2 1.2.2ZM8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8 2c-.3 0-.7 0-1 .1 1.2 1 2 2.3 2 3.9v2h5v-2c0-2.2-2.7-4-6-4ZM8 13c-4 0-7 2-7 4v2h14v-2c0-2-3-4-7-4Z" />
-              </svg>
+        {!usersView && !selectedUser && (
+          <section
+            className={styles.statistics}
+            aria-label="Resumen de cuentas"
+          >
+            {[
+              {
+                label: 'Participantes registrados',
+                value: participants.length,
+                Icon: FiUsers,
+                color: styles.blueIcon,
+              },
+              {
+                label: 'Participantes activos',
+                value: activeParticipants,
+                Icon: FiCheckCircle,
+                color: styles.greenIcon,
+              },
+              {
+                label: 'Directores / administradores',
+                value: administrators,
+                Icon: FiShield,
+                color: styles.purpleIcon,
+              },
+            ].map(({ label, value, Icon, color }) => (
+              <article
+                key={label}
+                className={styles.statCard}
+              >
+                <div
+                  className={`${styles.statIcon} ${color}`}
+                >
+                  <Icon aria-hidden="true" />
+                </div>
+
+                <div>
+                  <span>{label}</span>
+                  <strong>{loading ? '—' : value}</strong>
+                </div>
+              </article>
+            ))}
+          </section>
+        )}
+
+        {message && (
+          <p
+            className={styles.successMessage}
+            role="status"
+          >
+            {message}
+          </p>
+        )}
+
+        {error && (
+          <div className={styles.errorMessage} role="alert">
+            <p>{error}</p>
+
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={() => setRetry((value) => value + 1)}
+              disabled={busyId !== null}
+            >
+              Actualizar lista
+            </button>
+          </div>
+        )}
+
+        {!usersView ? null : selectedUser ? (
+          <section className={styles.usersCard}>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={closeProgress}
+            >
+              <FiArrowLeft aria-hidden="true" />
+              Regresar a usuarios
+            </button>
+
+            <div className={styles.detailHeading}>
+              <span className={styles.pageSubtitle}>
+                SEGUIMIENTO ACADÉMICO
+              </span>
+
+              <h2
+                ref={detailHeadingRef}
+                tabIndex={-1}
+              >
+                {selectedUser.name}
+              </h2>
+
+              <p>{selectedUser.email}</p>
             </div>
 
-            <div>
-              <span>Total de usuarios</span>
-              <strong>{totalUsers}</strong>
-            </div>
-          </article>
+            {progressLoading && (
+              <p role="status">
+                Consultando avance e intentos…
+              </p>
+            )}
 
-          <article className={styles.statCard}>
-            <div className={`${styles.statIcon} ${styles.purpleIcon}`}>
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 2 4 5v6c0 5.1 3.4 9.7 8 11 4.6-1.3 8-5.9 8-11V5l-8-3Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 11.5c-1.7-.6-3.1-1.6-4.1-2.9.7-1.1 2.3-1.8 4.1-1.8s3.4.7 4.1 1.8c-1 1.3-2.4 2.3-4.1 2.9Z" />
-              </svg>
+            {progressError && (
+              <div
+                className={styles.errorMessage}
+                role="alert"
+              >
+                <p>{progressError}</p>
+
+                <button
+                  type="button"
+                  className={styles.secondaryButton}
+                  onClick={() => loadProgress(selectedUser)}
+                >
+                  Reintentar
+                </button>
+              </div>
+            )}
+
+            {progress && !progressLoading && (
+              <>
+                {(progress.courses || []).length === 0 && (
+                  <p className={styles.emptyState}>
+                    Este participante todavía no tiene
+                    cursos iniciados.
+                  </p>
+                )}
+
+                {(progress.courses || []).map((course) => (
+                  <article
+                    key={course.id}
+                    className={styles.courseDetail}
+                  >
+                    <header className={styles.tableHeader}>
+                      <div>
+                        <h3>{course.name}</h3>
+                        <p>
+                          {course.completedModules} de{' '}
+                          {course.totalModules} módulos aprobados
+                        </p>
+                      </div>
+
+                      <strong className={styles.resultCount}>
+                        {course.progress} % de avance
+                      </strong>
+                    </header>
+
+                    {(course.modules || [])
+                      .filter((module) => module.supported)
+                      .map((module) => (
+                        <section
+                          key={module.id}
+                          className={styles.moduleDetail}
+                        >
+                          <h4>
+                            Módulo {module.order}: {module.title}
+                          </h4>
+
+                          <p>
+                            Avance: {module.progress} % ·
+                            Videos: {module.completedVideos}/
+                            {module.totalVideos} ·
+                            Lecturas: {module.readings?.viewed}/
+                            {module.readings?.total}
+                          </p>
+
+                          <div className={styles.tableContainer}>
+                            <table>
+                              <caption>
+                                Evaluaciones del módulo{' '}
+                                {module.order}
+                              </caption>
+
+                              <thead>
+                                <tr>
+                                  <th scope="col">Evaluación</th>
+                                  <th scope="col">Intentos</th>
+                                  <th scope="col">Mejor nota</th>
+                                  <th scope="col">Estado</th>
+                                </tr>
+                              </thead>
+
+                              <tbody>
+                                {(module.evaluations || []).map(
+                                  (evaluation) => (
+                                    <tr key={evaluation.topic}>
+                                      <th scope="row">
+                                        Tema {evaluation.topic}
+                                      </th>
+                                      <td>
+                                        {evaluation.attempts ?? '—'}
+                                      </td>
+                                      <td>
+                                        {formatScore(
+                                          evaluation.bestScore
+                                        )}
+                                      </td>
+                                      <td>
+                                        {evaluation.passed
+                                          ? 'Aprobada'
+                                          : evaluation.bestScore != null
+                                            ? 'Por aprobar'
+                                            : 'Pendiente'}
+                                      </td>
+                                    </tr>
+                                  )
+                                )}
+
+                                <tr>
+                                  <th scope="row">
+                                    Integradora
+                                  </th>
+                                  <td>
+                                    {module.integrative?.attempts ??
+                                      '—'}
+                                  </td>
+                                  <td>
+                                    {formatScore(
+                                      module.integrative?.bestScore
+                                    )}
+                                  </td>
+                                  <td>
+                                    {module.integrative?.passed
+                                      ? 'Aprobada'
+                                      : module.integrative
+                                            ?.bestScore != null
+                                        ? 'Por aprobar'
+                                        : 'Pendiente'}
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </section>
+                      ))}
+                  </article>
+                ))}
+
+                <section className={styles.courseDetail}>
+                  <h3>Historial de intentos</h3>
+
+                  <div className={styles.tableContainer}>
+                    <table>
+                      <caption>
+                        Nota obtenida en cada intento
+                      </caption>
+
+                      <thead>
+                        <tr>
+                          <th scope="col">Evaluación</th>
+                          <th scope="col">Fecha</th>
+                          <th scope="col">Nota</th>
+                          <th scope="col">Resultado</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {(progress.attempts || []).map(
+                          (attempt) => (
+                            <tr key={attempt.id}>
+                              <th scope="row">
+                                {attempt.title}
+                              </th>
+                              <td>
+                                {formatDate(attempt.attemptedAt)}
+                              </td>
+                              <td>
+                                {formatScore(attempt.score)}
+                              </td>
+                              <td>
+                                {attempt.passed
+                                  ? 'Aprobada'
+                                  : 'No aprobada'}
+                              </td>
+                            </tr>
+                          )
+                        )}
+
+                        {!progress.attempts?.length && (
+                          <tr>
+                            <td
+                              colSpan={4}
+                              className={styles.emptyState}
+                            >
+                              Todavía no hay intentos registrados.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </>
+            )}
+          </section>
+        ) : (
+          <section className={styles.usersCard}>
+            <div className={styles.tableHeader}>
+              <div>
+                <h2>
+                  {isSuperAdmin
+                    ? 'Cuentas de la plataforma'
+                    : 'Participantes'}
+                </h2>
+
+                <p>
+                  Usa «Ver seguimiento» para consultar
+                  módulos, intentos y notas.
+                </p>
+              </div>
+
+              <span className={styles.resultCount}>
+                {filteredUsers.length} resultados
+              </span>
             </div>
 
-            <div>
-              <span>Administradores</span>
-              <strong>{totalAdministrators}</strong>
-            </div>
-          </article>
+            <div className={styles.filters}>
+              <label className={styles.searchContainer}>
+                <FiSearch aria-hidden="true" />
 
-          <article className={styles.statCard}>
-            <div className={`${styles.statIcon} ${styles.greenIcon}`}>
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M9 16.2 4.8 12 3.4 13.4 9 19 21 7l-1.4-1.4L9 16.2Z" />
-              </svg>
+                <input
+                  type="search"
+                  aria-label="Buscar por nombre o correo"
+                  placeholder="Buscar por nombre o correo…"
+                  value={search}
+                  onChange={(event) =>
+                    setSearch(event.target.value)
+                  }
+                />
+              </label>
+
+              {isSuperAdmin && (
+                <select
+                  className={styles.roleFilter}
+                  aria-label="Filtrar por rol"
+                  value={roleFilter}
+                  onChange={(event) =>
+                    setRoleFilter(event.target.value)
+                  }
+                >
+                  <option value="ALL">Todos los roles</option>
+                  <option value="USER">Participantes</option>
+                  <option value="ADMIN">Administradores</option>
+                  <option value="SUPERADMIN">
+                    Superadministradores
+                  </option>
+                </select>
+              )}
+
+              <select
+                className={styles.roleFilter}
+                aria-label="Filtrar por estado"
+                value={statusFilter}
+                onChange={(event) =>
+                  setStatusFilter(event.target.value)
+                }
+              >
+                <option value="ALL">Todos los estados</option>
+                <option value="ACTIVE">Activos</option>
+                <option value="INACTIVE">Inactivos</option>
+              </select>
             </div>
 
-            <div>
-              <span>Usuarios activos</span>
-              <strong>{totalActiveUsers}</strong>
-            </div>
-          </article>
-        </section>
+            {loading ? (
+              <p role="status">Cargando usuarios…</p>
+            ) : (
+              <div className={styles.tableContainer}>
+                <table>
+                  <caption>
+                    Cuentas registradas y acciones disponibles
+                  </caption>
+
+                  <thead>
+                    <tr>
+                      <th scope="col">Usuario</th>
+                      <th scope="col">Correo electrónico</th>
+                      <th scope="col">Rol</th>
+                      <th scope="col">Estado</th>
+                      <th scope="col">Acciones</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {filteredUsers.map((target) => (
+                      <tr key={getId(target)}>
+                        <td>
+                          <div className={styles.userInformation}>
+                            <div className={styles.userAvatar}>
+                              {target.name
+                                ?.charAt(0)
+                                .toUpperCase() || 'U'}
+                            </div>
+
+                            <span>
+                              {target.name || 'Sin nombre'}
+                            </span>
+                          </div>
+                        </td>
+
+                        <td className={styles.email}>
+                          {target.email}
+                        </td>
+
+                        <td>
+                          <span
+                            className={
+                              target.role === 'USER'
+                                ? styles.userRole
+                                : styles.adminRole
+                            }
+                          >
+                            {ROLE_NAMES[target.role] ||
+                              target.role}
+                          </span>
+                        </td>
+
+                        <td>
+                          <span
+                            className={
+                              target.status
+                                ? styles.activeStatus
+                                : styles.inactiveStatus
+                            }
+                          >
+                            <span
+                              className={styles.statusDot}
+                              aria-hidden="true"
+                            />
+                            {target.status ? 'Activo' : 'Inactivo'}
+                          </span>
+                        </td>
+
+                        <td>
+                          <div className={styles.rowActions}>
+                            {target.role === 'USER' && (
+                              <button
+                                type="button"
+                                className={styles.primaryButton}
+                                onClick={() => loadProgress(target)}
+                              >
+                                Ver seguimiento
+                              </button>
+                            )}
+
+                            {canManage(target) && (
+                              <button
+                                type="button"
+                                className={styles.secondaryButton}
+                                disabled={busyId !== null}
+                                onClick={() => changeStatus(target)}
+                              >
+                                {busyId === getId(target)
+                                  ? 'Guardando…'
+                                  : target.status
+                                    ? 'Desactivar'
+                                    : 'Activar'}
+                              </button>
+                            )}
+
+                            {isSuperAdmin && canManage(target) && (
+                              <button
+                                type="button"
+                                className={styles.secondaryButton}
+                                disabled={
+                                  busyId !== null ||
+                                  (target.role === 'USER' &&
+                                    !target.status)
+                                }
+                                title={
+                                  target.role === 'USER' &&
+                                  !target.status
+                                    ? 'Activa la cuenta antes de asignarle el rol de administrador.'
+                                    : undefined
+                                }
+                                onClick={() => changeRole(target)}
+                              >
+                                {target.role === 'ADMIN'
+                                  ? 'Retirar administrador'
+                                  : 'Asignar administrador'}
+                              </button>
+                            )}
+
+                            {!canManage(target) &&
+                              target.role !== 'USER' && (
+                                <span>
+                                  {String(getId(target)) === accountKey
+                                    ? 'Tu cuenta'
+                                    : 'Cuenta protegida'}
+                                </span>
+                              )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+
+                    {filteredUsers.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan={5}
+                          className={styles.emptyState}
+                        >
+                          No se encontraron cuentas con
+                          los filtros seleccionados.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+        )}
+
+        {!selectedUser && !usersView && (
+          <div className={styles.bottomActions}>
+            <Link
+              to="/admin/users"
+              className={styles.primaryButton}
+            >
+              Ir a gestión de usuarios
+            </Link>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Perfil administrativo sin medallas ni avance del curso.
+export const AdminAccount = () => {
+  const { user, updateUser } = useContext(AuthContext);
+
+  const [name, setName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    setName(user?.name || '');
+    setEmail(user?.email || '');
+  }, [user?.name, user?.email]);
+
+  const save = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+    setMessage('');
+    setError('');
+
+    try {
+      await updateUser({
+        name: name.trim(),
+        email: email.trim(),
+      });
+
+      setMessage('Perfil actualizado correctamente.');
+    } catch (requestError) {
+      setError(
+        requestError.message ||
+          'No se pudo actualizar el perfil.'
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className={styles.adminPage}>
+      <div className={styles.adminContainer}>
+        <header className={styles.pageHeader}>
+          <div>
+            <span className={styles.pageSubtitle}>
+              MI CUENTA
+            </span>
+            <h1>Perfil administrativo</h1>
+            <p>{ROLE_NAMES[user?.role]}</p>
+          </div>
+        </header>
 
         <section className={styles.usersCard}>
-          <div className={styles.tableHeader}>
-            <div>
-              <h2>Gestión de usuarios</h2>
-              <p>Consulta las cuentas registradas y su estado actual.</p>
-            </div>
+          <h2>Información personal</h2>
 
-            <span className={styles.resultCount}>
-              {filteredUsers.length} resultados
-            </span>
-          </div>
+          {message && (
+            <p className={styles.successMessage} role="status">
+              {message}
+            </p>
+          )}
 
-          <div className={styles.filters}>
-            <div className={styles.searchContainer}>
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m20.7 19.3-4.2-4.2A7.5 7.5 0 1 0 15.1 16l4.2 4.2 1.4-1.4ZM5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0Z" />
-              </svg>
+          {error && (
+            <p className={styles.errorMessage} role="alert">
+              {error}
+            </p>
+          )}
 
+          <form className={styles.profileForm} onSubmit={save}>
+            <label>
+              Nombre completo
               <input
-                type="search"
-                placeholder="Buscar por nombre o correo..."
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                autoComplete="name"
+                required
               />
-            </div>
+            </label>
 
-            <select
-              className={styles.roleFilter}
-              value={roleFilter}
-              onChange={(event) => setRoleFilter(event.target.value)}
+            <label>
+              Correo electrónico
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                autoComplete="email"
+                required
+              />
+            </label>
+
+            <button
+              type="submit"
+              className={styles.primaryButton}
+              disabled={saving}
             >
-              <option value="ALL">Todos los roles</option>
-              <option value="ADMIN">Administradores</option>
-              <option value="USER">Usuarios</option>
-            </select>
-          </div>
-
-          {error && <div className={styles.errorMessage}>{error}</div>}
-
-          <div className={styles.tableContainer}>
-            <table>
-              <thead>
-                <tr>
-                  <th>Usuario</th>
-                  <th>Correo electrónico</th>
-                  <th>Rol</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {filteredUsers.length > 0 ? (
-                  filteredUsers.map((currentUser) => (
-                    <tr key={currentUser.id}>
-                      <td>
-                        <div className={styles.userInformation}>
-                          <div className={styles.userAvatar}>
-                            {currentUser.name?.charAt(0).toUpperCase() || 'U'}
-                          </div>
-
-                          <span>{currentUser.name || 'Sin nombre'}</span>
-                        </div>
-                      </td>
-
-                      <td className={styles.email}>
-                        {currentUser.email || 'Sin correo'}
-                      </td>
-
-                      <td>
-                        <span
-                          className={
-                            currentUser.role === 'ADMIN'
-                              ? styles.adminRole
-                              : styles.userRole
-                          }
-                        >
-                          {currentUser.role === 'ADMIN'
-                            ? 'Administrador'
-                            : 'Usuario'}
-                        </span>
-                      </td>
-
-                      <td>
-                        <span
-                          className={
-                            currentUser.status
-                              ? styles.activeStatus
-                              : styles.inactiveStatus
-                          }
-                        >
-                          <span className={styles.statusDot}></span>
-                          {currentUser.status ? 'Activo' : 'Inactivo'}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className={styles.emptyState}>
-                      No se encontraron usuarios con los filtros seleccionados.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+              {saving ? 'Guardando…' : 'Guardar cambios'}
+            </button>
+          </form>
         </section>
-      </section>
-    </main>
+      </div>
+    </div>
   );
 };
 

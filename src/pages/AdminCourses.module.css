@@ -1,0 +1,365 @@
+.page {
+  min-height: 75vh;
+  padding: 42px 5% 75px;
+  background: #f4f7fb;
+  color: #15233b;
+}
+
+.container {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.eyebrow {
+  color: #2459a4;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+}
+
+.header h1 {
+  margin: 7px 0;
+  font-size: 30px;
+}
+
+.header p,
+.courseHeading p {
+  color: #526780;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.panel {
+  margin-bottom: 22px;
+  padding: 24px;
+  border: 1px solid #dfe7f2;
+  border-radius: 17px;
+  background: #fff;
+}
+
+.panel h2 {
+  margin-bottom: 12px;
+  font-size: 21px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.courseCard {
+  min-width: 0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid #dfe7f2;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 7px 20px rgba(25, 55, 104, 0.05);
+}
+
+.courseIcon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  background: #eaf2ff;
+  color: #2459a4;
+}
+
+.courseIcon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.courseCard h2 {
+  margin: 14px 0 10px;
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+
+.courseCard p,
+.moduleCard p {
+  margin: 8px 0 16px;
+  color: #526780;
+  font-size: 14px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.courseCard small {
+  margin-top: auto;
+  color: #526780;
+  font-size: 13px;
+}
+
+.actions {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.primary,
+.secondary {
+  min-height: 44px;
+  padding: 10px 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #cbd8ed;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.primary {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+.primary:hover {
+  background: #1e4fbf;
+}
+
+.secondary {
+  background: #f0f5ff;
+  color: #2459a4;
+}
+
+.secondary:hover {
+  background: #e4edff;
+}
+
+.primary:disabled,
+.secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form {
+  margin-top: 18px;
+}
+
+.form fieldset {
+  min-width: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border: 0;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #344d6b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.form input:not([type="checkbox"]),
+.form textarea {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 13px;
+  border: 1px solid #cbd7e8;
+  border-radius: 10px;
+  background: #fff;
+  color: #253b59;
+  font: inherit;
+  font-weight: 400;
+}
+
+.form textarea {
+  resize: vertical;
+  line-height: 1.7;
+}
+
+.form .checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+}
+
+.checkbox input {
+  width: 21px;
+  height: 21px;
+  accent-color: #2563eb;
+}
+
+.active,
+.inactive {
+  padding: 5px 10px;
+  display: inline-flex;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.active {
+  background: #e7f7ef;
+  color: #17633e;
+}
+
+.inactive {
+  background: #f0f2f6;
+  color: #52627a;
+}
+
+.courseHeading {
+  margin-top: 24px;
+}
+
+.courseHeading h2 {
+  margin-top: 8px;
+}
+
+.moduleList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.moduleCard {
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  border: 1px solid #dfe7f2;
+  border-left: 4px solid #3478ec;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.moduleCard > div {
+  min-width: 0;
+}
+
+.moduleCard h3 {
+  margin-top: 7px;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.moduleCard button {
+  flex-shrink: 0;
+}
+
+.error,
+.success {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border: 1px solid;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.error {
+  border-color: #edbcbc;
+  background: #fff2f2;
+  color: #a42c2c;
+}
+
+.success {
+  border-color: #bce1cf;
+  background: #edf9f2;
+  color: #17633e;
+}
+
+.empty {
+  padding: 25px;
+  color: #526780;
+  text-align: center;
+}
+
+@media (max-width: 950px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 75px 16px 80px;
+  }
+
+  .header,
+  .moduleCard {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .header h1 {
+    font-size: 25px;
+  }
+
+  .panel,
+  .courseCard,
+  .moduleCard {
+    padding: 18px;
+  }
+
+  .actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+}
+.danger {
+  min-height: 44px;
+  padding: 10px 15px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: 1px solid #edbcbc;
+  border-radius: 10px;
+  background: #fff2f2;
+  color: #a42c2c;
+
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+
+  cursor: pointer;
+}
+
+.danger:hover {
+  border-color: #d88a8a;
+  background: #ffe4e4;
+}
+
+.danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
