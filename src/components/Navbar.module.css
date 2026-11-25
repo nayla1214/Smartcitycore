@@ -1,51 +1,332 @@
-:global(#root) { min-height:100vh; padding-left:0; box-sizing:border-box; transition:padding-left .25s ease; }
-:global(#root.with-sidebar) { padding-left:260px; }
-.sidebar { position:fixed; top:0; left:0; z-index:100; width:260px; height:100vh; display:flex; flex-direction:column; background:#fff; border-right:2px solid #d8e0ec; box-shadow:7px 0 24px rgba(31,58,105,.1); font-family:inherit; }
-.sidebarHeader { min-height:145px; padding:16px 20px; display:flex; align-items:center; justify-content:center; border-bottom:none; }
-.sidebarFooter { padding:17px; border-top:1px solid #e8ecf2; background:#fbfcfe; }
-.logo { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:#15233b; text-decoration:none; }
-.logoIcon { width:82px; height:82px; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid #e7ecf4; border-radius:19px; background:#fff; box-shadow:0 8px 22px rgba(25,55,104,.14); transition:transform .2s ease,box-shadow .2s ease; }
-.logo:hover .logoIcon { transform:translateY(-2px); box-shadow:0 11px 25px rgba(25,55,104,.18); }
-.logoIcon img { width:100px; height:200px; display:block; object-fit:contain; }
-.logo > span { margin:0; color:#52627a; font-size:13px; font-weight:700; letter-spacing:.2px; }
-.sidebarContent { flex:1; padding:25px 17px; overflow-y:auto; }
-.menuLabel { display:block; margin:0 12px 12px; color:#9aa4b4; font-size:9px; font-weight:800; letter-spacing:1.3px; }
-.links { display:flex; flex-direction:column; gap:6px; }
-.navLink { min-height:46px; padding:0 13px; display:flex; align-items:center; gap:12px; border-radius:10px; color:#657187; font-size:13px; font-weight:600; text-decoration:none; transition:color .2s ease,background .2s ease,transform .2s ease; }
-.navLink svg { width:20px; height:20px; flex-shrink:0; fill:currentColor; }
-.navLink:hover { background:#f2f6fd; color:#2563eb; transform:translateX(2px); }
-.activeLink { background:#eaf1ff; color:#2563eb; font-weight:700; }
-.activeLink:hover { background:#eaf1ff; color:#2563eb; }
-.userInformation { margin-bottom:12px; padding:10px; display:flex; align-items:center; gap:10px; border-radius:11px; background:#f6f8fc; }
-.userAvatar { width:37px; height:37px; display:flex; align-items:center; justify-content:center; flex-shrink:0; border-radius:50%; background:linear-gradient(145deg,#123b79,#2563eb); color:#fff; font-size:14px; font-weight:800; }
-.userInformation > div:last-child { min-width:0; display:flex; flex-direction:column; }
-.userInformation strong { max-width:150px; overflow:hidden; color:#25334a; font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
-.userInformation span { margin-top:2px; color:#8a95a6; font-size:10px; }
-.logoutButton { width:100%; min-height:42px; padding:0 13px; display:flex; align-items:center; justify-content:center; gap:9px; border:1px solid #dfe5ee; border-radius:9px; background:#fff; color:#5d6a80; font:inherit; font-size:12px; font-weight:700; cursor:pointer; transition:color .2s ease,border-color .2s ease,background .2s ease; }
-.logoutButton svg { width:17px; height:17px; fill:currentColor; }
-.logoutButton:hover { border-color:#f1baba; background:#fff4f4; color:#c83b3b; }
-.authButtons { display:flex; flex-direction:column; gap:9px; }
-.loginButton,.registerButton { min-height:41px; display:flex; align-items:center; justify-content:center; border-radius:9px; font-size:12px; font-weight:700; text-decoration:none; }
-.loginButton { border:1px solid #dbe2ed; color:#4d5b72; }
-.loginButton:hover { border-color:#2563eb; color:#2563eb; }
-.registerButton { background:#2563eb; color:#fff; }
-.registerButton:hover { background:#1d4ed8; }
-.copyright { margin:14px 0 0; color:#a1a9b6; font-size:9px; text-align:center; }
-.mobileButton,.overlay { display:none; }
-.accountSection { margin-top:30px; padding-top:24px; border-top:1px solid #e6ebf2; }
-.notificationBadge { margin-left:auto; min-width:22px; padding:3px 6px; flex-shrink:0; border-radius:20px; background:#2563eb; color:#fff; font-size:10px; font-weight:800; line-height:1.4; text-align:center; }
-.navLink:focus-visible,.logoutButton:focus-visible { outline:3px solid #a8c5f6; outline-offset:2px; }
-@media(max-width:800px) {
-  :global(#root.with-sidebar) { padding-left:0; }
-  .sidebar { width:260px; transform:translateX(-105%); transition:transform .25s ease; }
-  .sidebarOpen { transform:translateX(0); }
-  .mobileButton { position:fixed; top:16px; left:16px; z-index:90; width:44px; height:44px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:5px; border:1px solid #dce3ee; border-radius:11px; background:#fff; box-shadow:0 5px 15px rgba(25,55,104,.12); cursor:pointer; }
-  .mobileButton span { width:20px; height:2px; border-radius:5px; background:#2563eb; }
-  .overlay { position:fixed; inset:0; z-index:95; display:block; border:none; background:rgba(15,28,48,.44); cursor:pointer; }
+:global(#root) {
+  min-height: 100vh;
+  padding-left: 0;
+  box-sizing: border-box;
 }
+
+:global(#root.with-sidebar) {
+  padding-left: 260px;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 260px;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #d6e4e8;
+  background: #ffffff;
+  box-shadow: 5px 0 25px rgba(8, 51, 83, 0.06);
+  font-family: inherit;
+}
+
+.sidebarHeader {
+  min-height: 185px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid #edf2f3;
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.logoIcon {
+  width: 125px;
+  height: 125px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logoIcon img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.logo > span {
+  color: #285348;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  text-align: center;
+}
+
+.sidebarContent {
+  min-height: 0;
+  flex: 1;
+  padding: 24px 16px;
+  overflow-y: auto;
+}
+
+.menuLabel {
+  margin: 0 12px 12px;
+  display: block;
+  color: #607a80;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.navLink {
+  min-height: 46px;
+  padding: 12px 13px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: #506873;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.navLink > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .navLink svg,
 .logoutButton svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
   fill: none;
   stroke: currentColor;
-  stroke-width: 2;
+  stroke-width: 1.8;
+}
+
+.navLink:hover {
+  background: #f0f7f4;
+  color: #075343;
+}
+
+.activeLink {
+  border-color: #cbe5d7;
+  background: #eaf5ed;
+  color: #176027;
+  font-weight: 700;
+}
+
+.activeLink:hover {
+  background: #e2f0e6;
+  color: #176027;
+}
+
+.accountSection {
+  margin-top: 28px;
+  padding-top: 23px;
+  border-top: 1px solid #e3ecee;
+}
+
+.notificationBadge {
+  min-width: 22px;
+  margin-left: auto;
+  padding: 3px 6px;
+  flex-shrink: 0;
+  border-radius: 20px;
+  background: #0866a8;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.sidebarFooter {
+  padding: 15px;
+  flex-shrink: 0;
+  border-top: 1px solid #e1ebed;
+  background: #f8fbfa;
+}
+
+.userInformation {
+  margin-bottom: 11px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e2ece8;
+  border-radius: 11px;
+  background: #ffffff;
+}
+
+.userAvatar {
+  width: 37px;
+  height: 37px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #075343, #087096);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.userInformation > div:last-child {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.userInformation strong {
+  max-width: 150px;
+  overflow: hidden;
+  color: #173f4b;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userInformation span {
+  margin-top: 3px;
+  color: #607780;
+  font-size: 10px;
+}
+
+.logoutButton {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid #cbdde0;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #365b65;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.logoutButton svg {
+  width: 17px;
+  height: 17px;
+}
+
+.logoutButton:hover {
+  border-color: #e2b4b4;
+  background: #fff4f4;
+  color: #a92d2d;
+}
+
+.logo:focus-visible,
+.navLink:focus-visible,
+.logoutButton:focus-visible,
+.mobileButton:focus-visible {
+  outline: 3px solid #0866a8;
+  outline-offset: 3px;
+}
+
+.mobileButton,
+.overlay {
+  display: none;
+}
+
+@media (max-height: 680px) {
+  .sidebarHeader {
+    min-height: 145px;
+    padding: 10px 20px;
+  }
+
+  .logoIcon {
+    width: 95px;
+    height: 95px;
+  }
+
+  .sidebarContent {
+    padding-top: 15px;
+  }
+
+  .sidebarFooter {
+    padding: 10px 15px;
+  }
+}
+
+@media (max-width: 800px) {
+  :global(#root.with-sidebar) {
+    padding-left: 0;
+  }
+
+  .sidebar {
+    width: 260px;
+    visibility: hidden;
+    transform: translateX(-105%);
+    transition:
+      transform 0.25s ease,
+      visibility 0.25s ease;
+  }
+
+  .sidebarOpen {
+    visibility: visible;
+    transform: translateX(0);
+  }
+
+  .mobileButton {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 90;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    border: 1px solid #cbdde0;
+    border-radius: 11px;
+    background: #ffffff;
+    box-shadow: 0 5px 15px rgba(8, 51, 83, 0.12);
+    cursor: pointer;
+  }
+
+  .mobileButton span {
+    width: 20px;
+    height: 2px;
+    border-radius: 5px;
+    background: #075343;
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 95;
+    display: block;
+    border: none;
+    background: rgba(4, 30, 43, 0.52);
+    cursor: pointer;
+  }
 }

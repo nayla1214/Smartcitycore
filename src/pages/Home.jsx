@@ -1,153 +1,158 @@
+import { useContext } from 'react';
 import { Link } from 'react-router-dom';
+
 import {
   FiBookOpen,
-  FiAward,
-  FiBarChart2,
-  FiLayers,
   FiMonitor,
+  FiBarChart2,
+  FiGlobe,
 } from 'react-icons/fi';
+
+import { AuthContext } from '../context/AuthContext';
+
+import logoSmartCity from '../assets/logo-smartcity.jpeg';
+import cityImage from '../assets/smart-city.png';
+
 import styles from './Home.module.css';
 
 const Home = () => {
-  const beneficios = [
+  const { user } = useContext(AuthContext);
+
+  const isManagement = [
+    'ADMIN',
+    'SUPERADMIN',
+  ].includes(user?.role);
+
+  const accessRoute = user
+    ? isManagement
+      ? '/admin'
+      : '/dashboard'
+    : '/login';
+
+  const benefits = [
     {
-      Icon: FiBookOpen,
-      titulo: 'Cursos especializados',
-      descripcion:
-        'Accede a contenidos organizados en módulos sobre ciudades inteligentes.',
+      Icon: FiMonitor,
+      title: 'Cursos',
+      subtitle: 'virtuales',
     },
     {
-      Icon: FiAward,
-      titulo: 'Aprendizaje progresivo',
-      descripcion:
-        'Avanza a tu ritmo mediante videos, actividades y evaluaciones.',
+      Icon: FiBookOpen,
+      title: 'Aprendizaje',
+      subtitle: 'por módulos',
     },
     {
       Icon: FiBarChart2,
-      titulo: 'Seguimiento',
-      descripcion:
-        'Consulta tu progreso y los resultados obtenidos durante la capacitación.',
+      title: 'Seguimiento',
+      subtitle: 'académico',
+    },
+    {
+      Icon: FiGlobe,
+      title: 'Acceso',
+      subtitle: 'flexible',
     },
   ];
 
   return (
-    <main className={styles.home}>
-      {/* Presentación principal */}
-      <section className={styles.hero}>
-        <Link to="/login" className={styles.loginButton}>
-          Iniciar sesión
-        </Link>
-
-        <div className={styles.heroContent}>
-          <span className={styles.badge}>
-            Plataforma de formación virtual
-          </span>
-
-          <h1>
-            Aprende sobre el desarrollo de{' '}
-            <span>ciudades inteligentes</span>
-          </h1>
-
-          <p>
-            Fortalece tus conocimientos mediante cursos, recursos educativos
-            y actividades orientadas a la transformación de los municipios.
-          </p>
-
-          <div className={styles.heroButtons}>
-            <a href="#informacion" className={styles.primaryButton}>
-              Conocer la plataforma
-            </a>
-          </div>
-        </div>
-
-        <div className={styles.heroVisual}>
-          <div className={styles.educationCard}>
-            <div className={styles.cardTop}>
-              <div className={styles.bookIcon}>
-                <FiBookOpen />
-              </div>
-
-              <div>
-                <span>Capacitación virtual</span>
-                <strong>Ciudades inteligentes</strong>
-              </div>
-            </div>
-
-            <div className={styles.module}>
-              <div className={styles.moduleIcon}>
-                <FiLayers />
-              </div>
-
-              <div className={styles.moduleInformation}>
-                <div>
-                  <span>Contenido educativo</span>
-                  <strong>Introducción a las Smart Cities</strong>
-                </div>
-
-                <div className={styles.progress}>
-                  <span />
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.learningData}>
-              <div>
-                <strong>3</strong>
-                <span>Módulos</span>
-              </div>
-
-              <div>
-                <strong>100%</strong>
-                <span>Virtual</span>
-              </div>
-
-              <div>
-                <strong>24/7</strong>
-                <span>Acceso</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* Beneficios educativos */}
+    <div className={styles.home} data-home-page>
       <section
-        id="informacion"
-        className={styles.featuresSection}
+        className={styles.hero}
+        style={{
+          '--hero-image': `url("${cityImage}")`,
+        }}
+        aria-labelledby="home-title"
       >
-        <div className={styles.sectionHeading}>
-          <span>Formación en línea</span>
+    
 
-          <h2>¿Qué encontrarás en la plataforma?</h2>
+        <div className={styles.content}>
+          <header className={styles.identity}>
+            <img
+              src={logoSmartCity}
+              alt="SMART CITY CORE"
+              className={styles.logo}
+              width="220"
+              height="220"
+            />
 
-          <p>
-            Herramientas educativas para desarrollar una experiencia de
-            capacitación organizada, accesible y dinámica.
+            <div className={styles.heading}>
+              <h1 id="home-title">
+                Plataforma virtual
+                <br />
+                de capacitación
+              </h1>
+
+              <p>Ciudades inteligentes</p>
+
+              <div
+                className={styles.headingCurve}
+                aria-hidden="true"
+              />
+            </div>
+          </header>
+
+          <p className={styles.motto}>
+            Aprende <span>·</span> Innova{' '}
+            <span>·</span> Transforma
           </p>
+
+          <div className={styles.description}>
+            <p>
+              Formación en tecnologías y soluciones
+              para el desarrollo de ciudades más{' '}
+              <strong>
+                conectadas, sostenibles e inclusivas.
+              </strong>
+            </p>
+          </div>
+
+          <ul
+            className={styles.benefits}
+            aria-label="Características de la plataforma"
+          >
+            {benefits.map(
+              ({ Icon, title, subtitle }) => (
+                <li key={title}>
+                  <div className={styles.benefitIcon}>
+                    <Icon aria-hidden="true" />
+                  </div>
+
+                  <span>
+                    {title}
+                    <br />
+                    {subtitle}
+                  </span>
+                </li>
+              )
+            )}
+          </ul>
+
+          <div className={styles.actions}>
+            <Link
+              to={user ? accessRoute : '/register'}
+              className={styles.primaryButton}
+            >
+              <FiBookOpen aria-hidden="true" />
+
+              {user
+                ? isManagement
+                  ? 'Gestionar la plataforma'
+                  : 'Continuar mi capacitación'
+                : '¡Empieza tu capacitación ahora!'}
+            </Link>
+
+           <Link
+  to="/plataforma"
+  className={styles.informationLink}
+>
+  Conocer la plataforma
+</Link>
+          </div>
         </div>
 
-        <div className={styles.featuresGrid}>
-          {beneficios.map((beneficio) => {
-            const Icon = beneficio.Icon;
-
-            return (
-              <article
-                className={styles.featureCard}
-                key={beneficio.titulo}
-              >
-                <div className={styles.featureIcon}>
-                  <Icon />
-                </div>
-
-                <h3>{beneficio.titulo}</h3>
-                <p>{beneficio.descripcion}</p>
-              </article>
-            );
-          })}
-        </div>
+        <p className={styles.screenReaderText}>
+          Construyendo juntos ciudades inteligentes.
+        </p>
       </section>
-    </main>
+    </div>
   );
 };
 

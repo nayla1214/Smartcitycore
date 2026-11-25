@@ -1,148 +1,389 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+
+import {
+  FiArrowLeft,
+  FiArrowRight,
+  FiUser,
+  FiMail,
+  FiLock,
+  FiEye,
+  FiEyeOff,
+} from 'react-icons/fi';
+
 import { AuthContext } from '../context/AuthContext';
 import { api } from '../services/api';
+
+import logoSmartCity from '../assets/logo-smartcity-transparente.png';
 import styles from './Register.module.css';
+
+const NAME_PATTERN =
+  /^[\p{L}\p{M}]+(?:[ '’\-][\p{L}\p{M}]+)*$/u;
+
+const EMAIL_PATTERN =
+  /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)+$/;
+
+const isValidEmail = (email) => {
+  if (email.length > 254 || !EMAIL_PATTERN.test(email)) {
+    return false;
+  }
+
+  const [local, domain] = email.split('@');
+
+  return (
+    local.length <= 64 &&
+    !local.startsWith('.') &&
+    !local.endsWith('.') &&
+    !local.includes('..') &&
+    domain.split('.').every((label) => label.length <= 63)
+  );
+};
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const submittingRef = useRef(false);
+  const nameRef = useRef(null);
+  const emailRef = useRef(null);
 
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const handleNameChange = (e) => {
+    const value = e.target.value;
+
+    // También bloquea números al pegar texto.
+    if (/[^\p{L}\p{M} '’\-]/u.test(value)) {
+      setNameError(
+        'Usa solamente letras, espacios, apóstrofos o guiones.'
+      );
+      return;
+    }
+
+    setName(value);
+    setNameError('');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (submittingRef.current) return;
+
     setError('');
+
+    const cleanName = name
+      .normalize('NFC')
+      .trim()
+      .replace(/\s+/gu, ' ');
+
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (
+      cleanName.length < 2 ||
+      cleanName.length > 120 ||
+      !NAME_PATTERN.test(cleanName)
+    ) {
+      setNameError(
+        'Ingresa un nombre válido, sin números y de al menos 2 caracteres.'
+      );
+      nameRef.current?.focus();
+      return;
+    }
+
+    setNameError('');
+
+    if (!isValidEmail(cleanEmail)) {
+      setError('Ingresa un correo electrónico válido.');
+      emailRef.current?.focus();
+      return;
+    }
+
+    if (password.length < 6) {
+      setError(
+        'La contraseña debe tener al menos 6 caracteres.'
+      );
+      return;
+    }
+
+    if (new TextEncoder().encode(password).length > 72) {
+      setError(
+        'La contraseña es demasiado larga. Usa una más corta.'
+      );
+      return;
+    }
+
+    submittingRef.current = true;
+    setSubmitting(true);
 
     try {
       const data = await api.post('/auth/register', {
-        name,
-        email,
+        name: cleanName,
+        email: cleanEmail,
         password,
       });
 
       login(data);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.message || 'Error al crear la cuenta');
+      setError(
+        err.message || 'Error al crear la cuenta.'
+      );
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
     }
   };
 
   return (
-    <main className={styles.registerPage}>
-      <section className={styles.registerContainer}>
-        <div className={styles.informationPanel}>
-          <div className={styles.circleTop}></div>
-          <div className={styles.circleBottom}></div>
+    <div
+      className={styles.registerPage}
+      data-register-page
+    >
+      <div className={styles.pageContent}>
+        <nav
+          className={styles.topbar}
+          aria-label="Navegación del registro"
+        >
+          <Link to="/" className={styles.backLink}>
+            <FiArrowLeft aria-hidden="true" />
+            Volver al inicio
+          </Link>
+        </nav>
 
-          <div className={styles.informationContent}>
-            <div className={styles.iconBox}>
-              <svg
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                className={styles.graduationIcon}
-              >
-                <path d="M12 3 1.8 8.2 12 13.4l8-4.1v6h2V8.2L12 3Zm-6 9.1v4.2c0 1.7 2.7 3.7 6 3.7s6-2 6-3.7v-4.2l-6 3.1-6-3.1Z" />
-              </svg>
+        <div className={styles.registerLayout}>
+          <section
+            className={styles.presentation}
+            aria-labelledby="register-title"
+          >
+            <span className={styles.welcomeLabel}>
+              TU PRÓXIMO PASO COMIENZA AQUÍ
+            </span>
+
+            <h1 id="register-title">
+              Nuevas ideas.
+              <br />
+              <span>Más posibilidades.</span>
+            </h1>
+
+            <p className={styles.welcomeText}>
+              Fortalece tus conocimientos y sé parte
+              de la transformación hacia ciudades más
+              inteligentes.
+            </p>
+
+            <div className={styles.brandVisual}>
+              <img
+                src={logoSmartCity}
+                alt="SMART CITY CORE"
+                className={styles.brandLogo}
+                width="210"
+                height="210"
+              />
             </div>
 
+            <Link
+              to="/plataforma"
+              className={styles.discoverButton}
+            >
+              Conocer la plataforma
+              <FiArrowRight aria-hidden="true" />
+            </Link>
+          </section>
 
-            <h1>Plataforma de Capacitación SMARTCITYCORE</h1>
+          <section
+            className={styles.formCard}
+            aria-labelledby="create-account-title"
+          >
+            <header className={styles.formHeader}>
+              <span className={styles.formBadge}>
+                EMPIEZA HOY
+              </span>
 
-            <p>
-              Accede a cursos y recursos educativos sobre ciudades inteligentes
-              para fortalecer tus conocimientos y capacidades profesionales.
-            </p>
-          </div>
-        </div>
+              <h2 id="create-account-title">
+                Crea tu cuenta
+              </h2>
 
-        <div className={styles.formPanel}>
-          <div className={styles.formContent}>
-            <h2>Registrarse</h2>
-            <p className={styles.description}>
-              Completa tus datos para acceder a la plataforma.
-            </p>
+              <p>Completa tus datos para comenzar.</p>
+            </header>
 
-            {error && <div className={styles.alert}>{error}</div>}
+            {error && (
+              <div
+                id="register-error"
+                className={styles.alert}
+                role="alert"
+              >
+                {error}
+              </div>
+            )}
 
-            <form onSubmit={handleSubmit}>
+            <form
+              onSubmit={handleSubmit}
+              aria-busy={submitting}
+            >
               <div className={styles.formGroup}>
-                <label htmlFor="name">Nombres completos</label>
+                <label htmlFor="name">
+                  Nombres completos
+                </label>
 
                 <div className={styles.inputContainer}>
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z" />
-                  </svg>
+                  <FiUser aria-hidden="true" />
 
                   <input
+                    ref={nameRef}
                     id="name"
+                    name="name"
                     type="text"
-                    placeholder="Ingresa tus nombres completos"
+                    placeholder="Escribe tus nombres completos"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={handleNameChange}
                     autoComplete="name"
+                    maxLength={120}
+                    aria-invalid={Boolean(nameError)}
+                    aria-describedby="name-help"
+                    disabled={submitting}
                     required
                   />
                 </div>
+
+                <p
+                  id="name-help"
+                  className={styles.fieldHelp}
+                  aria-live="polite"
+                >
+                  {nameError ||
+                    'Solo letras, espacios, apóstrofos o guiones.'}
+                </p>
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="email">Correo electrónico</label>
+                <label htmlFor="email">
+                  Correo electrónico
+                </label>
 
                 <div className={styles.inputContainer}>
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M3 5h18v14H3V5Zm9 7 7-5H5l7 5Zm0 2.5L5 9.6V17h14V9.6l-7 4.9Z" />
-                  </svg>
+                  <FiMail aria-hidden="true" />
 
                   <input
+                    ref={emailRef}
                     id="email"
+                    name="email"
                     type="email"
-                    placeholder="Ingresa tu correo electrónico"
+                    placeholder="nombre@correo.com"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) =>
+                      setEmail(e.target.value)
+                    }
                     autoComplete="email"
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    maxLength={254}
+                    disabled={submitting}
                     required
                   />
                 </div>
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="password">Contraseña</label>
+                <label htmlFor="password">
+                  Contraseña
+                </label>
 
                 <div className={styles.inputContainer}>
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M17 9h-1V7a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v9h14v-9a2 2 0 0 0-2-2Zm-7-2a2 2 0 0 1 4 0v2h-4V7Zm3 8.7V18h-2v-2.3a2 2 0 1 1 2 0Z" />
-                  </svg>
+                  <FiLock aria-hidden="true" />
 
                   <input
                     id="password"
-                    type="password"
-                    placeholder="Ingresa tu contraseña"
+                    name="password"
+                    type={
+                      showPassword ? 'text' : 'password'
+                    }
+                    placeholder="Crea tu contraseña"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) =>
+                      setPassword(e.target.value)
+                    }
                     autoComplete="new-password"
-                    minLength="6"
+                    aria-describedby="password-help"
+                    minLength={6}
+                    disabled={submitting}
                     required
                   />
+
+                  <button
+                    type="button"
+                    className={styles.passwordToggle}
+                    onClick={() =>
+                      setShowPassword(
+                        (current) => !current
+                      )
+                    }
+                    aria-label={
+                      showPassword
+                        ? 'Ocultar contraseña'
+                        : 'Mostrar contraseña'
+                    }
+                    aria-controls="password"
+                    disabled={submitting}
+                  >
+                    {showPassword ? (
+                      <FiEyeOff aria-hidden="true" />
+                    ) : (
+                      <FiEye aria-hidden="true" />
+                    )}
+                  </button>
                 </div>
+
+                <p
+                  id="password-help"
+                  className={styles.fieldHelp}
+                >
+                  Utiliza al menos 6 caracteres.
+                </p>
               </div>
 
-              <button type="submit" className={styles.submitButton}>
-                Crear cuenta
-                <span aria-hidden="true">→</span>
+              <button
+                type="submit"
+                className={styles.submitButton}
+                disabled={submitting}
+              >
+                {submitting ? (
+                  <>
+                    <span
+                      className={styles.spinner}
+                      aria-hidden="true"
+                    />
+                    Creando cuenta...
+                  </>
+                ) : (
+                  <>
+                    Crear cuenta
+                    <FiArrowRight aria-hidden="true" />
+                  </>
+                )}
               </button>
             </form>
 
-            <p className={styles.loginLink}>
-              ¿Ya tienes una cuenta? <Link to="/login">Inicia sesión</Link>
-            </p>
-          </div>
+            <div className={styles.loginSection}>
+              <p>¿Ya tienes una cuenta?</p>
+
+              <Link
+                to="/login"
+                className={styles.loginLink}
+              >
+                Inicia sesión
+                <FiArrowRight aria-hidden="true" />
+              </Link>
+            </div>
+          </section>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
   );
 };
 

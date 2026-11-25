@@ -24,7 +24,7 @@ import {
 import { AuthContext } from '../context/AuthContext';
 import useNotificationCount from '../hooks/useNotificationCount';
 import styles from './Navbar.module.css';
-import logoSmartCity from '../assets/logo.png';
+import logoSmartCity from '../assets/logo-smartcity.jpeg';
 
 const ParticipantNotifications = ({
   getLinkClass,

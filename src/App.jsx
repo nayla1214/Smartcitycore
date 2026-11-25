@@ -15,6 +15,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import GadDetail from './pages/GadDetail';
 import Dashboard from './pages/Dashboard';
+import PlatformInfo from './pages/PlatformInfo';
 
 import AdminDashboard, {
   AdminAccount,
@@ -73,7 +74,14 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<MainLayout />}>
+          {/* Páginas públicas */}
+
           <Route index element={<Home />} />
+
+          <Route
+            path="plataforma"
+            element={<PlatformInfo />}
+          />
 
           <Route
             path="login"
@@ -90,7 +98,11 @@ function App() {
             element={<GadDetail />}
           />
 
+          {/* Páginas que requieren iniciar sesión */}
+
           <Route element={<PrivateRoute />}>
+            {/* Administración */}
+
             <Route element={<ManagementRoute />}>
               <Route
                 path="admin"
@@ -109,6 +121,8 @@ function App() {
                 />
               </Route>
             </Route>
+
+            {/* Participantes */}
 
             <Route element={<ParticipantRoute />}>
               <Route
@@ -156,6 +170,8 @@ function App() {
                 element={<TopicPage />}
               />
             </Route>
+
+            {/* Perfil según el rol */}
 
             <Route
               path="profile"
