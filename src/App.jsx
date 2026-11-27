@@ -21,7 +21,17 @@ import AdminDashboard, {
   AdminAccount,
 } from './pages/AdminDashboard';
 
+import TeacherDashboard, {
+  TeacherAccount,
+} from './pages/TeacherDashboard';
+
+import {
+  TeacherTracking,
+  TeacherForums,
+} from './pages/TeacherSupport';
+
 import AdminCourses from './pages/AdminCourses';
+import AdminSurveys from './pages/AdminSurveys';
 
 import CourseDetail from './pages/CourseDetail';
 import ModuleDetail from './pages/ModuleDetail';
@@ -37,36 +47,53 @@ import ModuleIntegrativeEvaluation from './pages/ModuleIntegrativeEvaluation';
 import Module2IntegrativeEvaluation from './pages/Module2IntegrativeEvaluation';
 import Module3IntegrativeEvaluation from './pages/Module3IntegrativeEvaluation';
 
-const ManagementRoute = () => {
-  const { user } = useContext(AuthContext);
+const getRoleHome = (role) => {
+  if (['ADMIN', 'SUPERADMIN'].includes(role)) {
+    return '/admin';
+  }
 
-  return ['ADMIN', 'SUPERADMIN'].includes(user?.role)
-    ? <Outlet />
-    : <Navigate to="/dashboard" replace />;
+  if (role === 'DOCENTE') {
+    return '/docente';
+  }
+
+  if (role === 'USER') {
+    return '/dashboard';
+  }
+
+  return '/';
 };
 
-const CourseAdminRoute = () => {
+const RoleRoute = ({ roles }) => {
   const { user } = useContext(AuthContext);
 
-  return user?.role === 'ADMIN'
-    ? <Outlet />
-    : <Navigate to="/admin" replace />;
-};
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-const ParticipantRoute = () => {
-  const { user } = useContext(AuthContext);
-
-  return user?.role === 'USER'
+  return roles.includes(user.role)
     ? <Outlet />
-    : <Navigate to="/admin" replace />;
+    : (
+      <Navigate
+        to={getRoleHome(user.role)}
+        replace
+      />
+    );
 };
 
 const AccountPage = () => {
   const { user } = useContext(AuthContext);
 
-  return ['ADMIN', 'SUPERADMIN'].includes(user?.role)
-    ? <AdminAccount />
-    : <Profile />;
+  if (
+    ['ADMIN', 'SUPERADMIN'].includes(user?.role)
+  ) {
+    return <AdminAccount />;
+  }
+
+  if (user?.role === 'DOCENTE') {
+    return <TeacherAccount />;
+  }
+
+  return <Profile />;
 };
 
 function App() {
@@ -98,12 +125,16 @@ function App() {
             element={<GadDetail />}
           />
 
-          {/* Páginas que requieren iniciar sesión */}
-
           <Route element={<PrivateRoute />}>
             {/* Administración */}
 
-            <Route element={<ManagementRoute />}>
+            <Route
+              element={
+                <RoleRoute
+                  roles={['ADMIN', 'SUPERADMIN']}
+                />
+              }
+            >
               <Route
                 path="admin"
                 element={<AdminDashboard />}
@@ -114,17 +145,55 @@ function App() {
                 element={<AdminDashboard />}
               />
 
-              <Route element={<CourseAdminRoute />}>
+              {/* Exclusivo del administrador tutor */}
+
+              <Route
+                element={
+                  <RoleRoute roles={['ADMIN']} />
+                }
+              >
                 <Route
                   path="admin/courses"
                   element={<AdminCourses />}
                 />
+
+                <Route
+                  path="admin/surveys"
+                  element={<AdminSurveys />}
+                />
               </Route>
+            </Route>
+
+            {/* Docentes */}
+
+            <Route
+              element={
+                <RoleRoute roles={['DOCENTE']} />
+              }
+            >
+              <Route
+                path="docente"
+                element={<TeacherDashboard />}
+              />
+
+              <Route
+                path="docente/seguimiento"
+                element={<TeacherTracking />}
+              />
+
+              <Route
+                path="docente/foros"
+                element={<TeacherForums />}
+              />
             </Route>
 
             {/* Participantes */}
 
-            <Route element={<ParticipantRoute />}>
+            <Route
+              element={
+                <RoleRoute roles={['USER']} />
+              }
+            >
               <Route
                 path="dashboard"
                 element={<Dashboard />}
@@ -147,17 +216,23 @@ function App() {
 
               <Route
                 path="module/1/integrative-evaluation"
-                element={<ModuleIntegrativeEvaluation />}
+                element={
+                  <ModuleIntegrativeEvaluation />
+                }
               />
 
               <Route
                 path="module/2/integrative-evaluation"
-                element={<Module2IntegrativeEvaluation />}
+                element={
+                  <Module2IntegrativeEvaluation />
+                }
               />
 
               <Route
                 path="module/3/integrative-evaluation"
-                element={<Module3IntegrativeEvaluation />}
+                element={
+                  <Module3IntegrativeEvaluation />
+                }
               />
 
               <Route
@@ -178,6 +253,11 @@ function App() {
               element={<AccountPage />}
             />
           </Route>
+
+          <Route
+            path="*"
+            element={<Navigate to="/" replace />}
+          />
         </Route>
       </Routes>
     </Router>

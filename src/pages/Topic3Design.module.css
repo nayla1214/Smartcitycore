@@ -1,4 +1,3 @@
-/* Estos estilos se combinan con TopicDetail.module.css solo dentro del tema 2.1. */
 .greenWelcome {
   display: grid; grid-template-columns: minmax(0, 1fr) 220px; align-items: center;
   gap: 26px; padding: 30px; margin: 0 0 28px; border: 1px solid #d7e5ff;
@@ -89,3 +88,29 @@
 .greenCongratulations { color: #245eaa; }
 .videoHeadingIcon { display: grid; place-items: center; flex: 0 0 50px; width: 50px; height: 50px; border-radius: 14px; color: #7854c5; background: #eee8fa; }
 .greenWelcome { background: linear-gradient(110deg,#faf8ff,#f1ecfb); border-color: #e0d5f5; }
+/* Enlaces de lecturas: destacados como en la referencia */
+.articleCard .articleLink {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-self: flex-start;
+  margin-top: auto;
+  padding-top: 20px;
+  color: var(--reading-accent);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.6;
+  text-decoration: none;
+}
+
+.articleCard .articleLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.articleCard .articleLink:focus-visible {
+  outline: 2px solid var(--reading-accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}

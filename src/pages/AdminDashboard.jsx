@@ -27,6 +27,7 @@ const ROLE_NAMES = {
   USER: 'Participante',
   ADMIN: 'Director del proyecto',
   SUPERADMIN: 'Superadministrador',
+  DOCENTE: 'Docente',
 };
 
 const getId = (user) => user?.id ?? user?._id;
@@ -34,9 +35,10 @@ const getId = (user) => user?.id ?? user?._id;
 const formatScore = (value) =>
   value === null || value === undefined
     ? '—'
-    : `${(Number(value) / 10).toLocaleString('es-EC', {
-        maximumFractionDigits: 2,
-      })}/10`;
+    : `${(Number(value) / 10).toLocaleString(
+        'es-EC',
+        { maximumFractionDigits: 2 }
+      )}/10`;
 
 const formatDate = (value) => {
   if (!value) return '—';
@@ -48,6 +50,373 @@ const formatDate = (value) => {
     : date.toLocaleString('es-EC');
 };
 
+// Formulario de asignaciones del administrador tutor.
+const TeacherAssignments = ({
+  teacher,
+  onClose,
+}) => {
+  const [courses, setCourses] = useState([]);
+  const [assignedIds, setAssignedIds] = useState([]);
+  const [courseId, setCourseId] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [retry, setRetry] = useState(0);
+
+  const mountedRef = useRef(false);
+  const busyRef = useRef(false);
+  const teacherId = Number(getId(teacher));
+
+  useEffect(() => {
+    mountedRef.current = true;
+
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadAssignments = async () => {
+      setLoading(true);
+      setError('');
+      setCourseId('');
+
+      try {
+        const data = await api.get('/courses/admin');
+
+        if (!Array.isArray(data)) {
+          throw new Error(
+            'La lista de cursos no es válida.'
+          );
+        }
+
+        const assignments = await Promise.all(
+          data.map(async (course) => {
+            const rows = await api.get(
+              `/teachers/courses/${course.id}/teachers`
+            );
+
+            if (!Array.isArray(rows)) {
+              throw new Error(
+                'La lista de asignaciones no es válida.'
+              );
+            }
+
+            return rows.some(
+              (row) =>
+                Number(row.userId) === teacherId
+            )
+              ? Number(course.id)
+              : null;
+          })
+        );
+
+        if (!active) return;
+
+        setCourses(data);
+        setAssignedIds(
+          assignments.filter((id) => id !== null)
+        );
+      } catch (requestError) {
+        if (active) {
+          setError(
+            requestError.message ||
+              'No se pudieron consultar las asignaciones.'
+          );
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    loadAssignments();
+
+    return () => {
+      active = false;
+    };
+  }, [teacherId, retry]);
+
+  const assignCourse = async (event) => {
+    event.preventDefault();
+
+    if (!courseId || busyRef.current) return;
+
+    busyRef.current = true;
+    setBusy(true);
+    setError('');
+    setMessage('');
+
+    const selectedId = Number(courseId);
+
+    try {
+      const response = await api.post(
+        `/teachers/courses/${selectedId}/teachers`,
+        { userId: teacherId }
+      );
+
+      if (!mountedRef.current) return;
+
+      setAssignedIds((current) => [
+        ...new Set([...current, selectedId]),
+      ]);
+
+      setCourseId('');
+      setMessage(
+        response.message ||
+          'Curso asignado correctamente.'
+      );
+    } catch (requestError) {
+      if (mountedRef.current) {
+        setError(
+          requestError.message ||
+            'No se pudo asignar el curso.'
+        );
+      }
+    } finally {
+      busyRef.current = false;
+
+      if (mountedRef.current) setBusy(false);
+    }
+  };
+
+  const removeCourse = async (course) => {
+    if (busyRef.current) return;
+
+    const confirmed = window.confirm(
+      `¿Retirar el curso «${course.name}» de ${teacher.name}?`
+    );
+
+    if (!confirmed) return;
+
+    busyRef.current = true;
+    setBusy(true);
+    setError('');
+    setMessage('');
+
+    try {
+      // Usa request porque el servicio api puede
+      // no tener un método delete definido.
+      await api.post(
+        `/teachers/courses/${course.id}/teachers/${teacherId}/remove`,
+        {}
+      );
+
+      if (!mountedRef.current) return;
+
+      setAssignedIds((current) =>
+        current.filter(
+          (id) => id !== Number(course.id)
+        )
+      );
+
+      setMessage(
+        'Asignación retirada correctamente.'
+      );
+    } catch (requestError) {
+      if (mountedRef.current) {
+        setError(
+          requestError.message ||
+            'No se pudo retirar la asignación.'
+        );
+      }
+    } finally {
+      busyRef.current = false;
+
+      if (mountedRef.current) setBusy(false);
+    }
+  };
+
+  const assignedCourses = courses.filter(
+    (course) =>
+      assignedIds.includes(Number(course.id))
+  );
+
+  const availableCourses = courses.filter(
+    (course) =>
+      course.status === true &&
+      !assignedIds.includes(Number(course.id))
+  );
+
+  return (
+    <section
+      className={styles.usersCard}
+      aria-labelledby="teacher-assignments-title"
+    >
+      <div className={styles.tableHeader}>
+        <div>
+          <span className={styles.pageSubtitle}>
+            ASIGNACIÓN DOCENTE
+          </span>
+
+          <h2 id="teacher-assignments-title">
+            Cursos de {teacher.name}
+          </h2>
+
+          <p>{teacher.email}</p>
+        </div>
+
+        <button
+          type="button"
+          className={styles.secondaryButton}
+          onClick={onClose}
+          disabled={busy}
+        >
+          Cerrar
+        </button>
+      </div>
+
+      {message && (
+        <p
+          className={styles.successMessage}
+          role="status"
+        >
+          {message}
+        </p>
+      )}
+
+      {error && (
+        <div
+          className={styles.errorMessage}
+          role="alert"
+        >
+          <p>{error}</p>
+
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            disabled={busy || loading}
+            onClick={() =>
+              setRetry((current) => current + 1)
+            }
+          >
+            Actualizar asignaciones
+          </button>
+        </div>
+      )}
+
+      {loading ? (
+        <p role="status">
+          Consultando cursos asignados…
+        </p>
+      ) : (
+        <>
+          {!error && (
+            <form
+              className={styles.profileForm}
+              onSubmit={assignCourse}
+            >
+              <label>
+                Curso disponible
+
+                <select
+                  className={styles.roleFilter}
+                  value={courseId}
+                  onChange={(event) =>
+                    setCourseId(event.target.value)
+                  }
+                  disabled={
+                    busy ||
+                    !teacher.status ||
+                    !availableCourses.length
+                  }
+                  required
+                >
+                  <option value="">
+                    Selecciona un curso
+                  </option>
+
+                  {availableCourses.map((course) => (
+                    <option
+                      key={course.id}
+                      value={course.id}
+                    >
+                      {course.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <button
+                type="submit"
+                className={styles.primaryButton}
+                disabled={
+                  busy ||
+                  !teacher.status ||
+                  !courseId
+                }
+              >
+                {busy ? 'Guardando…' : 'Asignar curso'}
+              </button>
+            </form>
+          )}
+
+          {!teacher.status && (
+            <p>
+              Activa la cuenta para asignarle nuevos cursos.
+            </p>
+          )}
+
+          <h3>Cursos asignados</h3>
+
+          {!assignedCourses.length && !error ? (
+            <p>
+              Este docente todavía no tiene cursos asignados.
+            </p>
+          ) : (
+            <div className={styles.tableContainer}>
+              <table>
+                <caption>
+                  Cursos asignados al docente
+                </caption>
+
+                <thead>
+                  <tr>
+                    <th scope="col">Curso</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Acción</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {assignedCourses.map((course) => (
+                    <tr key={course.id}>
+                      <th scope="row">
+                        {course.name}
+                      </th>
+
+                      <td>
+                        {course.status
+                          ? 'Activo'
+                          : 'Inactivo'}
+                      </td>
+
+                      <td>
+                        <button
+                          type="button"
+                          className={styles.secondaryButton}
+                          disabled={busy}
+                          onClick={() =>
+                            removeCourse(course)
+                          }
+                        >
+                          Retirar asignación
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
+      )}
+    </section>
+  );
+};
+
 const AdminDashboard = () => {
   const { user } = useContext(AuthContext);
   const location = useLocation();
@@ -56,30 +425,43 @@ const AdminDashboard = () => {
     user?.role
   );
 
-  const isSuperAdmin = user?.role === 'SUPERADMIN';
+  const isSuperAdmin =
+    user?.role === 'SUPERADMIN';
+
+  const isCourseAdmin =
+    user?.role === 'ADMIN';
 
   const accountKey = String(getId(user) || '');
-  const usersView = location.pathname === '/admin/users';
+  const usersView =
+    location.pathname === '/admin/users';
 
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [retry, setRetry] = useState(0);
 
   const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState('ALL');
-  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [roleFilter, setRoleFilter] =
+    useState('ALL');
+  const [statusFilter, setStatusFilter] =
+    useState('ALL');
 
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [busyId, setBusyId] = useState(null);
 
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] =
+    useState(null);
+  const [selectedTeacher, setSelectedTeacher] =
+    useState(null);
+
   const [progress, setProgress] = useState(null);
   const [progressLoading, setProgressLoading] =
     useState(false);
-  const [progressError, setProgressError] = useState('');
+  const [progressError, setProgressError] =
+    useState('');
 
   const requestRef = useRef(0);
+  const mutationRef = useRef(false);
   const detailHeadingRef = useRef(null);
 
   useEffect(() => {
@@ -89,6 +471,7 @@ const AdminDashboard = () => {
 
     setUsers([]);
     setSelectedUser(null);
+    setSelectedTeacher(null);
     setProgress(null);
     setProgressError('');
     setProgressLoading(false);
@@ -130,11 +513,17 @@ const AdminDashboard = () => {
       active = false;
       requestRef.current += 1;
     };
-  }, [accountKey, user?.role, allowed, retry]);
+  }, [
+    accountKey,
+    user?.role,
+    allowed,
+    retry,
+  ]);
 
   useEffect(() => {
     requestRef.current += 1;
     setSelectedUser(null);
+    setSelectedTeacher(null);
     setProgress(null);
     setProgressLoading(false);
     setProgressError('');
@@ -150,7 +539,9 @@ const AdminDashboard = () => {
     () =>
       isSuperAdmin
         ? users
-        : users.filter((item) => item.role === 'USER'),
+        : users.filter((item) =>
+            ['USER', 'DOCENTE'].includes(item.role)
+          ),
     [users, isSuperAdmin]
   );
 
@@ -166,16 +557,25 @@ const AdminDashboard = () => {
     (item) => item.role === 'ADMIN'
   ).length;
 
+  const teachers = users.filter(
+    (item) => item.role === 'DOCENTE'
+  ).length;
+
   const filteredUsers = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     return visibleUsers.filter((item) => {
       const matchesSearch =
-        (item.name || '').toLowerCase().includes(query) ||
-        (item.email || '').toLowerCase().includes(query);
+        (item.name || '')
+          .toLowerCase()
+          .includes(query) ||
+        (item.email || '')
+          .toLowerCase()
+          .includes(query);
 
       const matchesRole =
-        roleFilter === 'ALL' || item.role === roleFilter;
+        roleFilter === 'ALL' ||
+        item.role === roleFilter;
 
       const matchesStatus =
         statusFilter === 'ALL' ||
@@ -200,37 +600,59 @@ const AdminDashboard = () => {
   const replaceUser = (updatedUser) => {
     setUsers((current) =>
       current.map((item) =>
-        String(getId(item)) === String(getId(updatedUser))
+        String(getId(item)) ===
+        String(getId(updatedUser))
           ? { ...item, ...updatedUser }
           : item
       )
+    );
+
+    setSelectedTeacher((current) =>
+      current &&
+      String(getId(current)) ===
+        String(getId(updatedUser))
+        ? updatedUser.role === 'DOCENTE'
+          ? { ...current, ...updatedUser }
+          : null
+        : current
     );
   };
 
   const canManage = (target) => {
     if (
       String(getId(target)) === accountKey ||
-      !['USER', 'ADMIN'].includes(target.role)
+      !['USER', 'ADMIN', 'DOCENTE'].includes(
+        target.role
+      )
     ) {
       return false;
     }
 
-    return isSuperAdmin || target.role === 'USER';
+    return (
+      isSuperAdmin ||
+      ['USER', 'DOCENTE'].includes(target.role)
+    );
   };
 
   const changeStatus = async (target) => {
-    if (busyId !== null || !canManage(target)) return;
+    if (
+      mutationRef.current ||
+      !canManage(target)
+    ) {
+      return;
+    }
 
     const nextStatus = !target.status;
 
-    const confirmed = window.confirm(
-      `${nextStatus ? '¿Activar' : '¿Desactivar'} la cuenta de ${
-        target.name
-      }?`
-    );
+    if (
+      !window.confirm(
+        `${nextStatus ? '¿Activar' : '¿Desactivar'} la cuenta de ${target.name}?`
+      )
+    ) {
+      return;
+    }
 
-    if (!confirmed) return;
-
+    mutationRef.current = true;
     setBusyId(getId(target));
     setError('');
     setMessage('');
@@ -249,30 +671,36 @@ const AdminDashboard = () => {
           'No se pudo cambiar el estado.'
       );
     } finally {
+      mutationRef.current = false;
       setBusyId(null);
     }
   };
 
-  const changeRole = async (target) => {
+  const changeRole = async (target, role) => {
     if (
       !isSuperAdmin ||
-      busyId !== null ||
-      !canManage(target)
+      mutationRef.current ||
+      !canManage(target) ||
+      role === target.role
     ) {
       return;
     }
 
-    const role =
-      target.role === 'USER' ? 'ADMIN' : 'USER';
+    const removalNotice =
+      target.role === 'DOCENTE' &&
+      role !== 'DOCENTE'
+        ? ' Se retirarán sus asignaciones docentes.'
+        : '';
 
-    const confirmed = window.confirm(
-      role === 'ADMIN'
-        ? `¿Asignar permisos de administrador a ${target.name}?`
-        : `¿Retirar los permisos de administrador a ${target.name}?`
-    );
+    if (
+      !window.confirm(
+        `¿Cambiar el rol de ${target.name} a ${ROLE_NAMES[role]}?${removalNotice}`
+      )
+    ) {
+      return;
+    }
 
-    if (!confirmed) return;
-
+    mutationRef.current = true;
     setBusyId(getId(target));
     setError('');
     setMessage('');
@@ -291,6 +719,7 @@ const AdminDashboard = () => {
           'No se pudo cambiar el rol.'
       );
     } finally {
+      mutationRef.current = false;
       setBusyId(null);
     }
   };
@@ -298,6 +727,7 @@ const AdminDashboard = () => {
   const loadProgress = async (target) => {
     const request = ++requestRef.current;
 
+    setSelectedTeacher(null);
     setSelectedUser(target);
     setProgress(null);
     setProgressError('');
@@ -339,7 +769,8 @@ const AdminDashboard = () => {
         <div className={styles.accessDenied}>
           <h1>Acceso denegado</h1>
           <p>
-            Esta sección requiere permisos administrativos.
+            Esta sección requiere permisos
+            administrativos.
           </p>
         </div>
       </div>
@@ -362,14 +793,17 @@ const AdminDashboard = () => {
             </h1>
 
             <p>
-              Consulta participantes, administra sus
-              cuentas y revisa su seguimiento académico.
+              Administra participantes y docentes,
+              asigna cursos y consulta el seguimiento
+              académico.
             </p>
           </div>
 
           <div className={styles.adminProfile}>
             <div className={styles.avatar}>
-              {user?.name?.charAt(0).toUpperCase() || 'A'}
+              {user?.name
+                ?.charAt(0)
+                .toUpperCase() || 'A'}
             </div>
 
             <div>
@@ -379,7 +813,7 @@ const AdminDashboard = () => {
           </div>
         </header>
 
-        {!usersView && !selectedUser && (
+        {!usersView && (
           <section
             className={styles.statistics}
             aria-label="Resumen de cuentas"
@@ -403,23 +837,33 @@ const AdminDashboard = () => {
                 Icon: FiShield,
                 color: styles.purpleIcon,
               },
-            ].map(({ label, value, Icon, color }) => (
-              <article
-                key={label}
-                className={styles.statCard}
-              >
-                <div
-                  className={`${styles.statIcon} ${color}`}
+              {
+                label: 'Docentes registrados',
+                value: teachers,
+                Icon: FiUsers,
+                color: styles.greenIcon,
+              },
+            ].map(
+              ({ label, value, Icon, color }) => (
+                <article
+                  key={label}
+                  className={styles.statCard}
                 >
-                  <Icon aria-hidden="true" />
-                </div>
+                  <div
+                    className={`${styles.statIcon} ${color}`}
+                  >
+                    <Icon aria-hidden="true" />
+                  </div>
 
-                <div>
-                  <span>{label}</span>
-                  <strong>{loading ? '—' : value}</strong>
-                </div>
-              </article>
-            ))}
+                  <div>
+                    <span>{label}</span>
+                    <strong>
+                      {loading ? '—' : value}
+                    </strong>
+                  </div>
+                </article>
+              )
+            )}
           </section>
         )}
 
@@ -433,19 +877,36 @@ const AdminDashboard = () => {
         )}
 
         {error && (
-          <div className={styles.errorMessage} role="alert">
+          <div
+            className={styles.errorMessage}
+            role="alert"
+          >
             <p>{error}</p>
 
             <button
               type="button"
               className={styles.secondaryButton}
-              onClick={() => setRetry((value) => value + 1)}
+              onClick={() =>
+                setRetry((value) => value + 1)
+              }
               disabled={busyId !== null}
             >
               Actualizar lista
             </button>
           </div>
         )}
+
+        {usersView &&
+          selectedTeacher &&
+          isCourseAdmin && (
+            <TeacherAssignments
+              key={getId(selectedTeacher)}
+              teacher={selectedTeacher}
+              onClose={() =>
+                setSelectedTeacher(null)
+              }
+            />
+          )}
 
         {!usersView ? null : selectedUser ? (
           <section className={styles.usersCard}>
@@ -489,7 +950,9 @@ const AdminDashboard = () => {
                 <button
                   type="button"
                   className={styles.secondaryButton}
-                  onClick={() => loadProgress(selectedUser)}
+                  onClick={() =>
+                    loadProgress(selectedUser)
+                  }
                 >
                   Reintentar
                 </button>
@@ -498,76 +961,119 @@ const AdminDashboard = () => {
 
             {progress && !progressLoading && (
               <>
-                {(progress.courses || []).length === 0 && (
+                {!progress.courses?.length && (
                   <p className={styles.emptyState}>
                     Este participante todavía no tiene
                     cursos iniciados.
                   </p>
                 )}
 
-                {(progress.courses || []).map((course) => (
-                  <article
-                    key={course.id}
-                    className={styles.courseDetail}
-                  >
-                    <header className={styles.tableHeader}>
-                      <div>
-                        <h3>{course.name}</h3>
-                        <p>
-                          {course.completedModules} de{' '}
-                          {course.totalModules} módulos aprobados
-                        </p>
-                      </div>
-
-                      <strong className={styles.resultCount}>
-                        {course.progress} % de avance
-                      </strong>
-                    </header>
-
-                    {(course.modules || [])
-                      .filter((module) => module.supported)
-                      .map((module) => (
-                        <section
-                          key={module.id}
-                          className={styles.moduleDetail}
-                        >
-                          <h4>
-                            Módulo {module.order}: {module.title}
-                          </h4>
-
+                {(progress.courses || []).map(
+                  (course) => (
+                    <article
+                      key={course.id}
+                      className={styles.courseDetail}
+                    >
+                      <header
+                        className={styles.tableHeader}
+                      >
+                        <div>
+                          <h3>{course.name}</h3>
                           <p>
-                            Avance: {module.progress} % ·
-                            Videos: {module.completedVideos}/
-                            {module.totalVideos} ·
-                            Lecturas: {module.readings?.viewed}/
-                            {module.readings?.total}
+                            {course.completedModules} de{' '}
+                            {course.totalModules} módulos
+                            aprobados
                           </p>
+                        </div>
 
-                          <div className={styles.tableContainer}>
-                            <table>
-                              <caption>
-                                Evaluaciones del módulo{' '}
-                                {module.order}
-                              </caption>
+                        <strong
+                          className={styles.resultCount}
+                        >
+                          {course.progress} % de avance
+                        </strong>
+                      </header>
 
-                              <thead>
-                                <tr>
-                                  <th scope="col">Evaluación</th>
-                                  <th scope="col">Intentos</th>
-                                  <th scope="col">Mejor nota</th>
-                                  <th scope="col">Estado</th>
-                                </tr>
-                              </thead>
+                      {(course.modules || [])
+                        .filter(
+                          (module) => module.supported
+                        )
+                        .map((module) => (
+                          <section
+                            key={module.id}
+                            className={styles.moduleDetail}
+                          >
+                            <h4>
+                              Módulo {module.order}:{' '}
+                              {module.title}
+                            </h4>
 
-                              <tbody>
-                                {(module.evaluations || []).map(
-                                  (evaluation) => (
-                                    <tr key={evaluation.topic}>
+                            <p>
+                              Avance: {module.progress} % ·
+                              Videos:{' '}
+                              {module.completedVideos}/
+                              {module.totalVideos} ·
+                              Lecturas:{' '}
+                              {module.readings?.viewed}/
+                              {module.readings?.total}
+                            </p>
+
+                            <div
+                              className={
+                                styles.tableContainer
+                              }
+                            >
+                              <table>
+                                <caption>
+                                  Evaluaciones del módulo{' '}
+                                  {module.order}
+                                </caption>
+
+                                <thead>
+                                  <tr>
+                                    <th scope="col">
+                                      Evaluación
+                                    </th>
+                                    <th scope="col">
+                                      Intentos
+                                    </th>
+                                    <th scope="col">
+                                      Mejor nota
+                                    </th>
+                                    <th scope="col">
+                                      Estado
+                                    </th>
+                                  </tr>
+                                </thead>
+
+                                <tbody>
+                                  {[
+                                    ...(
+                                      module.evaluations ||
+                                      []
+                                    ).map((evaluation) => ({
+                                      ...evaluation,
+                                      label:
+                                        `Tema ${evaluation.topic}`,
+                                      key: evaluation.topic,
+                                    })),
+                                    {
+                                      ...(
+                                        module.integrative ||
+                                        {}
+                                      ),
+                                      label: 'Integradora',
+                                      key: 'integrative',
+                                    },
+                                  ].map((evaluation) => (
+                                    <tr
+                                      key={evaluation.key}
+                                    >
                                       <th scope="row">
-                                        Tema {evaluation.topic}
+                                        {evaluation.label}
                                       </th>
                                       <td>
-                                        {evaluation.attempts ?? '—'}
+                                        {evaluation.attempts ??
+                                          '—'}
                                       </td>
                                       <td>
                                         {formatScore(
@@ -577,48 +1083,30 @@ const AdminDashboard = () => {
                                       <td>
                                         {evaluation.passed
                                           ? 'Aprobada'
-                                          : evaluation.bestScore != null
+                                          : evaluation.bestScore !=
+                                              null
                                             ? 'Por aprobar'
                                             : 'Pendiente'}
                                       </td>
                                     </tr>
-                                  )
-                                )}
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </section>
+                        ))}
+                    </article>
+                  )
+                )}
 
-                                <tr>
-                                  <th scope="row">
-                                    Integradora
-                                  </th>
-                                  <td>
-                                    {module.integrative?.attempts ??
-                                      '—'}
-                                  </td>
-                                  <td>
-                                    {formatScore(
-                                      module.integrative?.bestScore
-                                    )}
-                                  </td>
-                                  <td>
-                                    {module.integrative?.passed
-                                      ? 'Aprobada'
-                                      : module.integrative
-                                            ?.bestScore != null
-                                        ? 'Por aprobar'
-                                        : 'Pendiente'}
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </section>
-                      ))}
-                  </article>
-                ))}
-
-                <section className={styles.courseDetail}>
+                <section
+                  className={styles.courseDetail}
+                >
                   <h3>Historial de intentos</h3>
 
-                  <div className={styles.tableContainer}>
+                  <div
+                    className={styles.tableContainer}
+                  >
                     <table>
                       <caption>
                         Nota obtenida en cada intento
@@ -626,10 +1114,14 @@ const AdminDashboard = () => {
 
                       <thead>
                         <tr>
-                          <th scope="col">Evaluación</th>
+                          <th scope="col">
+                            Evaluación
+                          </th>
                           <th scope="col">Fecha</th>
                           <th scope="col">Nota</th>
-                          <th scope="col">Resultado</th>
+                          <th scope="col">
+                            Resultado
+                          </th>
                         </tr>
                       </thead>
 
@@ -641,10 +1133,14 @@ const AdminDashboard = () => {
                                 {attempt.title}
                               </th>
                               <td>
-                                {formatDate(attempt.attemptedAt)}
+                                {formatDate(
+                                  attempt.attemptedAt
+                                )}
                               </td>
                               <td>
-                                {formatScore(attempt.score)}
+                                {formatScore(
+                                  attempt.score
+                                )}
                               </td>
                               <td>
                                 {attempt.passed
@@ -661,7 +1157,8 @@ const AdminDashboard = () => {
                               colSpan={4}
                               className={styles.emptyState}
                             >
-                              Todavía no hay intentos registrados.
+                              Todavía no hay intentos
+                              registrados.
                             </td>
                           </tr>
                         )}
@@ -679,12 +1176,13 @@ const AdminDashboard = () => {
                 <h2>
                   {isSuperAdmin
                     ? 'Cuentas de la plataforma'
-                    : 'Participantes'}
+                    : 'Participantes y docentes'}
                 </h2>
 
                 <p>
-                  Usa «Ver seguimiento» para consultar
-                  módulos, intentos y notas.
+                  Consulta el seguimiento de participantes
+                  y las acciones disponibles para cada
+                  cuenta.
                 </p>
               </div>
 
@@ -694,7 +1192,9 @@ const AdminDashboard = () => {
             </div>
 
             <div className={styles.filters}>
-              <label className={styles.searchContainer}>
+              <label
+                className={styles.searchContainer}
+              >
                 <FiSearch aria-hidden="true" />
 
                 <input
@@ -708,23 +1208,35 @@ const AdminDashboard = () => {
                 />
               </label>
 
-              {isSuperAdmin && (
-                <select
-                  className={styles.roleFilter}
-                  aria-label="Filtrar por rol"
-                  value={roleFilter}
-                  onChange={(event) =>
-                    setRoleFilter(event.target.value)
-                  }
-                >
-                  <option value="ALL">Todos los roles</option>
-                  <option value="USER">Participantes</option>
-                  <option value="ADMIN">Administradores</option>
-                  <option value="SUPERADMIN">
-                    Superadministradores
-                  </option>
-                </select>
-              )}
+              <select
+                className={styles.roleFilter}
+                aria-label="Filtrar por rol"
+                value={roleFilter}
+                onChange={(event) =>
+                  setRoleFilter(event.target.value)
+                }
+              >
+                <option value="ALL">
+                  Todos los roles
+                </option>
+                <option value="USER">
+                  Participantes
+                </option>
+                <option value="DOCENTE">
+                  Docentes
+                </option>
+
+                {isSuperAdmin && (
+                  <>
+                    <option value="ADMIN">
+                      Administradores
+                    </option>
+                    <option value="SUPERADMIN">
+                      Superadministradores
+                    </option>
+                  </>
+                )}
+              </select>
 
               <select
                 className={styles.roleFilter}
@@ -734,25 +1246,36 @@ const AdminDashboard = () => {
                   setStatusFilter(event.target.value)
                 }
               >
-                <option value="ALL">Todos los estados</option>
-                <option value="ACTIVE">Activos</option>
-                <option value="INACTIVE">Inactivos</option>
+                <option value="ALL">
+                  Todos los estados
+                </option>
+                <option value="ACTIVE">
+                  Activos
+                </option>
+                <option value="INACTIVE">
+                  Inactivos
+                </option>
               </select>
             </div>
 
             {loading ? (
-              <p role="status">Cargando usuarios…</p>
+              <p role="status">
+                Cargando usuarios…
+              </p>
             ) : (
               <div className={styles.tableContainer}>
                 <table>
                   <caption>
-                    Cuentas registradas y acciones disponibles
+                    Cuentas registradas y acciones
+                    disponibles
                   </caption>
 
                   <thead>
                     <tr>
                       <th scope="col">Usuario</th>
-                      <th scope="col">Correo electrónico</th>
+                      <th scope="col">
+                        Correo electrónico
+                      </th>
                       <th scope="col">Rol</th>
                       <th scope="col">Estado</th>
                       <th scope="col">Acciones</th>
@@ -763,15 +1286,24 @@ const AdminDashboard = () => {
                     {filteredUsers.map((target) => (
                       <tr key={getId(target)}>
                         <td>
-                          <div className={styles.userInformation}>
-                            <div className={styles.userAvatar}>
+                          <div
+                            className={
+                              styles.userInformation
+                            }
+                          >
+                            <div
+                              className={
+                                styles.userAvatar
+                              }
+                            >
                               {target.name
                                 ?.charAt(0)
                                 .toUpperCase() || 'U'}
                             </div>
 
                             <span>
-                              {target.name || 'Sin nombre'}
+                              {target.name ||
+                                'Sin nombre'}
                             </span>
                           </div>
                         </td>
@@ -805,28 +1337,70 @@ const AdminDashboard = () => {
                               className={styles.statusDot}
                               aria-hidden="true"
                             />
-                            {target.status ? 'Activo' : 'Inactivo'}
+
+                            {target.status
+                              ? 'Activo'
+                              : 'Inactivo'}
                           </span>
                         </td>
 
                         <td>
-                          <div className={styles.rowActions}>
+                          <div
+                            className={styles.rowActions}
+                          >
                             {target.role === 'USER' && (
                               <button
                                 type="button"
-                                className={styles.primaryButton}
-                                onClick={() => loadProgress(target)}
+                                className={
+                                  styles.primaryButton
+                                }
+                                disabled={busyId !== null}
+                                onClick={() =>
+                                  loadProgress(target)
+                                }
                               >
                                 Ver seguimiento
                               </button>
                             )}
 
+                            {isCourseAdmin &&
+                              target.role ===
+                                'DOCENTE' && (
+                                <button
+                                  type="button"
+                                  className={
+                                    styles.primaryButton
+                                  }
+                                  disabled={
+                                    busyId !== null
+                                  }
+                                 onClick={() => {
+  setSelectedTeacher(target);
+
+  window.requestAnimationFrame(() => {
+    document
+      .getElementById('teacher-assignments-title')
+      ?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+  });
+}}
+                                >
+                                  Asignar cursos
+                                </button>
+                              )}
+
                             {canManage(target) && (
                               <button
                                 type="button"
-                                className={styles.secondaryButton}
+                                className={
+                                  styles.secondaryButton
+                                }
                                 disabled={busyId !== null}
-                                onClick={() => changeStatus(target)}
+                                onClick={() =>
+                                  changeStatus(target)
+                                }
                               >
                                 {busyId === getId(target)
                                   ? 'Guardando…'
@@ -836,33 +1410,61 @@ const AdminDashboard = () => {
                               </button>
                             )}
 
-                            {isSuperAdmin && canManage(target) && (
-                              <button
-                                type="button"
-                                className={styles.secondaryButton}
-                                disabled={
-                                  busyId !== null ||
-                                  (target.role === 'USER' &&
-                                    !target.status)
-                                }
-                                title={
-                                  target.role === 'USER' &&
-                                  !target.status
-                                    ? 'Activa la cuenta antes de asignarle el rol de administrador.'
-                                    : undefined
-                                }
-                                onClick={() => changeRole(target)}
-                              >
-                                {target.role === 'ADMIN'
-                                  ? 'Retirar administrador'
-                                  : 'Asignar administrador'}
-                              </button>
-                            )}
+                            {isSuperAdmin &&
+                              canManage(target) && (
+                                <select
+                                  className={
+                                    styles.roleFilter
+                                  }
+                                  aria-label={
+                                    `Cambiar rol de ${target.name}`
+                                  }
+                                  value={target.role}
+                                  disabled={
+                                    busyId !== null
+                                  }
+                                  onChange={(event) =>
+                                    changeRole(
+                                      target,
+                                      event.target.value
+                                    )
+                                  }
+                                >
+                                  <option value="USER">
+                                    Participante
+                                  </option>
+
+                                  <option
+                                    value="DOCENTE"
+                                    disabled={
+                                      !target.status &&
+                                      target.role !==
+                                        'DOCENTE'
+                                    }
+                                  >
+                                    Docente
+                                  </option>
+
+                                  <option
+                                    value="ADMIN"
+                                    disabled={
+                                      !target.status &&
+                                      target.role !==
+                                        'ADMIN'
+                                    }
+                                  >
+                                    Administrador
+                                  </option>
+                                </select>
+                              )}
 
                             {!canManage(target) &&
-                              target.role !== 'USER' && (
+                              target.role !==
+                                'USER' && (
                                 <span>
-                                  {String(getId(target)) === accountKey
+                                  {String(
+                                    getId(target)
+                                  ) === accountKey
                                     ? 'Tu cuenta'
                                     : 'Cuenta protegida'}
                                 </span>
@@ -872,7 +1474,7 @@ const AdminDashboard = () => {
                       </tr>
                     ))}
 
-                    {filteredUsers.length === 0 && (
+                    {!filteredUsers.length && (
                       <tr>
                         <td
                           colSpan={5}
@@ -890,7 +1492,7 @@ const AdminDashboard = () => {
           </section>
         )}
 
-        {!selectedUser && !usersView && (
+        {!usersView && (
           <div className={styles.bottomActions}>
             <Link
               to="/admin/users"
@@ -905,15 +1507,19 @@ const AdminDashboard = () => {
   );
 };
 
-// Perfil administrativo sin medallas ni avance del curso.
+// Perfil administrativo sin medallas ni avance.
 export const AdminAccount = () => {
-  const { user, updateUser } = useContext(AuthContext);
+  const { user, updateUser } =
+    useContext(AuthContext);
 
-  const [name, setName] = useState(user?.name || '');
-  const [email, setEmail] = useState(user?.email || '');
+  const [name, setName] =
+    useState(user?.name || '');
+  const [email, setEmail] =
+    useState(user?.email || '');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const savingRef = useRef(false);
 
   useEffect(() => {
     setName(user?.name || '');
@@ -922,9 +1528,21 @@ export const AdminAccount = () => {
 
   const save = async (event) => {
     event.preventDefault();
-    setSaving(true);
+
+    if (savingRef.current) return;
+
     setMessage('');
     setError('');
+
+    if (!name.trim() || !email.trim()) {
+      setError(
+        'Completa tu nombre y correo electrónico.'
+      );
+      return;
+    }
+
+    savingRef.current = true;
+    setSaving(true);
 
     try {
       await updateUser({
@@ -932,13 +1550,16 @@ export const AdminAccount = () => {
         email: email.trim(),
       });
 
-      setMessage('Perfil actualizado correctamente.');
+      setMessage(
+        'Perfil actualizado correctamente.'
+      );
     } catch (requestError) {
       setError(
         requestError.message ||
           'No se pudo actualizar el perfil.'
       );
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   };
@@ -951,6 +1572,7 @@ export const AdminAccount = () => {
             <span className={styles.pageSubtitle}>
               MI CUENTA
             </span>
+
             <h1>Perfil administrativo</h1>
             <p>{ROLE_NAMES[user?.role]}</p>
           </div>
@@ -960,35 +1582,53 @@ export const AdminAccount = () => {
           <h2>Información personal</h2>
 
           {message && (
-            <p className={styles.successMessage} role="status">
+            <p
+              className={styles.successMessage}
+              role="status"
+            >
               {message}
             </p>
           )}
 
           {error && (
-            <p className={styles.errorMessage} role="alert">
+            <p
+              className={styles.errorMessage}
+              role="alert"
+            >
               {error}
             </p>
           )}
 
-          <form className={styles.profileForm} onSubmit={save}>
+          <form
+            className={styles.profileForm}
+            onSubmit={save}
+            aria-busy={saving}
+          >
             <label>
               Nombre completo
+
               <input
                 value={name}
-                onChange={(event) => setName(event.target.value)}
+                onChange={(event) =>
+                  setName(event.target.value)
+                }
                 autoComplete="name"
+                disabled={saving}
                 required
               />
             </label>
 
             <label>
               Correo electrónico
+
               <input
                 type="email"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(event) =>
+                  setEmail(event.target.value)
+                }
                 autoComplete="email"
+                disabled={saving}
                 required
               />
             </label>
@@ -998,7 +1638,9 @@ export const AdminAccount = () => {
               className={styles.primaryButton}
               disabled={saving}
             >
-              {saving ? 'Guardando…' : 'Guardar cambios'}
+              {saving
+                ? 'Guardando…'
+                : 'Guardar cambios'}
             </button>
           </form>
         </section>

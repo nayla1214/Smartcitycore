@@ -19,11 +19,16 @@ import {
   FiBell,
   FiUser,
   FiLogOut,
+  FiMessageSquare,
+  FiBarChart2,
 } from 'react-icons/fi';
 
 import { AuthContext } from '../context/AuthContext';
+
 import useNotificationCount from '../hooks/useNotificationCount';
+
 import styles from './Navbar.module.css';
+
 import logoSmartCity from '../assets/logo-smartcity.jpeg';
 
 const ParticipantNotifications = ({
@@ -52,7 +57,9 @@ const ParticipantNotifications = ({
           className={styles.notificationBadge}
           aria-hidden="true"
         >
-          {unreadCount > 99 ? '99+' : unreadCount}
+          {unreadCount > 99
+            ? '99+'
+            : unreadCount}
         </span>
       )}
     </NavLink>
@@ -60,9 +67,11 @@ const ParticipantNotifications = ({
 };
 
 const Navbar = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout } =
+    useContext(AuthContext);
 
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] =
+    useState(false);
 
   const navigate = useNavigate();
 
@@ -71,15 +80,35 @@ const Navbar = () => {
     'SUPERADMIN',
   ].includes(user?.role);
 
+  const isTeacher =
+    user?.role === 'DOCENTE';
+
+  const isParticipant =
+    user?.role === 'USER';
+
   const roleName =
-    user?.role === 'SUPERADMIN'
-      ? 'Superadministrador'
-      : user?.role === 'ADMIN'
-        ? 'Director del proyecto'
-        : 'Participante';
+    {
+      SUPERADMIN: 'Superadministrador',
+      ADMIN: 'Director del proyecto',
+      DOCENTE: 'Docente',
+      USER: 'Participante',
+    }[user?.role] || 'Usuario';
+
+  const homeRoute = isManagement
+    ? '/admin'
+    : isTeacher
+      ? '/docente'
+      : '/';
+
+  const sectionName = isManagement
+    ? 'Gestión del proyecto'
+    : isTeacher
+      ? 'Espacio docente'
+      : 'Capacitación';
 
   useEffect(() => {
-    const root = document.getElementById('root');
+    const root =
+      document.getElementById('root');
 
     root?.classList.toggle(
       'with-sidebar',
@@ -146,7 +175,7 @@ const Navbar = () => {
       >
         <div className={styles.sidebarHeader}>
           <Link
-            to={isManagement ? '/admin' : '/'}
+            to={homeRoute}
             className={styles.logo}
             onClick={closeMenu}
           >
@@ -157,11 +186,7 @@ const Navbar = () => {
               />
             </div>
 
-            <span>
-              {isManagement
-                ? 'Gestión del proyecto'
-                : 'Capacitación'}
-            </span>
+            <span>{sectionName}</span>
           </Link>
         </div>
 
@@ -169,7 +194,9 @@ const Navbar = () => {
           <span className={styles.menuLabel}>
             {isManagement
               ? 'ADMINISTRACIÓN'
-              : 'MENÚ PRINCIPAL'}
+              : isTeacher
+                ? 'DOCENCIA'
+                : 'MENÚ PRINCIPAL'}
           </span>
 
           <nav
@@ -177,7 +204,9 @@ const Navbar = () => {
             aria-label={
               isManagement
                 ? 'Menú administrativo'
-                : 'Menú principal'
+                : isTeacher
+                  ? 'Menú docente'
+                  : 'Menú principal'
             }
           >
             {isManagement ? (
@@ -198,21 +227,70 @@ const Navbar = () => {
                   onClick={closeMenu}
                 >
                   <FiUsers aria-hidden="true" />
-                  <span>Usuarios y seguimiento</span>
+
+                  <span>
+                    Usuarios y seguimiento
+                  </span>
                 </NavLink>
 
                 {user.role === 'ADMIN' && (
-                  <NavLink
-                    to="/admin/courses"
-                    className={getLinkClass}
-                    onClick={closeMenu}
-                  >
-                    <FiBookOpen aria-hidden="true" />
-                    <span>Gestión de cursos</span>
-                  </NavLink>
+                  <>
+                    <NavLink
+                      to="/admin/courses"
+                      className={getLinkClass}
+                      onClick={closeMenu}
+                    >
+                      <FiBookOpen aria-hidden="true" />
+
+                      <span>Gestión de cursos</span>
+                    </NavLink>
+
+                    <NavLink
+                      to="/admin/surveys"
+                      className={getLinkClass}
+                      onClick={closeMenu}
+                    >
+                      <FiBarChart2 aria-hidden="true" />
+
+                      <span>Encuestas del curso</span>
+                    </NavLink>
+                  </>
                 )}
               </>
-            ) : (
+            ) : isTeacher ? (
+              <>
+                <NavLink
+                  to="/docente"
+                  end
+                  className={getLinkClass}
+                  onClick={closeMenu}
+                >
+                  <FiBookOpen aria-hidden="true" />
+
+                  <span>Mis cursos asignados</span>
+                </NavLink>
+
+                <NavLink
+                  to="/docente/seguimiento"
+                  className={getLinkClass}
+                  onClick={closeMenu}
+                >
+                  <FiTrendingUp aria-hidden="true" />
+
+                  <span>Seguimiento</span>
+                </NavLink>
+
+                <NavLink
+                  to="/docente/foros"
+                  className={getLinkClass}
+                  onClick={closeMenu}
+                >
+                  <FiMessageSquare aria-hidden="true" />
+
+                  <span>Foros</span>
+                </NavLink>
+              </>
+            ) : isParticipant ? (
               <>
                 <NavLink
                   to="/"
@@ -221,6 +299,7 @@ const Navbar = () => {
                   onClick={closeMenu}
                 >
                   <FiHome aria-hidden="true" />
+
                   <span>Inicio</span>
                 </NavLink>
 
@@ -230,10 +309,11 @@ const Navbar = () => {
                   onClick={closeMenu}
                 >
                   <FiGrid aria-hidden="true" />
+
                   <span>Cursos</span>
                 </NavLink>
               </>
-            )}
+            ) : null}
           </nav>
 
           <div className={styles.accountSection}>
@@ -245,7 +325,7 @@ const Navbar = () => {
               className={styles.links}
               aria-label="Mi cuenta"
             >
-              {!isManagement && (
+              {isParticipant && (
                 <>
                   <NavLink
                     to="/progress"
@@ -253,6 +333,7 @@ const Navbar = () => {
                     onClick={closeMenu}
                   >
                     <FiTrendingUp aria-hidden="true" />
+
                     <span>Avance</span>
                   </NavLink>
 
@@ -269,6 +350,7 @@ const Navbar = () => {
                 onClick={closeMenu}
               >
                 <FiUser aria-hidden="true" />
+
                 <span>Mi perfil</span>
               </NavLink>
             </nav>
@@ -278,7 +360,9 @@ const Navbar = () => {
         <div className={styles.sidebarFooter}>
           <div className={styles.userInformation}>
             <div className={styles.userAvatar}>
-              {user.name?.charAt(0).toUpperCase() || 'U'}
+              {user.name
+                ?.charAt(0)
+                .toUpperCase() || 'U'}
             </div>
 
             <div>
@@ -296,6 +380,7 @@ const Navbar = () => {
             onClick={handleLogout}
           >
             <FiLogOut aria-hidden="true" />
+
             Cerrar sesión
           </button>
         </div>

@@ -89,7 +89,13 @@ const Notifications = () => {
 
   return <main className={styles.page}>
     <header className={styles.header}>
-      <div><span className={styles.eyebrow}>MI CUENTA</span><h1>Notificaciones</h1><p>Consulta los comentarios que tus compañeros dejaron en tus respuestas del foro.</p></div>
+      <div><span className={styles.eyebrow}>MI CUENTA</span><h1>Notificaciones</h1><h3>
+ <h3>
+  {item.actorRole === 'DOCENTE'
+    ? `Tu docente ${item.actorName} dejó una observación en tu respuesta del tema ${item.topicNumber}.`
+    : `${item.actorName} comentó tu respuesta del tema ${item.topicNumber}.`}
+</h3>
+</h3></div>
       <div className={styles.bell}><FiBell /><strong>{unread}</strong><span>Sin leer</span></div>
     </header>
     <section className={styles.panel}>
@@ -109,7 +115,11 @@ const Notifications = () => {
           <button type="button" className={styles.view} onClick={() => openComment(item)} disabled={busy} aria-expanded={opened === item.id} aria-controls={`comment-${item.id}`}>{opened === item.id ? 'Ocultar comentario' : 'Ver comentario'} →</button>
           {opened === item.id && <div id={`comment-${item.id}`} className={styles.detail}>
             <h4>Tu respuesta · Tema {item.topicNumber}</h4><p>{item.postContent}</p>
-            <h4>Comentario de {item.actorName}</h4><p>{item.content}</p>
+            <h4>
+  {item.actorRole === 'DOCENTE'
+    ? `Comentario del docente ${item.actorName}`
+    : `Comentario de ${item.actorName}`}
+</h4><p>{item.content}</p>
             <Link to={`/module/${item.topicNumber.split('.')[0]}/topic/${item.topicNumber}`}>Ir al tema {item.topicNumber} →</Link>
           </div>}
         </div>

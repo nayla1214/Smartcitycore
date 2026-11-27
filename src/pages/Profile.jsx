@@ -20,9 +20,7 @@ import {
 
 import { AuthContext } from '../context/AuthContext';
 import { api } from '../services/api';
-import {
-  openCertificateExample,
-} from '../services/certificateExample';
+import { openCertificateExample } from '../services/certificateExample';
 
 import styles from './Profile.module.css';
 
@@ -104,15 +102,11 @@ const calculateGeneralGrade = (progress) => {
     let points = 0;
 
     for (const topicNumber of definition.topics) {
-      const evaluation = (
-        module?.evaluations || []
-      ).find(
+      const evaluation = (module?.evaluations || []).find(
         (item) => String(item.topic) === topicNumber
       );
 
-      const score = validScore(
-        evaluation?.bestScore
-      );
+      const score = validScore(evaluation?.bestScore);
 
       if (score !== null) {
         points += (score / 100) * 0.6;
@@ -130,8 +124,7 @@ const calculateGeneralGrade = (progress) => {
 
     if (integrativeScore !== null) {
       points +=
-        (integrativeScore / 100) *
-        definition.weight;
+        (integrativeScore / 100) * definition.weight;
 
       graded += 1;
 
@@ -179,6 +172,10 @@ const Profile = () => {
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
+  // Este estado debe estar dentro del componente.
+  const [issuingCertificate, setIssuingCertificate] =
+    useState(false);
+
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -225,9 +222,7 @@ const Profile = () => {
       }
 
       try {
-        const data = await api.get(
-          '/users/me/progress'
-        );
+        const data = await api.get('/users/me/progress');
 
         if (!active) return;
 
@@ -241,12 +236,18 @@ const Profile = () => {
       } catch (requestError) {
         if (!active) return;
 
+        console.error(
+          'Error al comprobar el avance del certificado:',
+          requestError
+        );
+
         setCertificateStatus({
           accountKey,
           loading: false,
           available: false,
           progress: null,
           error:
+            requestError.message ||
             'No se pudo consultar el avance y las calificaciones.',
         });
       }
@@ -290,22 +291,16 @@ const Profile = () => {
 
   const statistics = {
     coursesStarted:
-      Number(
-        progressData?.summary?.coursesStarted
-      ) || 0,
+      Number(progressData?.summary?.coursesStarted) || 0,
 
     videosCompleted:
-      Number(
-        progressData?.summary?.videosCompleted
-      ) || 0,
+      Number(progressData?.summary?.videosCompleted) || 0,
 
     coursesCompleted: (
       progressData?.courses || []
     ).filter((course) =>
       Number(course.id) === 1
-        ? hasCompletedCourse({
-            courses: [course],
-          })
+        ? hasCompletedCourse({ courses: [course] })
         : course.isCompleted === true &&
           Number(course.progress) === 100
     ).length,
@@ -349,10 +344,7 @@ const Profile = () => {
 
   const initial = useMemo(
     () =>
-      user?.name
-        ?.trim()
-        .charAt(0)
-        .toUpperCase() || 'U',
+      user?.name?.trim().charAt(0).toUpperCase() || 'U',
     [user?.name]
   );
 
@@ -389,6 +381,8 @@ const Profile = () => {
 
   const handleSave = async (event) => {
     event.preventDefault();
+
+    if (saving) return;
 
     setMessage('');
     setError('');
@@ -435,32 +429,71 @@ const Profile = () => {
     setError('');
   };
 
-  const handleCertificate = (print) => {
-    if (!certificateAvailable) return;
+  const handleCertificate = async (print) => {
+    if (!certificateAvailable || issuingCertificate) {
+      return;
+    }
 
     setError('');
 
+    // Abrir durante el clic evita el bloqueo de ventanas
+    // emergentes después de esperar la respuesta de la API.
+    const preview = window.open('', '_blank');
+
+    if (!preview) {
+      setError(
+        'Permite las ventanas emergentes para abrir el certificado.'
+      );
+      return;
+    }
+
+    preview.opener = null;
+    preview.document.title = 'Preparando certificado';
+    preview.document.body.textContent =
+      'Comprobando requisitos y preparando el certificado...';
+
+    setIssuingCertificate(true);
+
     try {
+      const certificate = await api.post(
+        '/certificates/course/1/issue',
+        {}
+      );
+
+      if (preview.closed) return;
+
       openCertificateExample(
-        user?.name || 'Nombre del participante',
+        certificate.participantName,
         {
           print,
-          finalScore: generalGrade.score,
-          courseName,
+          courseName: certificate.courseName,
+          finalScore: certificate.finalScore,
+          issueDate: certificate.issue_date,
+          uniqueCode: certificate.unique_code,
+          targetWindow: preview,
         }
       );
     } catch (certificateError) {
+      if (!preview.closed) {
+        preview.close();
+      }
+
+      console.error(
+        'Error al emitir el certificado:',
+        certificateError
+      );
+
       setError(
         certificateError.message ||
-          'No se pudo abrir el certificado.'
+          'No se pudo emitir el certificado.'
       );
+    } finally {
+      setIssuingCertificate(false);
     }
   };
 
   const retryProgress = () => {
-    setCertificateRetry(
-      (current) => current + 1
-    );
+    setCertificateRetry((current) => current + 1);
   };
 
   const lockedMessage =
@@ -485,8 +518,8 @@ const Profile = () => {
             <h1>{user?.name || 'Usuario'}</h1>
 
             <p>
-              Consulta tu información personal y el
-              progreso alcanzado en la plataforma.
+              Consulta tu información personal y el progreso
+              alcanzado en la plataforma.
             </p>
           </div>
         </div>
@@ -554,6 +587,7 @@ const Profile = () => {
               <form
                 className={styles.profileForm}
                 onSubmit={handleSave}
+                aria-busy={saving}
               >
                 <label>
                   Nombres completos
@@ -600,7 +634,6 @@ const Profile = () => {
                     disabled={saving}
                   >
                     <FiSave aria-hidden="true" />
-
                     {saving
                       ? 'Guardando...'
                       : 'Guardar cambios'}
@@ -618,13 +651,9 @@ const Profile = () => {
                 </div>
               </form>
             ) : (
-              <div
-                className={styles.personalInformation}
-              >
+              <div className={styles.personalInformation}>
                 <div className={styles.informationRow}>
-                  <div
-                    className={styles.informationIcon}
-                  >
+                  <div className={styles.informationIcon}>
                     <FiUser aria-hidden="true" />
                   </div>
 
@@ -637,9 +666,7 @@ const Profile = () => {
                 </div>
 
                 <div className={styles.informationRow}>
-                  <div
-                    className={styles.informationIcon}
-                  >
+                  <div className={styles.informationIcon}>
                     <FiMail aria-hidden="true" />
                   </div>
 
@@ -715,12 +742,10 @@ const Profile = () => {
                           : ''
                       }`}
                       style={{
-                        '--medal-color':
-                          achievement.color,
+                        '--medal-color': achievement.color,
                         '--medal-background':
                           achievement.background,
-                        '--medal-border':
-                          achievement.border,
+                        '--medal-border': achievement.border,
                       }}
                     >
                       <div className={styles.medal}>
@@ -738,9 +763,7 @@ const Profile = () => {
                         </span>
                       </div>
 
-                      <strong>
-                        {achievement.title}
-                      </strong>
+                      <strong>{achievement.title}</strong>
 
                       <span>
                         {achievement.description}
@@ -778,9 +801,7 @@ const Profile = () => {
               />
             </header>
 
-            <div
-              className={styles.certificateInformation}
-            >
+            <div className={styles.certificateInformation}>
               <span className={styles.exampleBadge}>
                 {checkingCertificate
                   ? 'Comprobando curso...'
@@ -802,19 +823,22 @@ const Profile = () => {
                   ? 'Estamos consultando tu avance.'
                   : progressError
                     ? 'No se pudo comprobar la disponibilidad del certificado.'
-                    : certificateAvailable
-                      ? 'Completaste los requisitos del curso. Puedes previsualizar y guardar el modelo de certificado con tu nota general.'
-                      : lockedMessage}
+                    : issuingCertificate
+                      ? 'Comprobando requisitos y preparando tu certificado...'
+                      : certificateAvailable
+                        ? 'Completaste los requisitos del curso. Al abrir el certificado se comprobará y registrará su emisión.'
+                        : lockedMessage}
               </p>
 
               <div className={styles.certificateActions}>
                 <button
                   type="button"
                   className={styles.saveButton}
-                  onClick={() =>
-                    handleCertificate(false)
+                  onClick={() => handleCertificate(false)}
+                  disabled={
+                    !certificateAvailable ||
+                    issuingCertificate
                   }
-                  disabled={!certificateAvailable}
                   aria-describedby="certificate-status"
                 >
                   {!certificateAvailable && (
@@ -827,10 +851,11 @@ const Profile = () => {
                 <button
                   type="button"
                   className={styles.cancelButton}
-                  onClick={() =>
-                    handleCertificate(true)
+                  onClick={() => handleCertificate(true)}
+                  disabled={
+                    !certificateAvailable ||
+                    issuingCertificate
                   }
-                  disabled={!certificateAvailable}
                   aria-describedby="certificate-status"
                   title="Guardar como PDF desde la ventana de impresión"
                 >
@@ -857,10 +882,10 @@ const Profile = () => {
               )}
 
               <p className={styles.certificateNote}>
-                El diseño actual es una vista previa
-                sin validez de emisión. La firma
-                autorizada, la fecha y el código se
-                conectarán con la emisión definitiva.
+                El certificado incluye tu nota general,
+                fecha de emisión y código único. Puedes
+                guardarlo como PDF desde la ventana de
+                impresión.
               </p>
             </div>
           </article>
@@ -896,14 +921,14 @@ const Profile = () => {
               ) : progressError ? (
                 <p role="alert">
                   No se pudieron consultar tus
-                  calificaciones. Usa «Volver a
-                  comprobar» en el certificado.
+                  calificaciones. Usa «Volver a comprobar»
+                  en el certificado.
                 </p>
               ) : !generalGrade ? (
                 <p>
-                  Tu calificación aparecerá cuando
-                  inicies el curso de Ciudades
-                  Inteligentes y Gobierno Digital.
+                  Tu calificación aparecerá cuando inicies
+                  el curso de Ciudades Inteligentes y
+                  Gobierno Digital.
                 </p>
               ) : (
                 <>
@@ -926,40 +951,30 @@ const Profile = () => {
                   </div>
 
                   <dl className={styles.gradeBreakdown}>
-                    {generalGrade.modules.map(
-                      (module) => (
-                        <div key={module.order}>
-                          <dt>
-                            Módulo {module.order}
-                          </dt>
+                    {generalGrade.modules.map((module) => (
+                      <div key={module.order}>
+                        <dt>Módulo {module.order}</dt>
 
-                          <dd>
-                            {formatGrade(module.points)}
+                        <dd>
+                          {formatGrade(module.points)}
 
-                            <span>
-                              {' / '}
-                              {formatGrade(
-                                module.maximum
-                              )}
-                            </span>
-                          </dd>
-                        </div>
-                      )
-                    )}
+                          <span>
+                            {' / '}
+                            {formatGrade(module.maximum)}
+                          </span>
+                        </dd>
+                      </div>
+                    ))}
                   </dl>
 
-                  <p
-                    className={styles.gradeExplanation}
-                  >
+                  <p className={styles.gradeExplanation}>
                     Las evaluaciones de temas aportan
-                    6 puntos y las integradoras
-                    4 puntos. Se utiliza tu mejor
-                    calificación en cada evaluación.
+                    6 puntos y las integradoras 4 puntos.
+                    Se utiliza tu mejor calificación en
+                    cada evaluación.
                   </p>
 
-                  <p
-                    className={styles.gradeExplanation}
-                  >
+                  <p className={styles.gradeExplanation}>
                     {generalGrade.allPassed
                       ? certificateAvailable
                         ? 'Completaste las evaluaciones, los videos y las lecturas requeridas.'

@@ -1,0 +1,273 @@
+.section {
+  width: calc(100% - 32px);
+  max-width: 1100px;
+  box-sizing: border-box;
+  margin: 28px auto;
+  overflow: hidden;
+  border: 1px solid #cce3dc;
+  border-radius: 18px;
+  background: #ffffff;
+  color: #153956;
+}
+
+/* Botón para desplegar los recursos */
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 22px;
+  border: none;
+  background: #edf8f3;
+  color: #153956;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.toggle:hover {
+  background: #e0f2e8;
+}
+
+.toggle:focus-visible {
+  outline: 3px solid #298a75;
+  outline-offset: -4px;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: #13836b;
+  color: #ffffff;
+  font-size: 25px;
+}
+
+.heading {
+  display: grid;
+  flex: 1;
+  gap: 6px;
+  min-width: 0;
+}
+
+.heading strong {
+  font-size: 17px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.heading > span {
+  color: #476b60;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.chevron {
+  flex-shrink: 0;
+  color: #16836c;
+  font-size: 22px;
+  transition: transform 0.2s;
+}
+
+.rotated {
+  transform: rotate(180deg);
+}
+
+/* Contenido desplegable */
+
+.panel {
+  padding: 24px;
+}
+
+.panel[hidden] {
+  display: none !important;
+}
+
+.notice {
+  padding: 13px 16px;
+  margin: 0 0 22px;
+  border: 1px solid #dce7f0;
+  border-radius: 11px;
+  background: #f1f6fb;
+  color: #486479;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* Tarjetas de videos */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(
+    2,
+    minmax(0, 1fr)
+  );
+  gap: 16px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid #d9e7e1;
+  border-radius: 15px;
+  background: #f9fcfa;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 20px;
+  background: #e2f3e9;
+  color: #187052;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.card h3 {
+  margin: 16px 0 10px;
+  color: #153956;
+  font-size: 17px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.card p {
+  margin: 0 0 18px;
+  color: #48677d;
+  font-size: 14px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Botones */
+
+.watchButton,
+.retry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 11px 15px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: #128169;
+  color: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+}
+
+.watchButton {
+  margin-top: auto;
+}
+
+.watchButton svg,
+.retry svg {
+  flex-shrink: 0;
+  font-size: 17px;
+}
+
+.watchButton:hover,
+.retry:hover {
+  background: #09654f;
+  color: #ffffff;
+  text-decoration: none;
+  box-shadow: 0 5px 12px rgb(18 129 105 / 15%);
+}
+
+.watchButton:focus-visible,
+.retry:focus-visible {
+  outline: 3px solid #6caee0;
+  outline-offset: 3px;
+}
+
+/* Estados */
+
+.empty {
+  margin: 0;
+  padding: 16px;
+  border: 1px dashed #cddfd7;
+  border-radius: 12px;
+  background: #f8fbf9;
+  color: #48677d;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.error {
+  padding: 16px;
+  border: 1px solid #edc7c7;
+  border-radius: 12px;
+  background: #fff4f4;
+  color: #a3313a;
+  line-height: 1.7;
+}
+
+.error p {
+  margin: 0 0 14px;
+}
+
+/* Celulares */
+
+@media (max-width: 650px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .toggle,
+  .panel {
+    padding: 18px;
+  }
+
+  .toggle {
+    gap: 12px;
+  }
+
+  .heading strong {
+    font-size: 15px;
+  }
+
+  .heading > span {
+    font-size: 12px;
+  }
+
+  .icon {
+    flex-basis: 38px;
+    width: 38px;
+    height: 38px;
+    font-size: 22px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+}
+
+/* Accesibilidad */
+
+@media (prefers-reduced-motion: reduce) {
+  .toggle,
+  .chevron,
+  .watchButton,
+  .retry {
+    transition: none;
+  }
+}

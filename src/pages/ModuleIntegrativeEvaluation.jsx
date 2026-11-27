@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import styles from './ModuleIntegrativeEvaluation.module.css';
+import CourseSurvey from '../components/CourseSurvey';
 
 const ENDPOINT = '/evaluations/module/1/integrative';
 const colors = ['#3875ce', '#8c67bd', '#239378', '#cd8734'];
@@ -215,6 +216,16 @@ export default function ModuleIntegrativeEvaluation() {
         })}
         {error && <p className={styles.error} role="alert">{error}</p>}
         <div className={styles.actions}><button className={styles.primary} type="submit" disabled={submitting}>{submitting ? 'Guardando resultado…' : 'Ver resultado →'}</button><Link className={styles.secondary} to="/course/1">Volver al curso</Link></div>
-      </form>}
+       </form>}
+
+    {!loading &&
+      evaluation &&
+      (
+        evaluation.passed === true ||
+        result?.passed === true
+      ) && (
+        <CourseSurvey courseId={1} />
+      )}
+
   </div></main>;
 }

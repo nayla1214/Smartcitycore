@@ -9,10 +9,15 @@ import {
 } from 'react-router-dom';
 
 import { api } from '../services/api';
+
+import ComplementaryVideos from '../components/ComplementaryVideos';
 import TopicDetail from './TopicDetail';
 
 const TopicPage = () => {
-  const { moduleId, topicNumber } = useParams();
+  const {
+    moduleId,
+    topicNumber,
+  } = useParams();
 
   const [state, setState] = useState({
     loading: true,
@@ -35,9 +40,14 @@ const TopicPage = () => {
 
     const load = async () => {
       try {
-        const [moduleData, topics] = await Promise.all([
+        const [
+          moduleData,
+          topics,
+        ] = await Promise.all([
           api.get(`/modules/${moduleId}`),
-          api.get(`/modules/${moduleId}/topics`),
+          api.get(
+            `/modules/${moduleId}/topics`
+          ),
         ]);
 
         if (!Array.isArray(topics)) {
@@ -47,7 +57,9 @@ const TopicPage = () => {
         }
 
         const topic = topics.find(
-          (item) => item.topicNumber === topicNumber
+          (item) =>
+            String(item.topicNumber) ===
+            String(topicNumber)
         );
 
         if (!topic) {
@@ -88,7 +100,9 @@ const TopicPage = () => {
   if (state.loading) {
     return (
       <div className="container mt-4">
-        <p role="status">Consultando tema…</p>
+        <p role="status">
+          Consultando tema…
+        </p>
       </div>
     );
   }
@@ -102,7 +116,9 @@ const TopicPage = () => {
           type="button"
           className="btn btn-primary mt-2"
           onClick={() =>
-            setRetry((current) => current + 1)
+            setRetry(
+              (current) => current + 1
+            )
           }
         >
           Reintentar
@@ -110,6 +126,9 @@ const TopicPage = () => {
       </div>
     );
   }
+
+  const isMainCourse =
+    Number(state.module.courseId) === 1;
 
   return (
     <>
@@ -134,10 +153,14 @@ const TopicPage = () => {
           </h1>
 
           {state.topic.introduction && (
-            <div style={{ marginTop: '1rem' }}>
-              {Number(state.module.courseId) === 1
-  ? 'Presentación del tutor'
-  : 'Contenido del tema'}
+            <div
+              style={{
+                marginTop: '1rem',
+              }}
+            >
+              {isMainCourse
+                ? 'Presentación del tutor'
+                : 'Contenido del tema'}
 
               <p
                 style={{
@@ -154,17 +177,29 @@ const TopicPage = () => {
         </div>
       </section>
 
-      {Number(state.module.courseId) === 1 ? (
-        <TopicDetail key={`${moduleId}-${topicNumber}`} />
+      <ComplementaryVideos
+        key={`${moduleId}-${topicNumber}-complementary`}
+        moduleId={moduleId}
+        topicNumber={state.topic.topicNumber}
+      />
+
+      {isMainCourse ? (
+        <TopicDetail
+          key={`${moduleId}-${topicNumber}`}
+        />
       ) : (
         <section className="container mt-4">
           <div className="card">
-           Este tema contiene material de lectura.
-Los videos y las actividades se incorporarán
-posteriormente.
+            <p>
+              Este tema contiene material de lectura.
+              Los videos obligatorios y las actividades
+              se incorporarán posteriormente.
+            </p>
 
             <Link
-              to={`/course/${state.module.courseId}`}
+              to={
+                `/course/${state.module.courseId}`
+              }
               className="btn btn-primary mt-2"
             >
               Volver al curso

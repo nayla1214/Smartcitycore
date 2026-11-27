@@ -5,7 +5,10 @@ import {
   useRef,
 } from 'react';
 
-import { Link, useNavigate } from 'react-router-dom';
+import {
+  Link,
+  useNavigate,
+} from 'react-router-dom';
 
 import {
   FiMail,
@@ -29,19 +32,28 @@ import imagen3 from '../assets/ciudad3.jpg';
 
 import styles from './Login.module.css';
 
-const images = [imagen1, imagen2, imagen3];
+const images = [
+  imagen1,
+  imagen2,
+  imagen3,
+];
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] =
+    useState(false);
   const [error, setError] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] =
+    useState(false);
 
-  const [currentImage, setCurrentImage] = useState(0);
+  const [currentImage, setCurrentImage] =
+    useState(0);
   const [paused, setPaused] = useState(false);
-  const [interacting, setInteracting] = useState(false);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const [interacting, setInteracting] =
+    useState(false);
+  const [reduceMotion, setReduceMotion] =
+    useState(false);
 
   const submittingRef = useRef(false);
 
@@ -63,48 +75,77 @@ const Login = () => {
     };
 
     updateMotion();
-    media.addEventListener('change', updateMotion);
 
-    const observer = new MutationObserver(updateMotion);
+    media.addEventListener(
+      'change',
+      updateMotion
+    );
 
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class'],
-    });
+    const observer =
+      new MutationObserver(updateMotion);
+
+    observer.observe(
+      document.documentElement,
+      {
+        attributes: true,
+        attributeFilter: ['class'],
+      }
+    );
 
     return () => {
-      media.removeEventListener('change', updateMotion);
+      media.removeEventListener(
+        'change',
+        updateMotion
+      );
+
       observer.disconnect();
     };
   }, []);
 
   useEffect(() => {
-    if (paused || interacting || reduceMotion) return;
+    if (
+      paused ||
+      interacting ||
+      reduceMotion
+    ) {
+      return;
+    }
 
     const interval = window.setInterval(() => {
       setCurrentImage(
-        (previous) => (previous + 1) % images.length
+        (previous) =>
+          (previous + 1) % images.length
       );
     }, 5000);
 
-    return () => window.clearInterval(interval);
-  }, [paused, interacting, reduceMotion]);
+    return () =>
+      window.clearInterval(interval);
+  }, [
+    paused,
+    interacting,
+    reduceMotion,
+  ]);
 
   const nextImage = () => {
     setCurrentImage(
-      (previous) => (previous + 1) % images.length
+      (previous) =>
+        (previous + 1) % images.length
     );
   };
 
   const previousImage = () => {
     setCurrentImage(
       (previous) =>
-        (previous - 1 + images.length) % images.length
+        (
+          previous -
+          1 +
+          images.length
+        ) % images.length
     );
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     if (submittingRef.current) return;
 
@@ -113,23 +154,33 @@ const Login = () => {
     setSubmitting(true);
 
     try {
-      const data = await api.post('/auth/login', {
-        email: email.trim(),
-        password,
-      });
+      const data = await api.post(
+        '/auth/login',
+        {
+          email: email.trim(),
+          password,
+        }
+      );
 
       login(data);
 
-      const role = data.user?.role ?? data.role;
+      const role =
+        data.user?.role ?? data.role;
 
-      navigate(
+      const destination =
         ['ADMIN', 'SUPERADMIN'].includes(role)
           ? '/admin'
-          : '/dashboard'
-      );
-    } catch (err) {
+          : role === 'DOCENTE'
+            ? '/docente'
+            : '/dashboard';
+
+      navigate(destination, {
+        replace: true,
+      });
+    } catch (requestError) {
       setError(
-        err.message || 'Error al iniciar sesión.'
+        requestError.message ||
+          'Error al iniciar sesión.'
       );
     } finally {
       submittingRef.current = false;
@@ -138,17 +189,22 @@ const Login = () => {
   };
 
   return (
-    <div className={styles.loginPage} data-login-page>
+    <div
+      className={styles.loginPage}
+      data-login-page
+    >
       <div className={styles.pageContent}>
         <nav
           className={styles.topbar}
           aria-label="Navegación de inicio de sesión"
         >
-          <Link to="/" className={styles.backHomeButton}>
+          <Link
+            to="/"
+            className={styles.backHomeButton}
+          >
             <FiArrowLeft aria-hidden="true" />
             Volver al inicio
           </Link>
-
         </nav>
 
         <div className={styles.loginLayout}>
@@ -168,8 +224,6 @@ const Login = () => {
                       Iniciar sesión
                     </h1>
                   </div>
-
-                  
                 </div>
 
                 <p>
@@ -178,7 +232,10 @@ const Login = () => {
               </header>
 
               {error && (
-                <div className={styles.alert} role="alert">
+                <div
+                  className={styles.alert}
+                  role="alert"
+                >
                   {error}
                 </div>
               )}
@@ -192,7 +249,9 @@ const Login = () => {
                     Correo electrónico
                   </label>
 
-                  <div className={styles.inputContainer}>
+                  <div
+                    className={styles.inputContainer}
+                  >
                     <FiMail aria-hidden="true" />
 
                     <input
@@ -201,8 +260,8 @@ const Login = () => {
                       type="email"
                       placeholder="nombre@correo.com"
                       value={email}
-                      onChange={(e) =>
-                        setEmail(e.target.value)
+                      onChange={(event) =>
+                        setEmail(event.target.value)
                       }
                       autoComplete="email"
                       autoCapitalize="none"
@@ -218,19 +277,23 @@ const Login = () => {
                     Contraseña
                   </label>
 
-                  <div className={styles.inputContainer}>
+                  <div
+                    className={styles.inputContainer}
+                  >
                     <FiLock aria-hidden="true" />
 
                     <input
                       id="password"
                       name="password"
                       type={
-                        showPassword ? 'text' : 'password'
+                        showPassword
+                          ? 'text'
+                          : 'password'
                       }
                       placeholder="Ingresa tu contraseña"
                       value={password}
-                      onChange={(e) =>
-                        setPassword(e.target.value)
+                      onChange={(event) =>
+                        setPassword(event.target.value)
                       }
                       autoComplete="current-password"
                       disabled={submitting}
@@ -267,7 +330,9 @@ const Login = () => {
                   className={styles.loginButton}
                   disabled={submitting}
                 >
-                  {submitting ? 'Ingresando...' : 'Ingresar'}
+                  {submitting
+                    ? 'Ingresando...'
+                    : 'Ingresar'}
 
                   {!submitting && (
                     <FiArrowRight aria-hidden="true" />
@@ -276,7 +341,9 @@ const Login = () => {
               </form>
 
               <div className={styles.loginOptions}>
-                <p>¿Todavía no tienes una cuenta?</p>
+                <p>
+                  ¿Todavía no tienes una cuenta?
+                </p>
 
                 <Link
                   to="/register"
@@ -293,12 +360,20 @@ const Login = () => {
             className={styles.carouselSection}
             aria-label="Imágenes de ciudades inteligentes"
             aria-roledescription="carrusel"
-            onMouseEnter={() => setInteracting(true)}
-            onMouseLeave={() => setInteracting(false)}
-            onFocusCapture={() => setInteracting(true)}
-            onBlurCapture={(e) => {
+            onMouseEnter={() =>
+              setInteracting(true)
+            }
+            onMouseLeave={() =>
+              setInteracting(false)
+            }
+            onFocusCapture={() =>
+              setInteracting(true)
+            }
+            onBlurCapture={(event) => {
               if (
-                !e.currentTarget.contains(e.relatedTarget)
+                !event.currentTarget.contains(
+                  event.relatedTarget
+                )
               ) {
                 setInteracting(false);
               }
@@ -328,7 +403,8 @@ const Login = () => {
               </h2>
 
               <p>
-                Construyendo juntos ciudades inteligentes.
+                Construyendo juntos ciudades
+                inteligentes.
               </p>
             </div>
 
@@ -350,9 +426,14 @@ const Login = () => {
               <FiChevronRight aria-hidden="true" />
             </button>
 
-            <div className={styles.carouselFooter}>
-              <span className={styles.imageCounter}>
-                0{currentImage + 1} / 0{images.length}
+            <div
+              className={styles.carouselFooter}
+            >
+              <span
+                className={styles.imageCounter}
+              >
+                0{currentImage + 1} / 0
+                {images.length}
               </span>
 
               <div className={styles.indicators}>
@@ -360,7 +441,9 @@ const Login = () => {
                   <button
                     type="button"
                     key={index}
-                    aria-label={`Mostrar imagen ${index + 1}`}
+                    aria-label={
+                      `Mostrar imagen ${index + 1}`
+                    }
                     aria-current={
                       index === currentImage
                         ? 'true'
@@ -371,7 +454,9 @@ const Login = () => {
                         ? styles.active
                         : ''
                     }`}
-                    onClick={() => setCurrentImage(index)}
+                    onClick={() =>
+                      setCurrentImage(index)
+                    }
                   />
                 ))}
               </div>
@@ -381,7 +466,9 @@ const Login = () => {
                   type="button"
                   className={styles.pauseButton}
                   onClick={() =>
-                    setPaused((current) => !current)
+                    setPaused(
+                      (current) => !current
+                    )
                   }
                   aria-label={
                     paused

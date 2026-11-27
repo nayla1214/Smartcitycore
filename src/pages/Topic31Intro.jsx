@@ -1789,7 +1789,7 @@ export const Topic33Content = ({ moduleData }) => {
       title:
         'Generative AI-Driven Digital Twin Architecture for Urban Mobility Simulation and Decision Support',
       description:
-        'Presenta un prototipo que combina inteligencia artificial generativa y simulación de movilidad urbana. Utiliza una interfaz conversacional para traducir solicitudes en configuraciones de simulación validadas.',
+        'Presenta un prototipo que combina inteligencia artificial generativa y simulación de movilidad urbana.',
       guidance:
         'Revisa cómo se preparan los escenarios y se comprueban sus parámetros. Piensa qué información necesitarías para comparar dos alternativas de movilidad en tu municipio.',
       url:
